@@ -1,0 +1,4 @@
+interface:
+  display_name: "减疲劳重写"
+  short_description: "给现有中文正文减负，先删坏句壳，再拆长句、补处境、打散段落，不制造新的模板。"
+  default_prompt: "使用 $writing-de-fatigue 重写这篇中文正文。先删评价壳、元说明壳和加工壳，再拆长句、补具体处境、打散均匀段落。不要发明新观点，不要改变槽位边界，不要把原文改成另一套模板。"

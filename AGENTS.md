@@ -303,6 +303,7 @@ evidence_status: "llm-draft"
 - 用户要求把研究推进成 dida-cli 任务闭环：`dida-research-closure`
 - 用户要求初始化一个新研究专题：`topic-bootstrap`
 - 用户要求提取一本书的核心原则层、区分观点与原则、或需要一组不读偏的判断准则：`book-principle-extractor`
+- 用户明确说现有正文“读起来累”“太绷”“太满”“像 AI”“像总结”“像说明书”，或要求降低模板感、拆长句、换词换句、补情绪露出、增加留白时：`writing-de-fatigue`。这个 skill 负责二次重写可读性，不替代槽位判断；默认先由槽位 skill 写对边界，再用它降阅读疲劳
 
 如果一个任务明显命中多个 skill，选择最小但足够覆盖的 skill 组合，不要把所有 skill 都挂上。
 

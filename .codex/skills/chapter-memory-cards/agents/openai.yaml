@@ -1,0 +1,4 @@
+interface:
+  display_name: "逐章记忆卡片"
+  short_description: "为逐章拆解生成独立记忆卡片文章"
+  default_prompt: "使用 $chapter-memory-cards 把这一章的逐章拆解文章压成独立的记忆卡片页，保留 3-5 张高价值卡片。"

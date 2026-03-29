@@ -1,0 +1,62 @@
+name: Deploy Blog to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HUGO_VERSION: "0.158.0"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Setup Hugo (Extended)
+        run: |
+          HUGO_DEB="hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          curl -fsSL -o "$RUNNER_TEMP/$HUGO_DEB" "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_DEB}"
+          sudo dpkg -i "$RUNNER_TEMP/$HUGO_DEB"
+          hugo version
+
+      - name: Build Hugo site
+        run: hugo -s ./site -d "${{ github.workspace }}/site/public" --baseURL "https://book.zongqir.com/" --cleanDestinationDir
+
+      - name: Ensure Cloudflare Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Missing required secrets: CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
+          if [ -z "$PROJECT_NAME" ]; then
+            PROJECT_NAME="book"
+          fi
+          npx wrangler pages project create "$PROJECT_NAME" --production-branch main || true
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          if [ -z "$PROJECT_NAME" ]; then
+            PROJECT_NAME="book"
+          fi
+          npx wrangler pages deploy ./site/public --project-name "$PROJECT_NAME" --branch "$GITHUB_REF_NAME"

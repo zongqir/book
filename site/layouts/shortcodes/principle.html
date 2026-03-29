@@ -1,0 +1,25 @@
+{{- $no := .Get "no" -}}
+{{- $type := .Get "type" | default "support" -}}
+{{- $statement := .Get "statement" -}}
+{{- $body := .Inner | strings.TrimSpace -}}
+
+<article class="principle-card principle-card--{{ $type }}">
+  <header class="principle-card-head">
+    {{- with $no }}
+      <span class="principle-card-no">{{ . }}</span>
+    {{- end }}
+    {{- if eq $type "core" }}
+      <span class="principle-card-badge">核心原则</span>
+    {{- else }}
+      <span class="principle-card-badge">支撑原则</span>
+    {{- end }}
+  </header>
+  <div class="principle-card-statement">
+    {{- $statement | markdownify -}}
+  </div>
+  {{- with $body }}
+    <div class="principle-card-body">
+      {{ . | markdownify }}
+    </div>
+  {{- end }}
+</article>

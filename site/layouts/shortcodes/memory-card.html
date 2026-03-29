@@ -1,0 +1,33 @@
+{{- $chapter := .Get "chapter" | default "" -}}
+{{- $title := .Get "title" | default "这一章最值得记住的判断" -}}
+{{- $phenomenon := .Get "phenomenon" | default "" -}}
+{{- $dont := .Get "dont" | default "" -}}
+{{- $check := .Get "check" | default "" -}}
+{{- $upgrade := .Get "upgrade" | default "" -}}
+
+<aside class="memory-card" aria-label="{{ $title }}">
+  <header class="memory-card-head">
+    {{- with $chapter }}
+      <span class="memory-card-kicker">{{ . }}</span>
+    {{- end }}
+    <h3 class="memory-card-title">{{ $title }}</h3>
+  </header>
+  <div class="memory-card-grid">
+    <section class="memory-card-item">
+      <div class="memory-card-label">看到什么现象</div>
+      <div class="memory-card-copy">{{ $phenomenon | markdownify }}</div>
+    </section>
+    <section class="memory-card-item">
+      <div class="memory-card-label">先别急着下什么结论</div>
+      <div class="memory-card-copy">{{ $dont | markdownify }}</div>
+    </section>
+    <section class="memory-card-item">
+      <div class="memory-card-label">先补哪组证据</div>
+      <div class="memory-card-copy">{{ $check | markdownify }}</div>
+    </section>
+    <section class="memory-card-item">
+      <div class="memory-card-label">什么时候才能升级成结论</div>
+      <div class="memory-card-copy">{{ $upgrade | markdownify }}</div>
+    </section>
+  </div>
+</aside>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Book Lab Icon</title>
+  <desc id="desc">A stylized open book with the initials B and L.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2f5b7c"/>
+      <stop offset="100%" stop-color="#6e5532"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffdf8"/>
+      <stop offset="100%" stop-color="#efe8d6"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="108" height="108" rx="28" fill="url(#bg)"/>
+  <path d="M34 34c13 0 21 4 30 11 9-7 17-11 30-11v48c-13 0-21 4-30 11-9-7-17-11-30-11V34Z" fill="url(#paper)" stroke="rgba(31,66,93,.22)" stroke-width="2"/>
+  <path d="M64 45v48" stroke="#d7ccb4" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M43 48h14c7 0 10 3 10 9s-3 9-10 9H43V48Zm0 20h16c6 0 9 3 9 8s-3 8-9 8H43V68Z" fill="#2f5b7c"/>
+  <path d="M74 48h9v27h18v9H74V48Z" fill="#6e5532"/>
+</svg>

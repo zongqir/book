@@ -1,0 +1,4 @@
+interface:
+  display_name: "复盘自检"
+  short_description: "写一份场景式自检对话，帮读者判断这本书的方法有没有真正进入日常动作"
+  default_prompt: "使用 $book-review-metrics 起草一篇中文复盘自检稿，通过场景式提问帮读者判断方法有没有进入执行习惯，读感像跟自己说实话，不像在填绩效表。"

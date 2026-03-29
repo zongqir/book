@@ -1,0 +1,4 @@
+interface:
+  display_name: "方法论总结"
+  short_description: "分析一本书的方法强度、方法流与边界，输出中文方法论总结稿"
+  default_prompt: "使用 $ook-methodology 分析这本书的方法论层，评估方法强度，识别方法流与边界，输出完整的中文方法论总结。"

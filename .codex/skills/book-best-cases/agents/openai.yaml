@@ -1,0 +1,4 @@
+interface:
+  display_name: "案例拆解"
+  short_description: "把最有价值的案例写成场景清楚、边界明确的中文案例稿"
+  default_prompt: "使用 $book-best-cases 起草或改写一篇中文《最有价值的案例》，要求先定义典型场景，再写错法、解法和案例价值；保持 cases 页面骨架，不要写成抽象观点总结。"

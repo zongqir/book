@@ -1,0 +1,19 @@
+title: "$topic_name"
+goal: "$goal"
+scope:
+  in:
+$scope_in
+  out:
+$scope_out
+sources:
+$sources
+deliverables:
+$deliverables
+status: "$status"
+created_at: "$today"
+updated_at: "$today"
+question:
+  core: "$core_question"
+success_criteria:
+$success_criteria
+next_step: "$next_step"

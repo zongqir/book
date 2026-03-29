@@ -1,0 +1,4 @@
+interface:
+  display_name: "行动指南"
+  short_description: "把单书行动指南写成可直接执行、顺序清楚、产物明确的中文协议"
+  default_prompt: "使用 $book-action-guide 起草或改写一篇中文《行动指南》，要求动作可执行、顺序清楚、产物明确。"

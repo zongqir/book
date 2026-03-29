@@ -1,0 +1,43 @@
+{{- $page := . -}}
+{{- $context := "single" -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = index . "page" -}}
+  {{- with index . "context" -}}
+    {{- $context = . -}}
+  {{- end -}}
+{{- end -}}
+{{- $statusMap := dict
+  "active" "进行中"
+  "review" "待复核"
+  "archived" "已归档"
+-}}
+{{- $evidenceMap := dict
+  "llm-draft" "未贴源核对"
+  "notebooklm-checked" "已贴源核对"
+  "source-checked" "已贴源核对"
+  "cross-checked" "已交叉核对"
+-}}
+{{- $visibilityMap := dict
+  "internal" "内部稿"
+-}}
+
+<div class="badge-row">
+  {{- with $page.Params.book_title }}
+    <span class="badge badge-book">《{{ . }}》</span>
+  {{- end }}
+  {{- with $page.Params.visibility }}
+    {{- if eq . "internal" }}
+      <span class="badge badge-visibility badge-visibility-{{ . }}">{{ or (index $visibilityMap .) . }}</span>
+    {{- end }}
+  {{- end }}
+  {{- with $page.Params.status }}
+    {{- if ne . "draft" }}
+      <span class="badge badge-status badge-status-{{ . }}">{{ or (index $statusMap .) . }}</span>
+    {{- end }}
+  {{- end }}
+  {{- if eq $context "single" }}
+    {{- with $page.Params.evidence_status }}
+      <span class="badge badge-evidence badge-evidence-{{ . }}">{{ or (index $evidenceMap .) . }}</span>
+    {{- end }}
+  {{- end }}
+</div>

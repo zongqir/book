@@ -1,0 +1,24 @@
+{{- $type := lower (or (.Get "type") "note") -}}
+{{- $titleMap := dict
+  "note" "补充说明"
+  "key" "关键结论"
+  "action" "行动建议"
+  "warning" "边界提醒"
+  "source" "来源提示"
+-}}
+{{- $title := or (.Get "title") (index $titleMap $type) "提示" -}}
+{{- $body := .Inner | strings.TrimSpace -}}
+
+<aside class="callout callout-{{ $type }}">
+  <div class="callout-head">
+    <span class="callout-label">{{ $title }}</span>
+    {{- with .Get "subtitle" }}
+      <span class="callout-subtitle">{{ . }}</span>
+    {{- end }}
+  </div>
+  {{- with $body }}
+    <div class="callout-body">
+      {{ . | markdownify }}
+    </div>
+  {{- end }}
+</aside>

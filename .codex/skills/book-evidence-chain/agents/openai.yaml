@@ -1,0 +1,4 @@
+interface:
+  display_name: "论证链"
+  short_description: "把核心结论拆成可跟读的推理过程，让读者看清结论是怎么一步步推出来的"
+  default_prompt: "使用 $book-evidence-chain 起草一篇中文论证链稿，复原核心结论的推理过程，让读者不靠术语也能跟上每一步怎么推到下一步。"

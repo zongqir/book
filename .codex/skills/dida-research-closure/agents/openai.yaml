@@ -1,0 +1,4 @@
+interface:
+  display_name: "研究闭环"
+  short_description: "把阅读、贴源、输出和审阅拆成可推进的研究任务闭环"
+  default_prompt: "使用 $dida-research-closure 把当前专题或单书研究拆成一轮可推进的任务闭环，并明确回写文件和完成标记。"

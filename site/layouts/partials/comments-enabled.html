@@ -1,0 +1,11 @@
+{{- $enabled := false -}}
+{{- if and site.Params.comments.enabled .IsPage (ne .Params.visibility "internal") -}}
+  {{- if isset .Params "comments" -}}
+    {{- $enabled = index .Params "comments" -}}
+  {{- else if and .Params.book_title .File -}}
+    {{- if gt (len (findRE "^(00|02|03|04|05|06|07|08|09|10|11)_" .File.BaseFileName)) 0 -}}
+      {{- $enabled = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $enabled -}}

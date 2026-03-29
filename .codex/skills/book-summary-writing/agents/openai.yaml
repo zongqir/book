@@ -1,0 +1,4 @@
+interface:
+  display_name: "Summary"
+  short_description: "把 frontmatter summary 改成直接陈述内容判断的中文写作技能"
+  default_prompt: "使用 $book-summary-writing 改写这批文稿的 summary，要求只写内容判断，不提这本书、不提这章，通俗易懂。"

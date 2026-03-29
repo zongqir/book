@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+  <link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+</head>
+{{ $isLibrary := hasPrefix .RelPermalink ("/library/" | relURL) }}
+<body class="{{ if .IsPage }}page-single{{ else }}page-list{{ end }}{{ if $isLibrary }} is-library{{ end }}">
+  <div class="page-frame">
+    <header class="site-header-wrap">
+        <div class="site-header shell">
+        <div class="identity">
+          <a class="brand" href="{{ "/" | relURL }}">
+            <span>{{ site.Title }}</span>
+          </a>
+          <span class="tagline">个人读书与研究资料库</span>
+        </div>
+        <nav class="top-nav" aria-label="主导航">
+          <a class="nav-pill{{ if .IsHome }} is-active{{ end }}" href="{{ "/" | relURL }}">首页</a>
+          <a class="nav-pill{{ if $isLibrary }} is-active{{ end }}" href="{{ "/library/" | relURL }}">目录</a>
+        </nav>
+      </div>
+    </header>
+  </div>
+  <main class="container shell">
+    {{ block "main" . }}{{ end }}
+  </main>
+  <footer class="site-footer shell">
+    <p>Book Lab 用来沉淀阅读判断、专题研究和结构化笔记。</p>
+    <p class="site-footer-meta">{{ now.Format "2006" }} · 个人读书与研究资料库</p>
+  </footer>
+  <script>
+    (function () {
+      var mq = window.matchMedia("(max-width: 760px)");
+      var sync = function () {
+        document.querySelectorAll("details[data-mobile-collapsible]").forEach(function (el) {
+          el.open = !mq.matches;
+        });
+      };
+      sync();
+      if (typeof mq.addEventListener === "function") {
+        mq.addEventListener("change", sync);
+      } else if (typeof mq.addListener === "function") {
+        mq.addListener(sync);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+baseURL = "https://book.zongqir.com/"
+languageCode = "zh-cn"
+title = "读书库"
+enableRobotsTXT = true
+
+[params]
+  description = "个人读书与专题研究展示站"
+  navSections = [
+    "01_通用技术",
+    "02_专业技术",
+    "03_沟通人际",
+    "04_理财",
+    "05_思想方法",
+    "90_专题研究"
+  ]
+  [params.comments]
+    enabled = true
+    provider = "giscus"
+    [params.comments.giscus]
+      repo = "zongqir/book_discussion"
+      repoID = "R_kgDORwpNEA"
+      category = "General"
+      categoryID = "DIC_kwDORwpNEM4C5Qes"
+      mapping = "pathname"
+      term = ""
+      strict = "0"
+      reactionsEnabled = "1"
+      emitMetadata = "0"
+      inputPosition = "bottom"
+      theme = "preferred_color_scheme"
+      lang = "zh-CN"
+      loading = "lazy"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[frontmatter]
+  date = ["created_at", "date", ":fileModTime", ":default"]
+  lastmod = ["updated_at", "lastmod", ":fileModTime", ":default"]

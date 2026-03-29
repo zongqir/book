@@ -1,0 +1,39 @@
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE state
+.vscode/
+.idea/
+.history/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Node / site build outputs
+node_modules/
+site/public/
+site/site/
+site/site/public/
+site/resources/
+site/.hugo_build.lock
+*.log
+
+# Cloudflare local state
+.wrangler/
+
+# Local ebook source files
+*.epub
+*.pdf
+__pycache__/
+*.pyc
+
+
+
+site/site/public-test*/
+.codex/skills/notebooklm/scripts/__pycache__/
+.codex/skills/notebooklm/scripts/__pycache__/
+site/public-clean-check/

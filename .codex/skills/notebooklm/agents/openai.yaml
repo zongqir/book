@@ -1,0 +1,4 @@
+interface:
+  display_name: "NotebookLM 贴源精修"
+  short_description: "拿着文章问原书，逐轮改正文，直到增量变小"
+  default_prompt: "用 $notebooklm 把我的文章当提问上下文，围绕原始书籍来源做贴源核对和逐轮精修。"

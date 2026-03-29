@@ -1,0 +1,4 @@
+interface:
+  display_name: "专题启动"
+  short_description: "为研究专题建立目录骨架、topic契约和首轮行动清单"
+  default_prompt: "使用 $topic-bootstrap 为这个仓库初始化一个新专题，并补好 topic.yml、README 和默认目录。"

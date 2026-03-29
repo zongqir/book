@@ -1,0 +1,4 @@
+interface:
+  display_name: "逐章拆解"
+  short_description: "把每一章说透，让读者读完拆解稿就真正理解这章，不需要倒回原书"
+  default_prompt: "使用 $engineering-book-chapter-breakdown 按章节做逐章拆解。每章说透，先给判断再补原因，保留原书最锋利的内容，结尾附 memory-card。"

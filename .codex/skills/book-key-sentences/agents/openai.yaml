@@ -1,0 +1,4 @@
+interface:
+  display_name: "关键句提炼"
+  short_description: "把最值得记住的句子写成有排序、有依据、元数据完整的中文提醒页"
+  default_prompt: "使用 $book-key-sentences 起草或改写一篇《最值得记住的句子》，要求先筛选再排序，元数据完整，文风自然；必须使用 sentence shortcode格式，并通过格式终检。"

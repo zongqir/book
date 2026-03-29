@@ -1,0 +1,4 @@
+interface:
+  display_name: "原则提取"
+  short_description: "从一本书中提取 3-7 条核心判断准则，区分观点、原则、方法、步骤四层"
+  default_prompt: "使用 $book-principle-extractor 从这本书中提取核心原则层，要求区分核心原则和支撑原则，标清证据强度和常见误读。"

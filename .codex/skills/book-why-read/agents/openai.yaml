@@ -1,0 +1,4 @@
+interface:
+  display_name: "单书入口稿"
+  short_description: "把为什么读与主要价值压成一篇自然、完整的中文入口稿"
+  default_prompt: "使用 $book-why-read 起草或改写一篇中文《为什么读这本书》，要求同时完成阅读判断与核心价值拆解，元数据完整，文风自然通俗。"

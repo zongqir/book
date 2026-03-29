@@ -1,0 +1,4 @@
+interface:
+  display_name: "迁移地图"
+  short_description: "把书中方法的底层机制迁移到书外具体场景，输出中文迁移地图稿"
+  default_prompt: "使用 $ook-transfer-map 分析这本书方法的底层可迁移机制，找到书外具体迁移目标，输出完整的中文迁移地图。"

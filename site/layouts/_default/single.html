@@ -1,0 +1,114 @@
+{{ define "main" }}
+{{ $section := .CurrentSection }}
+{{ $siblings := slice }}
+{{ if $section }}
+  {{ $pages := where $section.RegularPages "Params.visibility" "ne" "internal" }}
+  {{ $scratch := newScratch }}
+  {{ $scratch.Set "allNumbered" true }}
+  {{ range $pages }}
+    {{ if eq (len (findRE "^\\d{2}_" .File.BaseFileName)) 0 }}
+      {{ $scratch.Set "allNumbered" false }}
+    {{ end }}
+  {{ end }}
+  {{ $siblings = $pages.ByLastmod.Reverse }}
+  {{ if $scratch.Get "allNumbered" }}
+    {{ $siblings = sort $pages "File.BaseFileName" "asc" }}
+  {{ end }}
+{{ end }}
+
+{{ $nav := newScratch }}
+{{ if gt (len $siblings) 0 }}
+  {{ range $i, $page := $siblings }}
+    {{ if eq $page.RelPermalink $.RelPermalink }}
+      {{ if gt $i 0 }}
+        {{ $nav.Set "prev" (index $siblings (sub $i 1)) }}
+      {{ end }}
+      {{ if lt (add $i 1) (len $siblings) }}
+        {{ $nav.Set "next" (index $siblings (add $i 1)) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $hasTOC := gt (len (findRE "<li>" .TableOfContents)) 0 }}
+{{ $profile := partial "doc-profile.html" . }}
+
+<div class="doc-layout{{ if not $hasTOC }} doc-layout-single{{ end }}">
+  <article class="doc doc-main{{ with $profile.style }} doc-style-{{ . }}{{ end }}">
+    <header>
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <a href="{{ "/library/" | relURL }}">目录</a>
+        {{ range .Ancestors.Reverse }}
+          {{ if and (ne .RelPermalink ("/" | relURL)) (ne .RelPermalink ("/library/" | relURL)) }}
+            <span class="breadcrumb-sep">/</span>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ end }}
+        {{ end }}
+      </nav>
+      <div class="page-context">
+        <div class="page-meta-line">
+          <span class="meta">
+            {{ if .Params.updated_at }}
+              更新于 {{ dateFormat "2006-01-02" .Params.updated_at }}
+            {{ else if .Params.created_at }}
+              创建于 {{ dateFormat "2006-01-02" .Params.created_at }}
+            {{ else }}
+              更新于 {{ .Lastmod.Format "2006-01-02" }}
+            {{ end }}
+          </span>
+          {{ with .CurrentSection }}
+            <span class="page-meta-sep">·</span>
+            <span class="meta">所属目录：<a href="{{ .RelPermalink }}">{{ .Title }}</a></span>
+          {{ end }}
+        </div>
+        {{ partial "page-badges.html" . }}
+        {{ with .Params.source_path }}
+          <p class="source">来源：<code>{{ . }}</code></p>
+        {{ end }}
+      </div>
+    </header>
+    <section class="doc-content{{ with $profile.style }} doc-content-{{ . }}{{ end }}">
+      {{ .Content }}
+    </section>
+    {{ partial "comments.html" . }}
+    {{ if or ($nav.Get "prev") ($nav.Get "next") }}
+      <nav class="sequence-nav" aria-label="article navigation">
+        {{ with $nav.Get "prev" }}
+          <a class="sequence-link sequence-link-prev" href="{{ .RelPermalink }}">
+            <span class="sequence-label">上一篇</span>
+            <strong>{{ .Title }}</strong>
+          </a>
+        {{ else }}
+          <span></span>
+        {{ end }}
+        {{ with .CurrentSection }}
+          <a class="sequence-link sequence-link-section" href="{{ .RelPermalink }}">
+            <span class="sequence-label">返回目录</span>
+            <strong>{{ .Title }}</strong>
+          </a>
+        {{ end }}
+        {{ with $nav.Get "next" }}
+          <a class="sequence-link sequence-link-next" href="{{ .RelPermalink }}">
+            <span class="sequence-label">下一篇</span>
+            <strong>{{ .Title }}</strong>
+          </a>
+        {{ else }}
+          <span></span>
+        {{ end }}
+      </nav>
+    {{ end }}
+  </article>
+
+  {{ if $hasTOC }}
+    <aside class="doc-side">
+      <details class="toc-panel" data-mobile-collapsible>
+        <summary>
+          <span class="eyebrow">本页目录</span>
+          <span class="toc-toggle-icon" aria-hidden="true">+</span>
+        </summary>
+        {{ .TableOfContents }}
+      </details>
+    </aside>
+  {{ end }}
+</div>
+{{ end }}

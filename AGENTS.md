@@ -23,7 +23,7 @@
 
 当前资料库分类主要在：
 
-- `site/content/library/01_通用技术/`
+- `site/content/library/01_关键技能/`
 - `site/content/library/02_专业技术/`
 - `site/content/library/03_沟通人际/`
 - `site/content/library/04_理财/`

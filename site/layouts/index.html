@@ -117,9 +117,16 @@
   <h2>分类入口</h2>
   <ul class="card-list">
     {{ range site.Params.navSections }}
-      {{ $label := replaceRE "^\\d{2}_" "" . }}
+      {{ $sectionPath := . }}
+      {{ $sectionPage := site.GetPage (printf "/library/%s" $sectionPath) }}
+      {{ $label := replaceRE "^\\d{2}_" "" $sectionPath }}
+      {{ $url := printf "/library/%s/" $sectionPath | relURL }}
+      {{ with $sectionPage }}
+        {{ $label = .Title }}
+        {{ $url = .RelPermalink }}
+      {{ end }}
       <li class="card-item">
-        <a class="card-link" href="{{ printf "/library/%s/" . | relURL }}">
+        <a class="card-link" href="{{ $url }}">
           <span>{{ $label }}</span>
           <span class="arrow">→</span>
         </a>

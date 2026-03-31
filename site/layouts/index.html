@@ -102,8 +102,7 @@
   <div class="hero-grid">
     <div class="hero-main">
       <p class="eyebrow">读书库</p>
-      <h1>先找方向，再进书</h1>
-      <p class="hero-lead">按分类找入口，或者随机换一本到别的书。两种走法都行，先用顺手的那个。</p>
+      <h1>从书库里找下一本书</h1>
       <div class="actions hero-actions">
         <a class="btn" href="#home-categories">按分类进入</a>
         <a class="btn btn-ghost" href="#home-tools">先随机看看</a>
@@ -143,7 +142,6 @@
           <span class="hero-stat-label">句可抽提醒</span>
         </div>
       </div>
-      <p class="hero-panel-note">先从分类进更稳。想换换视角，就先随机挑一本到别的分类。</p>
       <a class="hero-panel-link" href="{{ "/library/" | relURL }}">查看完整书库目录</a>
     </aside>
   </div>
@@ -153,7 +151,6 @@
   <div class="section-head">
     <p class="eyebrow">随机浏览</p>
     <h2>随机换一本到书，或抽一句提醒</h2>
-    <p class="section-copy">拿不准下一本看什么时，先随机换一本到别的分类。想停一下，也可以先抽一句。</p>
   </div>
 
   <div class="home-tools">
@@ -161,7 +158,6 @@
     <header class="home-tool-head">
       <p class="eyebrow">筛子轮播</p>
       <h2>随机挑一本书目录</h2>
-      <p class="tool-note">拿不准下一本时，用这个更快。</p>
     </header>
     {{ if gt (len $bookData) 0 }}
       {{ $firstBook := index $bookData 0 }}
@@ -195,7 +191,6 @@
     <header class="home-tool-head">
       <p class="eyebrow">随机句子</p>
       <h2>从博客句子卡抽一句</h2>
-      <p class="tool-note">想先收住注意力时，用这个更合适。</p>
     </header>
     {{ if gt (len $sentenceData) 0 }}
       {{ $firstSentence := index $sentenceData 0 }}
@@ -220,7 +215,6 @@
   <div class="section-head">
     <p class="eyebrow">分类浏览</p>
     <h2>按分类看</h2>
-    <p class="section-copy">先看你要解决哪类问题，再进具体的书。</p>
   </div>
 
   <div class="category-grid">
@@ -237,7 +231,6 @@
 
           <div class="category-copy">
             <h3>{{ .title }}</h3>
-            <p class="category-summary">{{ .summary }}</p>
           </div>
 
           {{ if gt (len .bookTitles) 0 }}

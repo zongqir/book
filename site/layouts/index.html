@@ -96,61 +96,10 @@
     {{ end }}
   {{ end }}
 {{ end }}
-{{ $featuredCategories := first 4 (sort $categoryCards "docCount" "desc") }}
-
-<section class="hero hero-home">
-  <div class="hero-grid">
-    <div class="hero-main">
-      <p class="eyebrow">读书库</p>
-      <h1>从书库里找下一本书</h1>
-      <div class="actions hero-actions">
-        <a class="btn" href="#home-categories">按分类进入</a>
-        <a class="btn btn-ghost" href="#home-tools">先随机看看</a>
-      </div>
-      {{ if gt (len $featuredCategories) 0 }}
-        <div class="hero-quick-block">
-          <p class="hero-quick-label">常看分类</p>
-          <div class="hero-quick-grid" aria-label="首页快捷分类入口">
-            {{ range $featuredCategories }}
-              <a class="hero-quick-link" href="{{ .url }}">
-                <span class="hero-quick-link-title">{{ .title }}</span>
-                <span class="hero-quick-link-meta">{{ .docCount }} 篇文稿</span>
-              </a>
-            {{ end }}
-          </div>
-        </div>
-      {{ end }}
-    </div>
-
-    <aside class="hero-panel">
-      <p class="hero-panel-label">书库概况</p>
-      <div class="hero-stat-grid">
-        <div class="hero-stat">
-          <span class="hero-stat-value">{{ len $categoryCards }}</span>
-          <span class="hero-stat-label">个分类入口</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-value">{{ len $bookData }}</span>
-          <span class="hero-stat-label">本可浏览书目</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-value">{{ len $visibleSitePages }}</span>
-          <span class="hero-stat-label">篇公开文稿</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-value">{{ len $sentenceData }}</span>
-          <span class="hero-stat-label">句可抽提醒</span>
-        </div>
-      </div>
-      <a class="hero-panel-link" href="{{ "/library/" | relURL }}">查看完整书库目录</a>
-    </aside>
-  </div>
-</section>
-
 <section class="home-section home-tools-section" id="home-tools">
-  <div class="section-head">
+  <div class="section-head section-head--home">
     <p class="eyebrow">随机浏览</p>
-    <h2>随机换一本到书，或抽一句提醒</h2>
+    <h1>随机看看</h1>
   </div>
 
   <div class="home-tools">

@@ -1,4 +1,5 @@
 {{ define "main" }}
+{{ $hiddenHomeSections := slice "02_专业技术" }}
 {{ $visibleSitePages := where site.RegularPages "Params.visibility" "ne" "internal" }}
 {{ $bookSections := slice }}
 {{ range where site.Pages "Kind" "section" }}
@@ -6,7 +7,8 @@
   {{ $visiblePages := where .RegularPages "Params.visibility" "ne" "internal" }}
   {{ $hasDocs := gt (len $visiblePages) 0 }}
   {{ $tags := default (slice) .Params.book_tags }}
-  {{ if and $inLibrary $hasDocs (gt (len $tags) 0) (ne .Params.visibility "internal") }}
+  {{ $sectionKey := path.Base (strings.TrimSuffix "/" .RelPermalink) }}
+  {{ if and $inLibrary $hasDocs (gt (len $tags) 0) (ne .Params.visibility "internal") (not (in $hiddenHomeSections $sectionKey)) }}
     {{ $bookSections = $bookSections | append . }}
   {{ end }}
 {{ end }}
@@ -63,8 +65,9 @@
 {{ $categoryCards := slice }}
 {{ range site.Params.navSections }}
   {{ $sectionPath := . }}
-  {{ with site.GetPage (printf "/library/%s" $sectionPath) }}
-    {{ if ne .Params.visibility "internal" }}
+  {{ if not (in $hiddenHomeSections $sectionPath) }}
+    {{ with site.GetPage (printf "/library/%s" $sectionPath) }}
+      {{ if ne .Params.visibility "internal" }}
       {{ $sectionPage := . }}
       {{ $sectionPrefix := $sectionPage.RelPermalink }}
       {{ $docs := slice }}
@@ -93,6 +96,7 @@
           "bookTitles" $bookTitles
         ) }}
       {{ end }}
+    {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}

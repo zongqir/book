@@ -9,6 +9,9 @@ from pathlib import Path
 
 
 SHORTCODE_RE = re.compile(r"{{<\s*(/)?([A-Za-z0-9_-]+)(.*?)(/)?\s*>}}")
+ESCAPED_SHORTCODE_RE = re.compile(
+    r"{{(?:<\s*/\*|\s*/\*)\s*(?P<inner>.*?)(?:\*/\s*>|\*/)\s*}}"
+)
 VALUE_RE = r'"(?:[^"\\]|\\.)*"|`[^`]*`|\'(?:[^\'\\]|\\.)*\'|[^\s]+'
 PARAM_RE = re.compile(
     rf"""
@@ -85,6 +88,20 @@ def audit_file(path: Path) -> list[Finding]:
     stack: list[tuple[str, int, str]] = []
 
     for local_line_no, line in enumerate(body.splitlines(), start=1):
+        for escaped_match in ESCAPED_SHORTCODE_RE.finditer(line):
+            line_no = skipped_lines + local_line_no
+            snippet = escaped_match.group(0)
+            inner = (escaped_match.group("inner") or "").strip()
+            if re.match(r"^/?[A-Za-z0-9_-]+(?:\s|$)", inner):
+                findings.append(
+                    Finding(
+                        path,
+                        line_no,
+                        "commented shortcode marker found; Hugo will not render it as a shortcode",
+                        snippet,
+                    )
+                )
+
         for match in SHORTCODE_RE.finditer(line):
             is_closing = bool(match.group(1))
             name = match.group(2)

@@ -114,7 +114,7 @@
     </header>
     {{ if gt (len $bookData) 0 }}
       {{ $firstBook := index $bookData 0 }}
-      <div class="book-dice-card" id="book-dice-card" aria-live="polite">
+      <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="{{ "data/site-content.json" | relURL }}">
         <p class="book-dice-meta">
           <span id="book-dice-index">01</span>
           <span>/</span>
@@ -147,7 +147,7 @@
     </header>
     {{ if gt (len $sentenceData) 0 }}
       {{ $firstSentence := index $sentenceData 0 }}
-      <div class="random-quote-card" id="random-quote-card" aria-live="polite">
+      <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="{{ "data/site-content.json" | relURL }}">
         <p class="random-quote-text" id="random-quote-text">“{{ index $firstSentence "quote" }}”</p>
         <p class="random-quote-source">
           <span id="random-quote-book">{{ index $firstSentence "bookTitle" }}</span>
@@ -206,12 +206,18 @@
 
 <script>
   (function () {
+    var contentSource = "/data/site-content.json";
+    var contentNode = document.getElementById("book-dice-card") || document.getElementById("random-quote-card");
+    if (contentNode && contentNode.dataset.contentSource) {
+      contentSource = contentNode.dataset.contentSource;
+    }
+
     function formatIndex(value) {
       var n = Number(value) || 0;
       return n < 10 ? "0" + n : String(n);
     }
 
-    var books = {{ $bookData | jsonify | safeJS }};
+    var books = [];
     var bookTitle = document.getElementById("book-dice-title");
     var bookSummary = document.getElementById("book-dice-summary");
     var bookCategory = document.getElementById("book-dice-category");
@@ -281,28 +287,7 @@
       autoplayTimer = null;
     }
 
-    if (books.length) {
-      renderBook(0);
-      startAutoplay();
-      if (bookShuffle) {
-        bookShuffle.addEventListener("click", function () {
-          renderBook(randomBook(true));
-        });
-      }
-      if (bookCard) {
-        bookCard.addEventListener("mouseenter", stopAutoplay);
-        bookCard.addEventListener("mouseleave", startAutoplay);
-      }
-      document.addEventListener("visibilitychange", function () {
-        if (document.hidden) {
-          stopAutoplay();
-        } else {
-          startAutoplay();
-        }
-      });
-    }
-
-    var quotes = {{ $sentenceData | jsonify | safeJS }};
+    var quotes = [];
     var quoteText = document.getElementById("random-quote-text");
     var quoteBook = document.getElementById("random-quote-book");
     var quoteLink = document.getElementById("random-quote-link");
@@ -340,14 +325,72 @@
       return next;
     }
 
-    if (quotes.length) {
-      renderQuote(0);
-      if (quoteShuffle) {
-        quoteShuffle.addEventListener("click", function () {
-          renderQuote(randomQuote());
-        });
-      }
+    if (bookShuffle) {
+      bookShuffle.addEventListener("click", function () {
+        renderBook(randomBook(true));
+      });
     }
+    if (bookCard) {
+      bookCard.addEventListener("mouseenter", stopAutoplay);
+      bookCard.addEventListener("mouseleave", startAutoplay);
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
+    if (quoteShuffle) {
+      quoteShuffle.addEventListener("click", function () {
+        renderQuote(randomQuote());
+      });
+    }
+
+    fetch(contentSource)
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Failed to load site content index");
+        }
+        return response.json();
+      })
+      .then(function (payload) {
+        books = Array.isArray(payload.books)
+          ? payload.books.map(function (item) {
+              return {
+                title: item.title || "未命名",
+                url: item.url || "#",
+                summary: item.summary || "",
+                category: item.section_title || "未分类",
+                docCount: item.page_count || 0,
+                tags: Array.isArray(item.tags) ? item.tags : [],
+              };
+            })
+          : [];
+
+        quotes = Array.isArray(payload.quotes)
+          ? payload.quotes.map(function (item) {
+              return {
+                quote: item.quote || "",
+                pageTitle: item.page_title || "查看原文",
+                bookTitle: item.book_title || "来源",
+                url: item.url || "#",
+              };
+            })
+          : [];
+
+        if (books.length) {
+          renderBook(0);
+          startAutoplay();
+        }
+        if (quotes.length) {
+          renderQuote(0);
+        }
+      })
+      .catch(function () {
+        // Keep server-rendered first items when the index is unavailable.
+      });
   })();
 </script>
 {{ end }}

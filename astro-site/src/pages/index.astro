@@ -1,0 +1,263 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getHomeData } from "../lib/content";
+
+const { books, quotes, sections } = getHomeData();
+const firstBook = books[0];
+const firstQuote = quotes[0];
+---
+
+<BaseLayout isHome={true} isLibrary={false}>
+  <section class="home-section home-tools-section" id="home-tools">
+    <div class="section-head section-head--home">
+      <p class="eyebrow">随机浏览</p>
+      <h1>随机看看</h1>
+    </div>
+
+    <div class="home-tools">
+      <article class="home-tool-card home-tool-card--book" data-book-dice>
+        <header class="home-tool-head">
+          <p class="eyebrow">筛子轮播</p>
+          <h2>随机挑一本书目录</h2>
+        </header>
+        {firstBook ? (
+          <>
+            <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
+              <p class="book-dice-meta">
+                <span id="book-dice-index">01</span>
+                <span>/</span>
+                <span id="book-dice-total">{String(books.length).padStart(2, "0")}</span>
+                <span class="book-dice-dot">·</span>
+                <span id="book-dice-category">{firstBook.section_title}</span>
+              </p>
+              <h3 id="book-dice-title">{firstBook.title}</h3>
+              <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
+              <div class="book-dice-tags" id="book-dice-tags">
+                {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
+              </div>
+              <p class="book-dice-count" id="book-dice-count">{firstBook.page_count} 篇文稿</p>
+            </div>
+            <div class="actions book-dice-actions">
+              <button class="btn btn-ghost" type="button" id="book-dice-shuffle">掷一下</button>
+              <a class="btn" id="book-dice-open" href={firstBook.url}>打开当前目录</a>
+            </div>
+          </>
+        ) : (
+          <p class="tool-empty">现在还没有可随机的书目录。</p>
+        )}
+      </article>
+
+      <article class="home-tool-card home-tool-card--quote" data-random-quote>
+        <header class="home-tool-head">
+          <p class="eyebrow">随机句子</p>
+          <h2>从博客句子卡抽一句</h2>
+        </header>
+        {firstQuote ? (
+          <>
+            <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
+              <p class="random-quote-text" id="random-quote-text">“{firstQuote.quote}”</p>
+              <p class="random-quote-source">
+                <span id="random-quote-book">{firstQuote.book_title}</span>
+                <a id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+              </p>
+            </div>
+            <div class="actions random-quote-actions">
+              <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
+            </div>
+          </>
+        ) : (
+          <p class="tool-empty">暂时还没有句子卡可抽。</p>
+        )}
+      </article>
+    </div>
+  </section>
+
+  <section class="home-section home-categories" id="home-categories">
+    <div class="section-head">
+      <p class="eyebrow">分类浏览</p>
+      <h2>按分类看</h2>
+    </div>
+    <div class="category-grid">
+      {sections.map((section) => (
+        <article class="category-card">
+          <a class="category-link" href={section.url}>
+            <div class="category-card-top">
+              <span class="category-index">{section.key.slice(0, 2)}</span>
+              <div class="category-stats">
+                <span>{section.book_count} 本书</span>
+                <span>{section.page_count} 篇文稿</span>
+              </div>
+            </div>
+            <div class="category-copy">
+              <h3>{section.title}</h3>
+            </div>
+            <div class="category-card-foot">
+              <span>进入分类</span>
+              <span class="arrow">→</span>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var contentSource = "/data/site-content.json";
+      function formatIndex(value) {
+        var n = Number(value) || 0;
+        return n < 10 ? "0" + n : String(n);
+      }
+
+      var books = [];
+      var bookTitle = document.getElementById("book-dice-title");
+      var bookSummary = document.getElementById("book-dice-summary");
+      var bookCategory = document.getElementById("book-dice-category");
+      var bookIndex = document.getElementById("book-dice-index");
+      var bookTotal = document.getElementById("book-dice-total");
+      var bookCount = document.getElementById("book-dice-count");
+      var bookTags = document.getElementById("book-dice-tags");
+      var bookOpen = document.getElementById("book-dice-open");
+      var bookShuffle = document.getElementById("book-dice-shuffle");
+      var bookCard = document.getElementById("book-dice-card");
+      var currentBook = 0;
+      var autoplayTimer = null;
+
+      function renderBook(index) {
+        if (!books.length) return;
+        currentBook = ((index % books.length) + books.length) % books.length;
+        var current = books[currentBook];
+        if (!current) return;
+        if (bookTitle) bookTitle.textContent = current.title || "未命名";
+        if (bookSummary) bookSummary.textContent = current.summary || "";
+        if (bookCategory) bookCategory.textContent = current.category || "未分类";
+        if (bookIndex) bookIndex.textContent = formatIndex(currentBook + 1);
+        if (bookTotal) bookTotal.textContent = formatIndex(books.length);
+        if (bookCount) bookCount.textContent = String(current.docCount || 0) + " 篇文稿";
+        if (bookOpen) bookOpen.href = current.url || "#";
+        if (bookTags) {
+          bookTags.innerHTML = "";
+          var tags = Array.isArray(current.tags) ? current.tags : [];
+          tags.slice(0, 4).forEach(function (tag) {
+            var el = document.createElement("span");
+            el.className = "book-dice-tag";
+            el.textContent = tag;
+            bookTags.appendChild(el);
+          });
+        }
+      }
+
+      function randomBook(excludeCurrent) {
+        if (books.length <= 1) return currentBook;
+        var next = currentBook;
+        while (next === currentBook) {
+          next = Math.floor(Math.random() * books.length);
+          if (!excludeCurrent) break;
+        }
+        return next;
+      }
+
+      function startAutoplay() {
+        if (!books.length || autoplayTimer) return;
+        autoplayTimer = window.setInterval(function () {
+          renderBook(currentBook + 1);
+        }, 5800);
+      }
+
+      function stopAutoplay() {
+        if (!autoplayTimer) return;
+        window.clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+
+      var quotes = [];
+      var quoteText = document.getElementById("random-quote-text");
+      var quoteBook = document.getElementById("random-quote-book");
+      var quoteLink = document.getElementById("random-quote-link");
+      var quoteShuffle = document.getElementById("random-quote-shuffle");
+      var quoteCard = document.getElementById("random-quote-card");
+      var currentQuote = 0;
+
+      function renderQuote(index) {
+        if (!quotes.length) return;
+        currentQuote = ((index % quotes.length) + quotes.length) % quotes.length;
+        var current = quotes[currentQuote];
+        if (!current) return;
+        if (quoteText) quoteText.textContent = "“" + (current.quote || "") + "”";
+        if (quoteBook) quoteBook.textContent = current.bookTitle || "来源";
+        if (quoteLink) {
+          quoteLink.href = current.url || "#";
+          quoteLink.textContent = current.pageTitle || "查看原文";
+        }
+      }
+
+      function randomQuote() {
+        if (quotes.length <= 1) return currentQuote;
+        var next = currentQuote;
+        while (next === currentQuote) {
+          next = Math.floor(Math.random() * quotes.length);
+        }
+        return next;
+      }
+
+      if (bookShuffle) {
+        bookShuffle.addEventListener("click", function () {
+          renderBook(randomBook(true));
+        });
+      }
+      if (bookCard) {
+        bookCard.addEventListener("mouseenter", stopAutoplay);
+        bookCard.addEventListener("mouseleave", startAutoplay);
+      }
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) stopAutoplay();
+        else startAutoplay();
+      });
+      if (quoteShuffle) {
+        quoteShuffle.addEventListener("click", function () {
+          renderQuote(randomQuote());
+        });
+      }
+
+      fetch(contentSource)
+        .then(function (response) {
+          if (!response.ok) throw new Error("Failed to load content index");
+          return response.json();
+        })
+        .then(function (payload) {
+          books = Array.isArray(payload.books)
+            ? payload.books
+                .filter(function (item) { return item.section_key !== "02_专业技术"; })
+                .map(function (item) {
+                  return {
+                    title: item.title || "未命名",
+                    url: item.url || "#",
+                    summary: item.summary || "",
+                    category: item.section_title || "未分类",
+                    docCount: item.page_count || 0,
+                    tags: Array.isArray(item.tags) ? item.tags : [],
+                  };
+                })
+            : [];
+          quotes = Array.isArray(payload.quotes)
+            ? payload.quotes.map(function (item) {
+                return {
+                  quote: item.quote || "",
+                  pageTitle: item.page_title || "查看原文",
+                  bookTitle: item.book_title || "来源",
+                  url: item.url || "#",
+                };
+              })
+            : [];
+          if (books.length) {
+            renderBook(0);
+            startAutoplay();
+          }
+          if (quotes.length) {
+            renderQuote(0);
+          }
+        })
+        .catch(function () {});
+    })();
+  </script>
+</BaseLayout>

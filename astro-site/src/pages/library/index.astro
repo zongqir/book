@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLibraryIndex } from "../../lib/content";
+
+const sections = getLibraryIndex().filter((section) => section.key !== "02_专业技术");
+---
+
+<BaseLayout title="目录" isLibrary={true}>
+  <section class="page-head">
+    <p class="eyebrow">目录</p>
+    <h1>读书库目录</h1>
+  </section>
+
+  <section>
+    <h2>分类</h2>
+    <ul class="card-list">
+      {sections.map((section) => (
+        <li class="card-item">
+          <a class="card-link" href={section.url}>
+            <span class="card-copy">
+              <span class="card-title">{section.title}</span>
+              <span class="card-meta">{section.page_count} 篇文档</span>
+            </span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

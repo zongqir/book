@@ -1,0 +1,122 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllLibrarySlugs, getNodeBySlug } from "../../lib/content";
+
+export async function getStaticPaths() {
+  return getAllLibrarySlugs().map((slugParts) => ({
+    params: { slug: slugParts.join("/") },
+    props: { slugParts },
+  }));
+}
+
+const { slugParts } = Astro.props;
+const parts = Array.isArray(slugParts) ? slugParts : String(slugParts).split("/");
+const node = getNodeBySlug(parts);
+
+if (!node) {
+  throw new Error(`Missing library node for ${parts.join("/")}`);
+}
+---
+
+<BaseLayout title={node.title} isLibrary={true}>
+  {node.kind === "section" && (
+    <>
+      <section class="page-head">
+        <p class="eyebrow">目录</p>
+        <h1>{node.title}</h1>
+      </section>
+      <section>
+        <h2>书目</h2>
+        <ul class="card-list">
+          {node.books.map((book) => (
+            <li class="card-item">
+              <a class="card-link" href={book.url}>
+                <span class="card-copy">
+                  <span class="card-title">{book.title}</span>
+                  {book.summary && <span class="card-summary">{book.summary}</span>}
+                  <span class="card-meta">{book.page_count} 篇文档</span>
+                </span>
+                <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
+  )}
+
+  {node.kind === "book" && (
+    <>
+      <section class="page-head">
+        <p class="eyebrow">目录</p>
+        <h1>{node.title}</h1>
+      </section>
+      <section class="book-compact-meta">
+        <p class="meta">共 {node.pages.length} 篇 · 按序号阅读 · 所属分类：{node.book.section_title}</p>
+      </section>
+      <section>
+        <h2>文章</h2>
+        <ul class="doc-list">
+          {node.pages.map((page) => (
+            <li>
+              <div class="doc-row-main">
+                <a class="doc-row-title" href={page.url}>{page.title}</a>
+                {page.summary && <p class="doc-row-summary">{page.summary}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
+  )}
+
+  {node.kind === "page" && (
+    <div class="doc-layout">
+      <article class="doc doc-main">
+        <header>
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            {node.section && (
+              <>
+                <span class="breadcrumb-sep">/</span>
+                <a href={node.section.url}>{node.section.title}</a>
+              </>
+            )}
+            {node.book && (
+              <>
+                <span class="breadcrumb-sep">/</span>
+                <a href={node.book.url}>{node.book.title}</a>
+              </>
+            )}
+          </nav>
+          <div class="page-context">
+            <div class="page-meta-line">
+              {node.page.updated_at && <span class="meta">更新于 {node.page.updated_at.slice(0, 10)}</span>}
+              {node.book && (
+                <>
+                  <span class="page-meta-sep">·</span>
+                  <span class="meta">所属目录：<a href={node.book.url}>{node.book.title}</a></span>
+                </>
+              )}
+            </div>
+          </div>
+        </header>
+        <section class="doc-content" set:html={node.html} />
+      </article>
+
+      {node.headings.length > 0 && (
+        <aside class="doc-side">
+          <details class="toc-panel" open>
+            <summary>
+              <span class="eyebrow">本页目录</span>
+              <span class="toc-toggle-icon" aria-hidden="true">+</span>
+            </summary>
+            <ul>
+              {node.headings.filter((item) => item.level <= 2).map((heading) => <li>{heading.title}</li>)}
+            </ul>
+          </details>
+        </aside>
+      )}
+    </div>
+  )}
+</BaseLayout>

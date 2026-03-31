@@ -1,0 +1,323 @@
+[FAIL] Frontmatter audit found 322 issue(s):
+- site\content\library\01_关键技能\Make It Stick\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\Make It Stick\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\Make It Stick\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\Make It Stick\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\Make It Stick\05_方法论总结.md: missing required fields: confidence
+- site\content\library\01_关键技能\Make It Stick\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\Make It Stick\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\05_方法论总结.md: missing required fields: confidence
+- site\content\library\01_关键技能\如何学习\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何学习\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\如何提问\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\01_关键技能\如何阅读一本书\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis
+- site\content\library\01_关键技能\学习的本质\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\学习的本质\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\学习的本质\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\问题解决心理学\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\01_关键技能\问题解决心理学\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\01_关键技能\问题解决心理学\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\01_关键技能\问题解决心理学\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\01_关键技能\问题解决心理学\05_方法论总结.md: missing required fields: confidence
+- site\content\library\01_关键技能\问题解决心理学\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\01_关键技能\问题解决心理学\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\08_论证链与证据等级.md: missing required fields: evidence_basis, confidence
+- site\content\library\02_专业技术\05_DevOps与基础设施\性能之巅：系统、企业与云可观测性（第2版）\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\人际沟通技巧\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\人际沟通技巧\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\共情的力量\00_为什么读这本书.md: missing required fields: confidence
+- site\content\library\03_沟通人际\共情的力量\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\共情的力量\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\共情的力量\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\03_沟通人际\共情的力量\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\共情的力量\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\共情的力量\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\哈佛经典谈判术\00_为什么读这本书.md: missing required fields: audience
+- site\content\library\03_沟通人际\哈佛经典谈判术\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\03_沟通人际\哈佛经典谈判术\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\03_沟通人际\哈佛经典谈判术\04_行动指南.md: missing required fields: audience
+- site\content\library\03_沟通人际\哈佛经典谈判术\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\03_沟通人际\哈佛经典谈判术\10_复盘指标.md: missing required fields: audience
+- site\content\library\03_沟通人际\基本人际关系技巧\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\基本人际关系技巧\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\基本人际关系技巧\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\03_沟通人际\基本人际关系技巧\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\基本人际关系技巧\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\基本人际关系技巧\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\对答如流\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\对答如流\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\03_沟通人际\对答如流\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\03_沟通人际\对答如流\04_行动指南.md: missing required fields: audience
+- site\content\library\03_沟通人际\对答如流\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\03_沟通人际\对答如流\10_复盘指标.md: missing required fields: audience
+- site\content\library\03_沟通人际\说话的力量\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\说话的力量\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\说话的力量\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\说话的力量\04_行动指南.md: missing required fields: audience
+- site\content\library\03_沟通人际\说话的力量\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\03_沟通人际\说话的力量\10_复盘指标.md: missing required fields: audience
+- site\content\library\03_沟通人际\责任病毒\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\责任病毒\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\责任病毒\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\责任病毒\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\责任病毒\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\责任病毒\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\责任病毒\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\高难度对话\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度对话\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\05_方法论总结.md: missing required fields: confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\03_沟通人际\高难度谈话Ⅱ\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\一本书读懂财报\02_最值得记住的句子.md: missing required fields: selection_basis, ordering_rule
+- site\content\library\04_理财\一本书读懂财报\03_最有价值的案例.md: missing required fields: case_basis, selection_basis, ordering_rule
+- site\content\library\04_理财\一本书读懂财报\04_行动指南.md: missing required fields: action_scope, default_horizon, prerequisites
+- site\content\library\04_理财\一本书读懂财报\05_方法论总结.md: missing required fields: methodology_basis
+- site\content\library\04_理财\一本书读懂财报\06_适用边界与失效条件.md: missing required fields: guardrail_basis
+- site\content\library\04_理财\一课经济学\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\04_理财\一课经济学\05_方法论总结.md: missing required fields: confidence
+- site\content\library\04_理财\一课经济学\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\04_理财\一课经济学\08_论证链.md: missing required fields: confidence
+- site\content\library\04_理财\一课经济学\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\卢瑟经济学\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\04_理财\卢瑟经济学\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\04_理财\卢瑟经济学\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\04_理财\卢瑟经济学\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites, confidence
+- site\content\library\04_理财\卢瑟经济学\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\04_理财\卢瑟经济学\06_适用边界.md: missing required fields: audience, confidence
+- site\content\library\04_理财\卢瑟经济学\06_适用边界.md: missing one of required fields: guardrail_basis, boundary_basis
+- site\content\library\04_理财\卢瑟经济学\08_论证链.md: missing required fields: evidence_basis, confidence
+- site\content\library\04_理财\卢瑟经济学\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\百年中国经济史笔记\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\04_理财\百年中国经济史笔记\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\04_理财\百年中国经济史笔记\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\04_理财\百年中国经济史笔记\05_方法论总结.md: missing required fields: confidence
+- site\content\library\04_理财\百年中国经济史笔记\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\04_理财\百年中国经济史笔记\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\经济为什么会崩溃\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\04_理财\经济为什么会崩溃\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\04_理财\经济为什么会崩溃\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\04_理财\经济为什么会崩溃\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites, confidence
+- site\content\library\04_理财\经济为什么会崩溃\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\04_理财\经济为什么会崩溃\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis, confidence
+- site\content\library\04_理财\经济为什么会崩溃\08_论证链.md: missing required fields: evidence_basis, confidence
+- site\content\library\04_理财\经济为什么会崩溃\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\美国大萧条\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\04_理财\美国大萧条\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\04_理财\美国大萧条\04_行动指南.md: missing required fields: audience
+- site\content\library\04_理财\美国大萧条\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\04_理财\美国大萧条\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\04_理财\股市真规则\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\04_理财\股市真规则\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\GEB\00_为什么读这本书.md: missing required fields: audience
+- site\content\library\05_思想方法\GEB\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\GEB\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\GEB\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\GEB\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\GEB\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\GEB\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\GEB\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\反脆弱\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\反脆弱\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\反脆弱\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\思考的艺术\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思考的艺术\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\思考的艺术\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思辨与立场\00_为什么读这本书.md: missing required fields: audience
+- site\content\library\05_思想方法\思辨与立场\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思辨与立场\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思辨与立场\04_行动指南.md: missing required fields: audience, prerequisites, confidence
+- site\content\library\05_思想方法\思辨与立场\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\思辨与立场\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\思辨与立场\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\思辨与立场\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\控制论与科学方法论\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\控制论与科学方法论\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\控制论与科学方法论\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\08_论证链.md: missing required fields: evidence_basis, confidence
+- site\content\library\05_思想方法\毛泽东选集（第二卷）\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\社会学的邀请\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\社会学的邀请\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\纯粹理性批判\00_为什么读这本书.md: missing required fields: why_now
+- site\content\library\05_思想方法\纯粹理性批判\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\05_思想方法\纯粹理性批判\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule
+- site\content\library\05_思想方法\纯粹理性批判\04_行动指南.md: missing required fields: audience, prerequisites
+- site\content\library\05_思想方法\纯粹理性批判\05_方法论总结.md: missing required fields: methodology_basis
+- site\content\library\05_思想方法\纯粹理性批判\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis
+- site\content\library\05_思想方法\纯粹理性批判\10_复盘指标.md: missing required fields: audience
+- site\content\library\05_思想方法\送你一颗子弹\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\05_思想方法\送你一颗子弹\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\05_思想方法\送你一颗子弹\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\05_思想方法\送你一颗子弹\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites, confidence
+- site\content\library\05_思想方法\送你一颗子弹\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\05_思想方法\送你一颗子弹\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis, confidence
+- site\content\library\05_思想方法\送你一颗子弹\08_论证链.md: missing required fields: evidence_basis, confidence
+- site\content\library\05_思想方法\送你一颗子弹\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\05_方法论总结.md: missing required fields: confidence
+- site\content\library\05_思想方法\通往奴役之路\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\通往奴役之路\08_论证链.md: missing required fields: confidence
+- site\content\library\05_思想方法\通往奴役之路\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\05_思想方法\零售的哲学\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\化解内心的冲突\00_为什么读这本书.md: missing required fields: audience
+- site\content\library\06_心理学\化解内心的冲突\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\化解内心的冲突\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\06_心理学\化解内心的冲突\04_行动指南.md: missing required fields: audience
+- site\content\library\06_心理学\化解内心的冲突\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\06_心理学\化解内心的冲突\10_复盘指标.md: missing required fields: audience
+- site\content\library\06_心理学\当情绪遇见心智\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\当情绪遇见心智\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\当情绪遇见心智\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\06_心理学\当情绪遇见心智\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\当情绪遇见心智\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\06_心理学\当情绪遇见心智\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis, confidence
+- site\content\library\06_心理学\当情绪遇见心智\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\05_方法论总结.md: missing required fields: confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\心理医生为什么没有告诉我\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\态度改变与社会影响\00_为什么读这本书.md: missing required fields: audience, why_now
+- site\content\library\06_心理学\态度改变与社会影响\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\06_心理学\态度改变与社会影响\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\06_心理学\态度改变与社会影响\04_行动指南.md: missing required fields: audience
+- site\content\library\06_心理学\态度改变与社会影响\05_方法论总结.md: missing required fields: methodology_basis
+- site\content\library\06_心理学\态度改变与社会影响\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis
+- site\content\library\06_心理学\态度改变与社会影响\10_复盘指标.md: missing required fields: audience
+- site\content\library\06_心理学\怪诞行为学\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\怪诞行为学\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\怪诞行为学\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\怪诞行为学\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\怪诞行为学\05_方法论总结.md: missing required fields: confidence
+- site\content\library\06_心理学\我们内心的冲突\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\我们内心的冲突\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\我们内心的冲突\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\我们内心的冲突\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\我们内心的冲突\05_方法论总结.md: missing required fields: confidence
+- site\content\library\06_心理学\我们内心的冲突\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\我们内心的冲突\08_论证链.md: missing required fields: confidence
+- site\content\library\06_心理学\我们内心的冲突\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\活出意义来\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\06_心理学\活出意义来\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule
+- site\content\library\06_心理学\活出意义来\04_行动指南.md: missing required fields: audience, action_scope, default_horizon, prerequisites
+- site\content\library\06_心理学\活出意义来\05_方法论总结.md: missing required fields: methodology_basis
+- site\content\library\06_心理学\活出意义来\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis
+- site\content\library\06_心理学\活出意义来\10_复盘指标.md: missing required fields: audience
+- site\content\library\06_心理学\福格行为模型\00_为什么读这本书.md: missing required fields: audience
+- site\content\library\06_心理学\福格行为模型\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\06_心理学\福格行为模型\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\06_心理学\福格行为模型\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\06_心理学\福格行为模型\10_复盘指标.md: missing required fields: audience
+- site\content\library\06_心理学\谣言心理学\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\06_心理学\谣言心理学\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\06_心理学\谣言心理学\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\06_心理学\谣言心理学\04_行动指南.md: missing required fields: action_scope, default_horizon, prerequisites, confidence
+- site\content\library\06_心理学\谣言心理学\05_方法论总结.md: missing required fields: methodology_basis, confidence
+- site\content\library\06_心理学\谣言心理学\06_适用边界与失效条件.md: missing required fields: audience, guardrail_basis, confidence
+- site\content\library\06_心理学\谣言心理学\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\10人以下小团队管理手册\00_为什么读这本书.md: missing required fields: why_now
+- site\content\library\07_商业管理\10人以下小团队管理手册\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\07_商业管理\10人以下小团队管理手册\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\07_商业管理\10人以下小团队管理手册\04_行动指南.md: missing required fields: audience, prerequisites
+- site\content\library\07_商业管理\10人以下小团队管理手册\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\07_商业管理\10人以下小团队管理手册\10_复盘指标.md: missing required fields: audience
+- site\content\library\07_商业管理\成为技术领导者\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\07_商业管理\成为技术领导者\02_最值得记住的句子.md: missing required fields: audience, selection_basis, ordering_rule, confidence
+- site\content\library\07_商业管理\成为技术领导者\03_最有价值的案例.md: missing required fields: audience, case_basis, selection_basis, ordering_rule, confidence
+- site\content\library\07_商业管理\照着做，你就能带好团队\00_为什么读这本书.md: missing required fields: why_now
+- site\content\library\07_商业管理\照着做，你就能带好团队\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\07_商业管理\照着做，你就能带好团队\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\07_商业管理\照着做，你就能带好团队\04_行动指南.md: missing required fields: audience, prerequisites
+- site\content\library\07_商业管理\照着做，你就能带好团队\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\07_商业管理\照着做，你就能带好团队\10_复盘指标.md: missing required fields: audience
+- site\content\library\07_商业管理\科学的广告\00_为什么读这本书.md: missing required fields: audience, why_now, confidence
+- site\content\library\07_商业管理\科学的广告\02_最值得记住的句子.md: missing required fields: audience
+- site\content\library\07_商业管理\科学的广告\03_最有价值的案例.md: missing required fields: audience
+- site\content\library\07_商业管理\科学的广告\06_适用边界与失效条件.md: missing required fields: audience
+- site\content\library\07_商业管理\管理的实践\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\管理的实践\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\管理的实践\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\管理的实践\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\管理的实践\05_方法论总结.md: missing required fields: confidence
+- site\content\library\07_商业管理\管理的实践\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\管理的实践\08_论证链.md: missing required fields: confidence
+- site\content\library\07_商业管理\管理的实践\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\05_方法论总结.md: missing required fields: confidence
+- site\content\library\07_商业管理\组织行为学\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\组织行为学\08_论证链.md: missing required fields: confidence
+- site\content\library\07_商业管理\组织行为学\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\05_方法论总结.md: missing required fields: confidence
+- site\content\library\07_商业管理\项目管理艺术\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\07_商业管理\项目管理艺术\10_复盘指标.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\中国历代政治得失\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\中国历代政治得失\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\中国历代政治得失\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\00_为什么读这本书.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\02_最值得记住的句子.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\03_最有价值的案例.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\04_行动指南.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\05_方法论总结.md: missing required fields: confidence
+- site\content\library\08_历史传记\大国政治的悲剧\06_适用边界与失效条件.md: missing required fields: audience, confidence
+- site\content\library\08_历史传记\大国政治的悲剧\08_论证链.md: missing required fields: confidence
+- site\content\library\08_历史传记\大国政治的悲剧\10_复盘指标.md: missing required fields: audience, confidence

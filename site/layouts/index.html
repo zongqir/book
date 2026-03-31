@@ -96,6 +96,7 @@
     {{ end }}
   {{ end }}
 {{ end }}
+{{ $featuredCategories := first 4 (sort $categoryCards "docCount" "desc") }}
 
 <section class="hero hero-home">
   <div class="hero-grid">
@@ -107,11 +108,19 @@
         <a class="btn" href="#home-categories">按分类进入</a>
         <a class="btn btn-ghost" href="#home-tools">先随机看看</a>
       </div>
-      <div class="hero-quick-row" aria-label="首页快捷入口">
-        <span class="hero-quick-pill">先定位问题</span>
-        <span class="hero-quick-pill">再随机偏航</span>
-        <span class="hero-quick-pill">最后进单书目录</span>
-      </div>
+      {{ if gt (len $featuredCategories) 0 }}
+        <div class="hero-quick-block">
+          <p class="hero-quick-label">高频入口</p>
+          <div class="hero-quick-row" aria-label="首页快捷分类入口">
+            {{ range $featuredCategories }}
+              <a class="hero-quick-link" href="{{ .url }}">
+                <span>{{ .title }}</span>
+                <span>{{ .docCount }} 篇</span>
+              </a>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
     </div>
 
     <aside class="hero-panel">

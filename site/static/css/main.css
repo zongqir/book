@@ -92,7 +92,7 @@ body::after {
 .site-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1.2rem;
   padding: 0.9rem 1rem;
   border: 1px solid rgba(213, 210, 200, 0.85);
@@ -170,6 +170,10 @@ body::after {
   box-shadow: 0 12px 24px rgba(31, 66, 93, 0.2);
 }
 
+.nav-pill--subtle {
+  background: rgba(255, 255, 255, 0.48);
+}
+
 .container {
   margin: 1rem auto 3.4rem;
 }
@@ -233,17 +237,44 @@ body::after {
   gap: 0.46rem;
 }
 
-.hero-quick-pill {
+.hero-quick-block {
+  display: grid;
+  gap: 0.44rem;
+}
+
+.hero-quick-label {
+  margin: 0;
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.hero-quick-link {
   display: inline-flex;
   align-items: center;
-  min-height: 1.9rem;
-  padding: 0.18rem 0.72rem;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-height: 2rem;
+  padding: 0.22rem 0.76rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(47, 91, 124, 0.14);
   color: var(--accent-strong);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.hero-quick-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(47, 91, 124, 0.28);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 24px rgba(31, 66, 93, 0.08);
 }
 
 .hero-panel {
@@ -557,6 +588,11 @@ body::after {
 
 .home-tools-section {
   margin-top: 1.3rem;
+}
+
+#home-tools,
+#home-categories {
+  scroll-margin-top: 6rem;
 }
 
 .section-head {
@@ -2022,6 +2058,15 @@ details.toc-panel[open] .toc-toggle-icon {
     border-radius: 16px;
   }
 
+  .top-nav {
+    gap: 0.44rem;
+  }
+
+  .nav-pill {
+    padding: 0.36rem 0.72rem;
+    font-size: 0.88rem;
+  }
+
   .doc-layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2074,6 +2119,10 @@ details.toc-panel[open] .toc-toggle-icon {
 
   .hero-main {
     gap: 0.66rem;
+  }
+
+  .hero-quick-link {
+    width: 100%;
   }
 
   .hero-panel {
@@ -2141,6 +2190,11 @@ details.toc-panel[open] .toc-toggle-icon {
 
   .home-tool-head h2 {
     font-size: 1.1rem;
+  }
+
+  #home-tools,
+  #home-categories {
+    scroll-margin-top: 1rem;
   }
 
   .book-dice-card,

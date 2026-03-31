@@ -24,6 +24,10 @@
         </div>
         <nav class="top-nav" aria-label="主导航">
           <a class="nav-pill{{ if .IsHome }} is-active{{ end }}" href="{{ "/" | relURL }}">首页</a>
+          {{ if .IsHome }}
+            <a class="nav-pill nav-pill--subtle" href="#home-tools">随机入口</a>
+            <a class="nav-pill nav-pill--subtle" href="#home-categories">分类导航</a>
+          {{ end }}
           <a class="nav-pill{{ if $isLibrary }} is-active{{ end }}" href="{{ "/library/" | relURL }}">目录</a>
         </nav>
       </div>

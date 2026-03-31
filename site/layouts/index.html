@@ -1,4 +1,5 @@
 {{ define "main" }}
+{{ $visibleSitePages := where site.RegularPages "Params.visibility" "ne" "internal" }}
 {{ $bookSections := slice }}
 {{ range where site.Pages "Kind" "section" }}
   {{ $inLibrary := hasPrefix .RelPermalink ("/library/" | relURL) }}
@@ -29,7 +30,7 @@
 {{ end }}
 
 {{ $sentenceData := slice }}
-{{ range where site.RegularPages "Params.visibility" "ne" "internal" }}
+{{ range $visibleSitePages }}
   {{ $page := . }}
   {{ $quoteMatches := findRE `\{\{<\s*sentence\b[^>]*quote="[^"]+"[^>]*>\}\}` $page.RawContent }}
   {{ range $quoteMatches }}
@@ -59,20 +60,99 @@
   "09_健康生活" "放饮食、训练、睡眠和长期习惯，重点是把日常动作做得可持续。"
 }}
 
-<section class="hero">
-  <p class="eyebrow">读书库</p>
-  <h1>从书库里快速筛出一本书，再随机抽一句提醒</h1>
-  <p>{{ site.Params.description }}</p>
-  <div class="actions">
-    <a class="btn" href="{{ "/library/" | relURL }}">进入书库目录</a>
+{{ $categoryCards := slice }}
+{{ range site.Params.navSections }}
+  {{ $sectionPath := . }}
+  {{ with site.GetPage (printf "/library/%s" $sectionPath) }}
+    {{ if ne .Params.visibility "internal" }}
+      {{ $sectionPage := . }}
+      {{ $sectionPrefix := $sectionPage.RelPermalink }}
+      {{ $docs := slice }}
+      {{ $bookTitles := slice }}
+
+      {{ range $visibleSitePages }}
+        {{ if hasPrefix .RelPermalink $sectionPrefix }}
+          {{ $docs = $docs | append . }}
+          {{ $bookTitle := strings.TrimSpace (default .LinkTitle .Params.book_title) }}
+          {{ if and (ne $bookTitle "") (not (in $bookTitles $bookTitle)) }}
+            {{ $bookTitles = $bookTitles | append $bookTitle }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      {{ if gt (len $docs) 0 }}
+        {{ $summary := default (index $categoryFallbacks $sectionPath) $sectionPage.Params.summary }}
+        {{ $sectionNo := replaceRE "^([0-9]{2}).*$" "$1" $sectionPath }}
+        {{ $categoryCards = $categoryCards | append (dict
+          "title" $sectionPage.Title
+          "url" $sectionPage.RelPermalink
+          "summary" $summary
+          "sectionNo" $sectionNo
+          "docCount" (len $docs)
+          "bookCount" (len $bookTitles)
+          "bookTitles" $bookTitles
+        ) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+<section class="hero hero-home">
+  <div class="hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow">读书库</p>
+      <h1>不是把书堆在一起，是把判断入口做出来</h1>
+      <p class="hero-lead">先按分类缩小范围，再用随机入口打散惯性。首页应该帮你更快找到一本值得现在打开的书，而不是把你直接扔进目录树里。</p>
+      <div class="actions hero-actions">
+        <a class="btn" href="#home-categories">按分类进入</a>
+        <a class="btn btn-ghost" href="#home-tools">先随机看看</a>
+      </div>
+      <div class="hero-quick-row" aria-label="首页快捷入口">
+        <span class="hero-quick-pill">先定位问题</span>
+        <span class="hero-quick-pill">再随机偏航</span>
+        <span class="hero-quick-pill">最后进单书目录</span>
+      </div>
+    </div>
+
+    <aside class="hero-panel">
+      <p class="hero-panel-label">当前书库概况</p>
+      <div class="hero-stat-grid">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ len $categoryCards }}</span>
+          <span class="hero-stat-label">个分类入口</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ len $bookData }}</span>
+          <span class="hero-stat-label">本可浏览书目</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ len $visibleSitePages }}</span>
+          <span class="hero-stat-label">篇公开文稿</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ len $sentenceData }}</span>
+          <span class="hero-stat-label">句可抽提醒</span>
+        </div>
+      </div>
+      <p class="hero-panel-note">最稳的走法是先看分类卡，最快的走法是先掷一本到陌生分类。两个入口都保留，但层级现在分开了。</p>
+      <a class="hero-panel-link" href="{{ "/library/" | relURL }}">查看完整书库目录</a>
+    </aside>
   </div>
 </section>
 
-<section class="home-tools">
-  <article class="home-tool-card" data-book-dice>
+<section class="home-section home-tools-section" id="home-tools">
+  <div class="section-head">
+    <p class="eyebrow">随机入口</p>
+    <h2>一个帮你换书，一个帮你换脑子</h2>
+    <p class="section-copy">目录适合有目标时用。随机入口适合已经看腻熟面孔、想从别的分类里撞到一本书的时候用。</p>
+  </div>
+
+  <div class="home-tools">
+  <article class="home-tool-card home-tool-card--book" data-book-dice>
     <header class="home-tool-head">
       <p class="eyebrow">筛子轮播</p>
       <h2>随机挑一本书目录</h2>
+      <p class="tool-note">适合不知道下一本看什么，但又不想盯着目录慢慢筛的时候。</p>
     </header>
     {{ if gt (len $bookData) 0 }}
       {{ $firstBook := index $bookData 0 }}
@@ -102,10 +182,11 @@
     {{ end }}
   </article>
 
-  <article class="home-tool-card" data-random-quote>
+  <article class="home-tool-card home-tool-card--quote" data-random-quote>
     <header class="home-tool-head">
       <p class="eyebrow">随机句子</p>
       <h2>从博客句子卡抽一句</h2>
+      <p class="tool-note">适合需要一个提醒，把注意力从情绪里拽回来，而不是继续刷目录的时候。</p>
     </header>
     {{ if gt (len $sentenceData) 0 }}
       {{ $firstSentence := index $sentenceData 0 }}
@@ -123,9 +204,10 @@
       <p class="tool-empty">暂时没有发现句子卡，先在文稿里使用 `sentence` shortcode 再来抽。</p>
     {{ end }}
   </article>
+</div>
 </section>
 
-<section class="home-section home-categories">
+<section class="home-section home-categories" id="home-categories">
   <div class="section-head">
     <p class="eyebrow">分类导航</p>
     <h2>先按问题找区，再进书</h2>
@@ -133,60 +215,36 @@
   </div>
 
   <div class="category-grid">
-    {{ range site.Params.navSections }}
-      {{ $sectionPath := . }}
-      {{ with site.GetPage (printf "/library/%s" $sectionPath) }}
-        {{ if ne .Params.visibility "internal" }}
-          {{ $sectionPage := . }}
-          {{ $sectionPrefix := $sectionPage.RelPermalink }}
-          {{ $docs := slice }}
-          {{ $bookTitles := slice }}
+    {{ range $categoryCards }}
+      <article class="category-card">
+        <a class="category-link" href="{{ .url }}">
+          <div class="category-card-top">
+            <span class="category-index">{{ .sectionNo }}</span>
+            <div class="category-stats">
+              <span>{{ .bookCount }} 本书</span>
+              <span>{{ .docCount }} 篇文稿</span>
+            </div>
+          </div>
 
-          {{ range where site.RegularPages "Params.visibility" "ne" "internal" }}
-            {{ if hasPrefix .RelPermalink $sectionPrefix }}
-              {{ $docs = $docs | append . }}
-              {{ $bookTitle := strings.TrimSpace (default .LinkTitle .Params.book_title) }}
-              {{ if and (ne $bookTitle "") (not (in $bookTitles $bookTitle)) }}
-                {{ $bookTitles = $bookTitles | append $bookTitle }}
+          <div class="category-copy">
+            <h3>{{ .title }}</h3>
+            <p class="category-summary">{{ .summary }}</p>
+          </div>
+
+          {{ if gt (len .bookTitles) 0 }}
+            <div class="category-book-row" aria-label="{{ .title }}代表书目">
+              {{ range first 3 .bookTitles }}
+                <span class="category-book-chip">{{ . }}</span>
               {{ end }}
-            {{ end }}
+            </div>
           {{ end }}
 
-          {{ if gt (len $docs) 0 }}
-            {{ $summary := default (index $categoryFallbacks $sectionPath) $sectionPage.Params.summary }}
-            {{ $sectionNo := replaceRE "^([0-9]{2}).*$" "$1" $sectionPath }}
-            <article class="category-card">
-              <a class="category-link" href="{{ $sectionPage.RelPermalink }}">
-                <div class="category-card-top">
-                  <span class="category-index">{{ $sectionNo }}</span>
-                  <div class="category-stats">
-                    <span>{{ len $bookTitles }} 本书</span>
-                    <span>{{ len $docs }} 篇文稿</span>
-                  </div>
-                </div>
-
-                <div class="category-copy">
-                  <h3>{{ $sectionPage.Title }}</h3>
-                  <p class="category-summary">{{ $summary }}</p>
-                </div>
-
-                {{ if gt (len $bookTitles) 0 }}
-                  <div class="category-book-row" aria-label="{{ $sectionPage.Title }}代表书目">
-                    {{ range first 3 $bookTitles }}
-                      <span class="category-book-chip">{{ . }}</span>
-                    {{ end }}
-                  </div>
-                {{ end }}
-
-                <div class="category-card-foot">
-                  <span>打开这个分类</span>
-                  <span class="arrow">→</span>
-                </div>
-              </a>
-            </article>
-          {{ end }}
-        {{ end }}
-      {{ end }}
+          <div class="category-card-foot">
+            <span>打开这个分类</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </article>
     {{ end }}
   </div>
 </section>

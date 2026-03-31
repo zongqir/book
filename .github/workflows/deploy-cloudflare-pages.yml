@@ -32,6 +32,12 @@ jobs:
           sudo dpkg -i "$RUNNER_TEMP/$HUGO_DEB"
           hugo version
 
+      - name: Generate site content export
+        run: python3 scripts/export_site_content.py
+
+      - name: Verify site content export
+        run: python3 scripts/check_site_content_export.py
+
       - name: Build Hugo site
         run: hugo -s ./site -d "${{ github.workspace }}/site/public" --baseURL "https://book.zongqir.com/" --cleanDestinationDir
 

@@ -9,6 +9,9 @@ import sys
 from pathlib import Path
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run a local Hugo build using the repo's standard parameters."
@@ -54,6 +57,13 @@ def main() -> int:
     if not hugo_bin:
         print("[ERROR] Hugo binary not found. Set --hugo-bin or HUGO_BIN, or install Hugo in PATH.")
         return 2
+
+    export_result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "export_site_content.py")],
+        check=False,
+    )
+    if export_result.returncode != 0:
+        return export_result.returncode
 
     cmd = [
         hugo_bin,

@@ -37,6 +37,13 @@ WARN_PATTERNS = [
     re.compile(r"执行稿"),
 ]
 
+INDEX_SUMMARY_WARN_PATTERNS = [
+    re.compile(r"^summary:\s*[\"'`]?把一本.+拆成可判断、可执行、可复盘"),
+    re.compile(r"^summary:\s*[\"'`]?把.+拆成可判断、可执行、可复盘"),
+    re.compile(r"^summary:\s*[\"'`]?把.+整理成.+文稿"),
+    re.compile(r"^summary:\s*[\"'`]?把.+压成.+文稿"),
+]
+
 
 @dataclass
 class Finding:
@@ -74,6 +81,11 @@ def audit_file(path: Path) -> tuple[list[Finding], list[Finding]]:
         for pattern in WARN_PATTERNS:
             if pattern.search(stripped):
                 warnings.append(Finding(path, index, "template-like body phrasing", stripped))
+        if path.name == "_index.md":
+            for pattern in INDEX_SUMMARY_WARN_PATTERNS:
+                if pattern.search(stripped):
+                    warnings.append(Finding(path, index, "index summary uses processing-language template", stripped))
+                    break
 
     return errors, warnings
 

@@ -47,6 +47,18 @@
   {{ end }}
 {{ end }}
 
+{{ $categoryFallbacks := dict
+  "01_关键技能" "把阅读、提问、学习和决策这些可迁移能力放在一起，适合先补通用基本功。"
+  "02_专业技术" "按技术栈和工程环节拆开专业内容，适合带着具体问题回来查。"
+  "03_沟通人际" "收沟通、谈判、表达和协作问题，重点不在道理，而在现场怎么处理。"
+  "04_理财" "把投资、经济史和制度分析放在一起，适合先分清框架，再看具体工具。"
+  "05_思想方法" "集中放判断框架、推理工具和思想经典，适合处理复杂问题时切换视角。"
+  "06_心理学" "围绕情绪、行为、人格和认知偏差，帮助把反应看清，再决定怎么改。"
+  "07_商业管理" "关注组织、管理、领导和增长，适合处理团队协作和经营判断。"
+  "08_历史传记" "用历史与人物材料拆权力、制度和危机，不把复杂现实讲成抽象口号。"
+  "09_健康生活" "放饮食、训练、睡眠和长期习惯，重点是把日常动作做得可持续。"
+}}
+
 <section class="hero">
   <p class="eyebrow">读书库</p>
   <h1>从书库里快速筛出一本书，再随机抽一句提醒</h1>
@@ -113,26 +125,70 @@
   </article>
 </section>
 
-<section>
-  <h2>分类入口</h2>
-  <ul class="card-list">
+<section class="home-section home-categories">
+  <div class="section-head">
+    <p class="eyebrow">分类导航</p>
+    <h2>先按问题找区，再进书</h2>
+    <p class="section-copy">首页不该只给你一排分类名。每个入口至少要告诉你这里主要解决什么问题、现在积了多少内容、先从哪几本书切进去。</p>
+  </div>
+
+  <div class="category-grid">
     {{ range site.Params.navSections }}
       {{ $sectionPath := . }}
-      {{ $sectionPage := site.GetPage (printf "/library/%s" $sectionPath) }}
-      {{ $label := replaceRE "^\\d{2}_" "" $sectionPath }}
-      {{ $url := printf "/library/%s/" $sectionPath | relURL }}
-      {{ with $sectionPage }}
-        {{ $label = .Title }}
-        {{ $url = .RelPermalink }}
+      {{ with site.GetPage (printf "/library/%s" $sectionPath) }}
+        {{ if ne .Params.visibility "internal" }}
+          {{ $sectionPage := . }}
+          {{ $sectionPrefix := $sectionPage.RelPermalink }}
+          {{ $docs := slice }}
+          {{ $bookTitles := slice }}
+
+          {{ range where site.RegularPages "Params.visibility" "ne" "internal" }}
+            {{ if hasPrefix .RelPermalink $sectionPrefix }}
+              {{ $docs = $docs | append . }}
+              {{ $bookTitle := strings.TrimSpace (default .LinkTitle .Params.book_title) }}
+              {{ if and (ne $bookTitle "") (not (in $bookTitles $bookTitle)) }}
+                {{ $bookTitles = $bookTitles | append $bookTitle }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+
+          {{ if gt (len $docs) 0 }}
+            {{ $summary := default (index $categoryFallbacks $sectionPath) $sectionPage.Params.summary }}
+            {{ $sectionNo := replaceRE "^([0-9]{2}).*$" "$1" $sectionPath }}
+            <article class="category-card">
+              <a class="category-link" href="{{ $sectionPage.RelPermalink }}">
+                <div class="category-card-top">
+                  <span class="category-index">{{ $sectionNo }}</span>
+                  <div class="category-stats">
+                    <span>{{ len $bookTitles }} 本书</span>
+                    <span>{{ len $docs }} 篇文稿</span>
+                  </div>
+                </div>
+
+                <div class="category-copy">
+                  <h3>{{ $sectionPage.Title }}</h3>
+                  <p class="category-summary">{{ $summary }}</p>
+                </div>
+
+                {{ if gt (len $bookTitles) 0 }}
+                  <div class="category-book-row" aria-label="{{ $sectionPage.Title }}代表书目">
+                    {{ range first 3 $bookTitles }}
+                      <span class="category-book-chip">{{ . }}</span>
+                    {{ end }}
+                  </div>
+                {{ end }}
+
+                <div class="category-card-foot">
+                  <span>打开这个分类</span>
+                  <span class="arrow">→</span>
+                </div>
+              </a>
+            </article>
+          {{ end }}
+        {{ end }}
       {{ end }}
-      <li class="card-item">
-        <a class="card-link" href="{{ $url }}">
-          <span>{{ $label }}</span>
-          <span class="arrow">→</span>
-        </a>
-      </li>
     {{ end }}
-  </ul>
+  </div>
 </section>
 
 <script>

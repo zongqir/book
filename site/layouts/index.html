@@ -102,15 +102,15 @@
   <div class="hero-grid">
     <div class="hero-main">
       <p class="eyebrow">读书库</p>
-      <h1>不是把书堆在一起，是把判断入口做出来</h1>
-      <p class="hero-lead">先按分类缩小范围，再用随机入口打散惯性。首页应该帮你更快找到一本值得现在打开的书，而不是把你直接扔进目录树里。</p>
+      <h1>先找方向，再进书</h1>
+      <p class="hero-lead">按分类找入口，或者随机换一本到别的书。两种走法都行，先用顺手的那个。</p>
       <div class="actions hero-actions">
         <a class="btn" href="#home-categories">按分类进入</a>
         <a class="btn btn-ghost" href="#home-tools">先随机看看</a>
       </div>
       {{ if gt (len $featuredCategories) 0 }}
         <div class="hero-quick-block">
-          <p class="hero-quick-label">高频入口</p>
+          <p class="hero-quick-label">常看分类</p>
           <div class="hero-quick-grid" aria-label="首页快捷分类入口">
             {{ range $featuredCategories }}
               <a class="hero-quick-link" href="{{ .url }}">
@@ -124,7 +124,7 @@
     </div>
 
     <aside class="hero-panel">
-      <p class="hero-panel-label">当前书库概况</p>
+      <p class="hero-panel-label">书库概况</p>
       <div class="hero-stat-grid">
         <div class="hero-stat">
           <span class="hero-stat-value">{{ len $categoryCards }}</span>
@@ -143,7 +143,7 @@
           <span class="hero-stat-label">句可抽提醒</span>
         </div>
       </div>
-      <p class="hero-panel-note">最稳的走法是先看分类卡，最快的走法是先掷一本到陌生分类。两个入口都保留，但层级现在分开了。</p>
+      <p class="hero-panel-note">先从分类进更稳。想换换视角，就先随机挑一本到别的分类。</p>
       <a class="hero-panel-link" href="{{ "/library/" | relURL }}">查看完整书库目录</a>
     </aside>
   </div>
@@ -151,9 +151,9 @@
 
 <section class="home-section home-tools-section" id="home-tools">
   <div class="section-head">
-    <p class="eyebrow">随机入口</p>
-    <h2>一个帮你换书，一个帮你换脑子</h2>
-    <p class="section-copy">目录适合有目标时用。随机入口适合已经看腻熟面孔、想从别的分类里撞到一本书的时候用。</p>
+    <p class="eyebrow">随机浏览</p>
+    <h2>随机换一本到书，或抽一句提醒</h2>
+    <p class="section-copy">拿不准下一本看什么时，先随机换一本到别的分类。想停一下，也可以先抽一句。</p>
   </div>
 
   <div class="home-tools">
@@ -161,7 +161,7 @@
     <header class="home-tool-head">
       <p class="eyebrow">筛子轮播</p>
       <h2>随机挑一本书目录</h2>
-      <p class="tool-note">适合不知道下一本看什么，但又不想盯着目录慢慢筛的时候。</p>
+      <p class="tool-note">拿不准下一本时，用这个更快。</p>
     </header>
     {{ if gt (len $bookData) 0 }}
       {{ $firstBook := index $bookData 0 }}
@@ -187,7 +187,7 @@
         <a class="btn" id="book-dice-open" href="{{ index $firstBook "url" }}">打开当前目录</a>
       </div>
     {{ else }}
-      <p class="tool-empty">现在还没有可随机的书目录，先给单书目录补齐内容后再来掷。</p>
+      <p class="tool-empty">现在还没有可随机的书目录。</p>
     {{ end }}
   </article>
 
@@ -195,7 +195,7 @@
     <header class="home-tool-head">
       <p class="eyebrow">随机句子</p>
       <h2>从博客句子卡抽一句</h2>
-      <p class="tool-note">适合需要一个提醒，把注意力从情绪里拽回来，而不是继续刷目录的时候。</p>
+      <p class="tool-note">想先收住注意力时，用这个更合适。</p>
     </header>
     {{ if gt (len $sentenceData) 0 }}
       {{ $firstSentence := index $sentenceData 0 }}
@@ -210,7 +210,7 @@
         <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
       </div>
     {{ else }}
-      <p class="tool-empty">暂时没有发现句子卡，先在文稿里使用 `sentence` shortcode 再来抽。</p>
+      <p class="tool-empty">暂时还没有句子卡可抽。</p>
     {{ end }}
   </article>
 </div>
@@ -218,9 +218,9 @@
 
 <section class="home-section home-categories" id="home-categories">
   <div class="section-head">
-    <p class="eyebrow">分类导航</p>
-    <h2>先按问题找区，再进书</h2>
-    <p class="section-copy">首页不该只给你一排分类名。每个入口至少要告诉你这里主要解决什么问题、现在积了多少内容、先从哪几本书切进去。</p>
+    <p class="eyebrow">分类浏览</p>
+    <h2>按分类看</h2>
+    <p class="section-copy">先看你要解决哪类问题，再进具体的书。</p>
   </div>
 
   <div class="category-grid">
@@ -249,7 +249,7 @@
           {{ end }}
 
           <div class="category-card-foot">
-            <span>打开这个分类</span>
+            <span>进入分类</span>
             <span class="arrow">→</span>
           </div>
         </a>

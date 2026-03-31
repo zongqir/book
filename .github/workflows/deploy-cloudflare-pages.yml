@@ -9,9 +9,6 @@ on:
 permissions:
   contents: read
 
-env:
-  HUGO_VERSION: "0.158.0"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,18 +19,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-          package-manager-cache: false
+          node-version: "22.12.0"
+          cache: "npm"
+          cache-dependency-path: astro-site/package-lock.json
 
-      - name: Setup Hugo (Extended)
-        run: |
-          HUGO_DEB="hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
-          curl -fsSL -o "$RUNNER_TEMP/$HUGO_DEB" "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_DEB}"
-          sudo dpkg -i "$RUNNER_TEMP/$HUGO_DEB"
-          hugo version
+      - name: Install Astro dependencies
+        working-directory: ./astro-site
+        run: npm ci
 
-      - name: Build Hugo site
-        run: hugo -s ./site -d "${{ github.workspace }}/site/public" --baseURL "https://book.zongqir.com/" --cleanDestinationDir
+      - name: Build Astro site
+        working-directory: ./astro-site
+        run: npm run build
 
       - name: Ensure Cloudflare Pages project exists
         env:
@@ -59,4 +55,4 @@ jobs:
           if [ -z "$PROJECT_NAME" ]; then
             PROJECT_NAME="book"
           fi
-          npx wrangler pages deploy ./site/public --project-name "$PROJECT_NAME" --branch "$GITHUB_REF_NAME"
+          npx wrangler pages deploy ./astro-site/dist --project-name "$PROJECT_NAME" --branch "$GITHUB_REF_NAME"

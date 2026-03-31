@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -105,7 +105,14 @@ def build_bundle() -> dict[str, Any]:
         )
 
     quotes = collect_quotes(pages)
-    generated_at = datetime.now(BUILD_TIMEZONE).isoformat(timespec="seconds")
+    generated_at = max(
+        (
+            page["updated_at"]
+            for page in pages
+            if isinstance(page.get("updated_at"), str) and page["updated_at"]
+        ),
+        default="",
+    )
 
     return {
         "schema_version": 1,

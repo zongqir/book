@@ -913,6 +913,51 @@ img { display: block; max-width: 100%; }
   .library-index-card { min-height: auto; }
   .section-card a { gap: 10px; }
   .section-card .section-enter { margin-top: 6px; padding-top: 0; }
+  .library-hero,
+  .discover-panel {
+    gap: 18px;
+  }
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat-block {
+    padding: 14px 14px 16px;
+    border-radius: 18px;
+  }
+  .stat-value {
+    margin-top: 6px;
+    font-size: clamp(1.35rem, 6vw, 1.8rem);
+  }
+  .discover-controls {
+    gap: 12px;
+  }
+  .field-control {
+    gap: 8px;
+  }
+  .field-control > span {
+    font-size: 0.7rem;
+  }
+  .field-control input,
+  .field-control select {
+    min-height: 46px;
+    padding: 0 14px;
+    border-radius: 14px;
+  }
+  .discover-chip-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+  .discover-chip-row::-webkit-scrollbar { display: none; }
+  .tag-pill--button {
+    flex: 0 0 auto;
+  }
+  .discover-summary {
+    font-size: 0.94rem;
+  }
   .doc-grid { gap: 14px; }
   .doc-side { order: 1; gap: 12px; }
   .toc-card--mobile {

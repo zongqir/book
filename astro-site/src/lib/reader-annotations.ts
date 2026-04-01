@@ -52,11 +52,15 @@ type StorePayload = {
 };
 
 const STORAGE_KEY = "book-reader-annotations:v1";
+const FAB_POSITION_KEY = "book-reader-notes-fab-position:v1";
 const CONTEXT_WINDOW = 48;
 const HIGHLIGHT_CLASS = "reader-highlight";
 const ACTIVE_CLASS = "is-active";
 const MOBILE_BREAKPOINT = 760;
 const MOBILE_HIDE_DELAY_MS = 260;
+const FAB_SIZE = 54;
+const FAB_MARGIN = 18;
+const FAB_DRAG_THRESHOLD = 6;
 const MOBILE_PICK_SELECTOR = "p, li, blockquote, pre, td, th";
 
 class LocalAnnotationStore implements AnnotationStore {
@@ -359,6 +363,14 @@ export function setupReaderAnnotations() {
   let mobilePickMode = false;
   let isNotesPanelOpen = false;
   let activePickTarget: HTMLElement | null = null;
+  let fabX = 0;
+  let fabY = 0;
+  let fabPointerId: number | null = null;
+  let fabPressX = 0;
+  let fabPressY = 0;
+  let fabStartX = 0;
+  let fabStartY = 0;
+  let isDraggingFab = false;
   const mobilePickToggle = document.createElement("button");
   mobilePickToggle.type = "button";
   mobilePickToggle.className = "reader-mobile-pick-toggle tool-switch";
@@ -388,6 +400,73 @@ export function setupReaderAnnotations() {
     hideToolbarTimer = 0;
   }
 
+  function clampFabPosition(nextX: number, nextY: number) {
+    const size = notesFab.offsetWidth || FAB_SIZE;
+    const minX = 12;
+    const minY = 96;
+    const maxX = Math.max(minX, window.innerWidth - size - FAB_MARGIN);
+    const maxY = Math.max(minY, window.innerHeight - size - FAB_MARGIN);
+    return {
+      x: Math.min(maxX, Math.max(minX, nextX)),
+      y: Math.min(maxY, Math.max(minY, nextY)),
+    };
+  }
+
+  function saveFabPosition() {
+    window.localStorage.setItem(FAB_POSITION_KEY, JSON.stringify({ x: fabX, y: fabY }));
+  }
+
+  function getDefaultFabPosition() {
+    const rootRect = root.getBoundingClientRect();
+    const size = notesFab.offsetWidth || FAB_SIZE;
+    const fallbackX = window.innerWidth - size - FAB_MARGIN;
+    const preferredX = Math.min(fallbackX, Math.max(12, rootRect.right - size - 12));
+    const preferredY = Math.min(window.innerHeight - size - FAB_MARGIN, Math.max(140, rootRect.top + 120));
+    return clampFabPosition(preferredX, preferredY);
+  }
+
+  function loadFabPosition() {
+    try {
+      const raw = window.localStorage.getItem(FAB_POSITION_KEY);
+      if (!raw) return getDefaultFabPosition();
+      const parsed = JSON.parse(raw) as Partial<{ x: number; y: number }>;
+      if (typeof parsed.x !== "number" || typeof parsed.y !== "number") {
+        return getDefaultFabPosition();
+      }
+      return clampFabPosition(parsed.x, parsed.y);
+    } catch {
+      return getDefaultFabPosition();
+    }
+  }
+
+  function positionNotesPanel() {
+    if (notesPanel.hidden) return;
+    const panelWidth = Math.min(360, window.innerWidth - 32);
+    const panelHeight = Math.min(notesPanel.offsetHeight || 320, Math.min(window.innerHeight * 0.68, 560));
+    const fabRect = notesFab.getBoundingClientRect();
+    const gap = 12;
+    const nextLeft = Math.min(window.innerWidth - panelWidth - 12, Math.max(12, fabRect.right - panelWidth));
+    let nextTop = fabRect.top - panelHeight - gap;
+    if (nextTop < 12) {
+      nextTop = Math.min(window.innerHeight - panelHeight - 12, fabRect.bottom + gap);
+    }
+    notesPanel.style.left = nextLeft + "px";
+    notesPanel.style.right = "auto";
+    notesPanel.style.top = Math.max(12, nextTop) + "px";
+    notesPanel.style.bottom = "auto";
+  }
+
+  function applyFabPosition(nextX: number, nextY: number) {
+    const next = clampFabPosition(nextX, nextY);
+    fabX = next.x;
+    fabY = next.y;
+    notesFab.style.left = fabX + "px";
+    notesFab.style.right = "auto";
+    notesFab.style.top = fabY + "px";
+    notesFab.style.bottom = "auto";
+    positionNotesPanel();
+  }
+
   function syncNotesPanel() {
     const shouldShowFab = editor.hidden && toolbar.hidden;
     if (!shouldShowFab) {
@@ -397,6 +476,7 @@ export function setupReaderAnnotations() {
     notesPanel.hidden = !isNotesPanelOpen;
     notesFab.classList.toggle("is-active", isNotesPanelOpen);
     notesFab.dataset.count = String(annotations.length);
+    positionNotesPanel();
   }
 
   function setActivePickTarget(element: HTMLElement | null) {
@@ -646,9 +726,53 @@ export function setupReaderAnnotations() {
     openEditor("create");
   });
 
-  notesFab.addEventListener("click", () => {
-    isNotesPanelOpen = !isNotesPanelOpen;
-    syncNotesPanel();
+  notesFab.addEventListener("pointerdown", (event) => {
+    fabPointerId = event.pointerId;
+    fabPressX = event.clientX;
+    fabPressY = event.clientY;
+    fabStartX = fabX;
+    fabStartY = fabY;
+    isDraggingFab = false;
+    notesFab.setPointerCapture(event.pointerId);
+  });
+
+  notesFab.addEventListener("pointermove", (event) => {
+    if (fabPointerId !== event.pointerId) return;
+    const deltaX = event.clientX - fabPressX;
+    const deltaY = event.clientY - fabPressY;
+    if (!isDraggingFab && Math.hypot(deltaX, deltaY) >= FAB_DRAG_THRESHOLD) {
+      isDraggingFab = true;
+      notesFab.classList.add("is-dragging");
+    }
+    if (!isDraggingFab) return;
+    applyFabPosition(fabStartX + deltaX, fabStartY + deltaY);
+  });
+
+  notesFab.addEventListener("pointerup", (event) => {
+    if (fabPointerId !== event.pointerId) return;
+    if (notesFab.hasPointerCapture(event.pointerId)) {
+      notesFab.releasePointerCapture(event.pointerId);
+    }
+    if (isDraggingFab) {
+      saveFabPosition();
+      notesFab.classList.remove("is-dragging");
+    } else {
+      isNotesPanelOpen = !isNotesPanelOpen;
+      syncNotesPanel();
+    }
+    fabPointerId = null;
+    isDraggingFab = false;
+  });
+
+  notesFab.addEventListener("pointercancel", (event) => {
+    if (fabPointerId !== event.pointerId) return;
+    if (notesFab.hasPointerCapture(event.pointerId)) {
+      notesFab.releasePointerCapture(event.pointerId);
+    }
+    fabPointerId = null;
+    isDraggingFab = false;
+    notesFab.classList.remove("is-dragging");
+    applyFabPosition(fabX, fabY);
   });
 
   panelCloseButton.addEventListener("click", () => {
@@ -797,10 +921,13 @@ export function setupReaderAnnotations() {
 
   window.addEventListener("resize", () => {
     syncMobilePickToggle();
+    applyFabPosition(fabX, fabY);
     if (!pendingSelection || toolbar.hidden) return;
     setToolbarPosition(pendingSelection.rect);
   });
 
+  const initialFabPosition = loadFabPosition();
+  applyFabPosition(initialFabPosition.x, initialFabPosition.y);
   refresh();
   renderList();
   syncMobilePickToggle();

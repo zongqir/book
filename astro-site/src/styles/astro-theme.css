@@ -816,10 +816,14 @@ img { display: block; max-width: 100%; }
   font: inherit;
   cursor: pointer;
 }
+.reader-notes-item-summary,
 .reader-notes-item-quote,
 .reader-notes-quote {
   font-family: "Noto Serif SC", serif;
   line-height: 1.72;
+}
+.reader-notes-item-summary {
+  display: none;
 }
 .reader-notes-item-quote {
   display: -webkit-box;
@@ -1444,14 +1448,21 @@ img { display: block; max-width: 100%; }
   .reader-notes-head {
     align-items: center;
   }
+  .reader-notes-head--panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
   .reader-notes-head h3 {
     white-space: normal;
-    font-size: 0.98rem;
+    font-size: 0.96rem;
+    line-height: 1.35;
   }
   .reader-notes-head [data-reader-notes-close] {
-    min-height: 28px;
-    padding: 0 8px;
-    font-size: 0.78rem;
+    min-height: 24px;
+    padding: 0 6px;
+    font-size: 0.72rem;
+    border-radius: 999px;
   }
   .reader-notes-toolbar {
     display: grid;
@@ -1463,7 +1474,31 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     align-items: stretch;
   }
+  .reader-notes-item {
+    gap: 8px;
+    padding: 11px 12px;
+  }
+  .reader-notes-item-focus {
+    gap: 4px;
+  }
+  .reader-notes-item-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.95rem;
+  }
+  .reader-notes-item-quote,
+  .reader-notes-item-copy,
   .reader-notes-item-actions {
+    display: none;
+  }
+  .reader-notes-item.is-active .reader-notes-item-quote,
+  .reader-notes-item.is-active .reader-notes-item-copy {
+    display: -webkit-box;
+  }
+  .reader-notes-item.is-active .reader-notes-item-actions {
+    display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
@@ -1480,15 +1515,19 @@ img { display: block; max-width: 100%; }
     gap: 8px;
   }
   .reader-notes-colors {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   .reader-notes-color {
-    width: 100%;
-    max-width: none;
-    height: 38px;
-    justify-self: stretch;
+    width: 24px;
+    min-width: 24px;
+    max-width: 24px;
+    height: 24px;
+    justify-self: auto;
+  }
+  .reader-notes-color.is-selected {
+    box-shadow: inset 0 0 0 6px var(--reader-color-swatch, rgba(224, 191, 106, 0.92)), 0 0 0 2px rgba(23, 48, 67, 0.12);
   }
   .reader-notes-editor {
     padding: 12px;

@@ -411,8 +411,9 @@ export function setupReaderParagraphNotes() {
         return (
           '<article class="reader-notes-item reader-notes-item--' + note.color + (isActive ? ' is-active' : '') + '">' +
             '<button class="reader-notes-item-focus" type="button" data-reader-note-focus="' + escapeHtml(note.id) + '">' +
-              '<span class="reader-notes-item-quote">' + escapeHtml(note.quote) + '</span>' +
+              '<span class="reader-notes-item-summary">' + escapeHtml(note.note || note.quote) + '</span>' +
               '<span class="reader-notes-item-time">' + escapeHtml(formatTime(note.updatedAt)) + '</span>' +
+              '<span class="reader-notes-item-quote">' + escapeHtml(note.quote) + '</span>' +
             '</button>' +
             '<p class="reader-notes-item-copy">' + escapeHtml(note.note || '仅划线') + '</p>' +
             '<div class="reader-notes-item-actions">' +

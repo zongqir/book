@@ -38,14 +38,6 @@ type LegacyStoredPayload = {
   annotations: LegacyReaderAnnotation[];
 };
 
-const STORAGE_KEY = "book-reader-annotations:v1";
-const FAB_POSITION_KEY = "book-reader-notes-fab-position:v1";
-const MOBILE_BREAKPOINT = 760;
-const FAB_SIZE = 54;
-const FAB_MARGIN = 18;
-const FAB_DRAG_THRESHOLD = 6;
-const W3C_CONTEXT = "http://www.w3.org/ns/anno.jsonld";
-
 type StoredAnnotationBody = {
   id?: string;
   type?: string;
@@ -55,11 +47,39 @@ type StoredAnnotationBody = {
   modified?: string;
 };
 
+type PendingSelection = {
+  quote: string;
+  anchor: LegacyAnnotationAnchor;
+  rect: DOMRect;
+};
+
+const STORAGE_KEY = "book-reader-annotations:v1";
+const FAB_POSITION_KEY = "book-reader-notes-fab-position:v1";
+const MOBILE_BREAKPOINT = 760;
+const FAB_SIZE = 54;
+const FAB_MARGIN = 18;
+const FAB_DRAG_THRESHOLD = 6;
+const CONTEXT_WINDOW = 48;
+const MOBILE_PICK_SELECTOR = "p, li, blockquote, pre, td, th";
+const W3C_CONTEXT = "http://www.w3.org/ns/anno.jsonld";
+
+function getCurrentSource() {
+  return window.location.href.split("#")[0];
+}
+
+function createId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "ann-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
 function stampAnnotationPage(annotation: W3CTextAnnotation, pageId: string): W3CTextAnnotation {
   const normalized = normalizeStoredAnnotation(annotation);
+  const source = getCurrentSource();
   const target = Array.isArray(normalized.target)
-    ? normalized.target.map((item) => ({ ...item, scope: pageId }))
-    : { ...normalized.target, scope: pageId };
+    ? normalized.target.map((item) => ({ ...item, scope: pageId, source }))
+    : { ...normalized.target, scope: pageId, source };
 
   return {
     ...normalized,
@@ -163,6 +183,7 @@ function normalizeBody(body: StoredAnnotationBody): StoredAnnotationBody {
 function normalizeTarget(target: W3CTextAnnotationTarget): W3CTextAnnotationTarget {
   return {
     ...target,
+    source: target.source ?? getCurrentSource(),
   };
 }
 
@@ -211,7 +232,7 @@ function convertLegacyAnnotation(annotation: LegacyReaderAnnotation): W3CTextAnn
       pageId: annotation.pageId,
     },
     target: {
-      source: annotation.pageId,
+      source: getCurrentSource(),
       scope: annotation.pageId,
       selector: [
         {
@@ -293,6 +314,113 @@ function isRangeInsideRoot(root: HTMLElement, range: Range) {
   return !!startNode && !!endNode && root.contains(startNode) && root.contains(endNode);
 }
 
+function getPlainText(root: HTMLElement) {
+  return root.textContent ?? "";
+}
+
+function getNodeTextLength(node: Node | null): number {
+  if (!node) return 0;
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.nodeValue?.length ?? 0;
+  }
+  let total = 0;
+  node.childNodes.forEach((child) => {
+    total += getNodeTextLength(child);
+  });
+  return total;
+}
+
+function getOffsetWithinRoot(root: HTMLElement, container: Node, offset: number): number {
+  let cursor = 0;
+  let found = false;
+
+  function visit(node: Node) {
+    if (found) return;
+    if (node === container) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        cursor += offset;
+      } else {
+        const max = Math.min(offset, node.childNodes.length);
+        for (let index = 0; index < max; index += 1) {
+          cursor += getNodeTextLength(node.childNodes[index]);
+        }
+      }
+      found = true;
+      return;
+    }
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      cursor += node.nodeValue?.length ?? 0;
+      return;
+    }
+
+    node.childNodes.forEach((child) => {
+      visit(child);
+    });
+  }
+
+  visit(root);
+  return cursor;
+}
+
+function buildAnchor(root: HTMLElement, range: Range): LegacyAnnotationAnchor | null {
+  const start = getOffsetWithinRoot(root, range.startContainer, range.startOffset);
+  const end = getOffsetWithinRoot(root, range.endContainer, range.endOffset);
+  if (end <= start) return null;
+  const text = getPlainText(root);
+  const quote = text.slice(start, end);
+  if (!quote.trim()) return null;
+  return {
+    start,
+    end,
+    quote,
+    prefix: text.slice(Math.max(0, start - CONTEXT_WINDOW), start),
+    suffix: text.slice(end, Math.min(text.length, end + CONTEXT_WINDOW)),
+  };
+}
+
+function createDraftAnnotation(pageId: string, anchor: LegacyAnnotationAnchor, note = ""): W3CTextAnnotation {
+  const now = new Date().toISOString();
+  const id = createId();
+  return {
+    "@context": W3C_CONTEXT,
+    type: "Annotation",
+    id,
+    created: now,
+    modified: now,
+    body: note.trim()
+      ? [{
+          id: id + "#note",
+          type: "TextualBody",
+          purpose: "commenting",
+          value: note.trim(),
+          created: now,
+          modified: now,
+        }]
+      : [],
+    properties: {
+      pageId,
+    },
+    target: {
+      source: getCurrentSource(),
+      scope: pageId,
+      selector: [
+        {
+          type: "TextQuoteSelector",
+          exact: anchor.quote,
+          prefix: anchor.prefix,
+          suffix: anchor.suffix,
+        },
+        {
+          type: "TextPositionSelector",
+          start: anchor.start,
+          end: anchor.end,
+        },
+      ],
+    },
+  };
+}
+
 export function setupReaderAnnotations() {
   const root = document.querySelector<HTMLElement>("[data-reader-root]");
   if (!root) return;
@@ -320,8 +448,9 @@ export function setupReaderAnnotations() {
   }
 
   const store = new LocalAnnotationStore();
+  const source = getCurrentSource();
   const annotator = createTextAnnotator<TextAnnotation, W3CTextAnnotation>(root, {
-    adapter: W3CTextFormat<TextAnnotation, W3CTextAnnotation>(window.location.href.split("#")[0], root),
+    adapter: W3CTextFormat<TextAnnotation, W3CTextAnnotation>(source, root),
     dismissOnNotAnnotatable: "ALWAYS",
     renderer: "SPANS",
     selectionMode: "all",
@@ -340,6 +469,8 @@ export function setupReaderAnnotations() {
   let editingId: string | null = null;
   let isNotesPanelOpen = false;
   let lastSelectionRect: DOMRect | null = null;
+  let mobilePickMode = false;
+  let activePickTarget: HTMLElement | null = null;
   let fabX = 0;
   let fabY = 0;
   let fabPointerId: number | null = null;
@@ -349,12 +480,28 @@ export function setupReaderAnnotations() {
   let fabStartY = 0;
   let isDraggingFab = false;
 
+  const mobilePickToggle = document.createElement("button");
+  mobilePickToggle.type = "button";
+  mobilePickToggle.className = "reader-mobile-pick-toggle tool-switch";
+  mobilePickToggle.hidden = true;
+  mobilePickToggle.textContent = "点段落划线";
+  mobilePickToggle.setAttribute("aria-label", "切换点段落划线模式");
+  document.body.appendChild(mobilePickToggle);
+
   const notesFab = document.createElement("button");
   notesFab.type = "button";
   notesFab.className = "reader-notes-fab";
   notesFab.setAttribute("aria-label", "打开本页划线与笔记");
   notesFab.title = "本页划线与笔记";
   document.body.appendChild(notesFab);
+
+  function isMobileSelectionUI() {
+    return window.innerWidth <= MOBILE_BREAKPOINT || window.matchMedia("(pointer: coarse)").matches;
+  }
+
+  function syncAnnotatingMode() {
+    annotator.setAnnotatingEnabled(!isMobileSelectionUI());
+  }
 
   function setStatus(message: string) {
     status.textContent = message;
@@ -373,17 +520,48 @@ export function setupReaderAnnotations() {
     return range.getBoundingClientRect();
   }
 
+  function hasOverlap(anchor: LegacyAnnotationAnchor, excludeId?: string) {
+    return annotations.some((annotation) => {
+      if (excludeId && annotation.id === excludeId) return false;
+      const position = getPositionSelector(annotation);
+      if (!position) return false;
+      return anchor.start < position.end && anchor.end > position.start;
+    });
+  }
+
+  function findPickableBlock(target: HTMLElement) {
+    const block = target.closest<HTMLElement>(MOBILE_PICK_SELECTOR);
+    if (!block || !root.contains(block)) return null;
+    return block;
+  }
+
+  function captureBlockSelection(block: HTMLElement): PendingSelection | null {
+    const range = document.createRange();
+    range.selectNodeContents(block);
+    const anchor = buildAnchor(root, range);
+    range.detach?.();
+    if (!anchor || hasOverlap(anchor)) return null;
+    return {
+      quote: anchor.quote.trim(),
+      anchor,
+      rect: block.getBoundingClientRect(),
+    };
+  }
+
   function hideToolbar() {
     toolbar.hidden = true;
     toolbar.classList.remove("reader-toolbar--docked");
     toolbar.style.removeProperty("left");
     toolbar.style.removeProperty("top");
+    setActivePickTarget(null);
+    syncMobilePickToggle();
   }
 
   function closeEditor() {
     editor.hidden = true;
     editorInput.value = "";
     editingId = null;
+    syncMobilePickToggle();
     syncNotesPanel();
   }
 
@@ -392,7 +570,7 @@ export function setupReaderAnnotations() {
   }
 
   function setToolbarPosition(rect: DOMRect) {
-    if (window.innerWidth <= MOBILE_BREAKPOINT || window.matchMedia("(pointer: coarse)").matches) {
+    if (isMobileSelectionUI()) {
       toolbar.classList.add("reader-toolbar--docked");
       toolbar.style.removeProperty("left");
       toolbar.style.removeProperty("top");
@@ -406,10 +584,31 @@ export function setupReaderAnnotations() {
     toolbar.style.top = top + "px";
   }
 
+  function setActivePickTarget(element: HTMLElement | null) {
+    if (activePickTarget && activePickTarget !== element) {
+      activePickTarget.classList.remove("reader-mobile-pick-target");
+    }
+    activePickTarget = element;
+    activePickTarget?.classList.add("reader-mobile-pick-target");
+  }
+
+  function syncMobilePickToggle() {
+    const shouldShow = isMobileSelectionUI() && editor.hidden && toolbar.hidden;
+    if (!shouldShow && mobilePickMode) {
+      mobilePickMode = false;
+      setActivePickTarget(null);
+    }
+    mobilePickToggle.hidden = !shouldShow;
+    mobilePickToggle.textContent = mobilePickMode ? "点正文以划线" : "点段落划线";
+    mobilePickToggle.classList.toggle("is-active", mobilePickMode && shouldShow);
+    root.classList.toggle("reader-mobile-pick-root", mobilePickMode && shouldShow);
+  }
+
   function openToolbar() {
     toolbar.hidden = false;
     setToolbarPosition(lastSelectionRect ?? getToolbarFallbackRect());
     clearNativeSelection();
+    syncMobilePickToggle();
     syncNotesPanel();
   }
 
@@ -598,17 +797,31 @@ export function setupReaderAnnotations() {
     annotator.scrollIntoView(id);
   }
 
-  annotator.on("createAnnotation", (annotation) => {
+  function handlePendingAnnotation(annotation: W3CTextAnnotation) {
     if (pendingCreatedId && pendingCreatedId !== annotation.id) {
       annotator.removeAnnotation(pendingCreatedId);
     }
     pendingCreatedId = annotation.id;
     activeId = annotation.id;
-    lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
     refresh(false);
     setActive(annotation.id);
     isNotesPanelOpen = false;
     openToolbar();
+  }
+
+  function addMobileBlockHighlight(selection: PendingSelection) {
+    const annotation = createDraftAnnotation(pageId, selection.anchor);
+    lastSelectionRect = selection.rect;
+    annotator.addAnnotation(annotation);
+    const created = getAnnotationById(annotation.id);
+    if (created && pendingCreatedId !== annotation.id) {
+      handlePendingAnnotation(created);
+    }
+  }
+
+  annotator.on("createAnnotation", (annotation) => {
+    lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
+    handlePendingAnnotation(annotation);
   });
 
   annotator.on("clickAnnotation", (annotation) => {
@@ -692,6 +905,18 @@ export function setupReaderAnnotations() {
     syncNotesPanel();
   });
 
+  mobilePickToggle.addEventListener("click", () => {
+    mobilePickMode = !mobilePickMode;
+    setActivePickTarget(null);
+    if (mobilePickMode) {
+      clearNativeSelection();
+      setStatus("已进入划线模式：点一段正文，再选划线或记笔记。");
+    } else {
+      setStatus("");
+    }
+    syncMobilePickToggle();
+  });
+
   saveButton.addEventListener("click", () => {
     const annotation = getAnnotationById(editingId);
     if (!annotation) return;
@@ -750,6 +975,25 @@ export function setupReaderAnnotations() {
     }
   });
 
+  root.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (!mobilePickMode || !isMobileSelectionUI()) return;
+    if (target.closest(".r6o-annotation")) return;
+    const block = findPickableBlock(target);
+    if (!block) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const selection = captureBlockSelection(block);
+    if (!selection) {
+      setActivePickTarget(null);
+      setStatus("这一段已经划过了，换一段试试。");
+      return;
+    }
+    setActivePickTarget(block);
+    addMobileBlockHighlight(selection);
+  });
+
   document.addEventListener("mouseup", () => {
     lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
   });
@@ -763,7 +1007,7 @@ export function setupReaderAnnotations() {
   document.addEventListener("pointerdown", (event) => {
     const target = event.target;
     if (!(target instanceof Node)) return;
-    if (toolbar.contains(target) || editor.contains(target) || notesPanel.contains(target) || notesFab.contains(target)) {
+    if (toolbar.contains(target) || editor.contains(target) || notesPanel.contains(target) || notesFab.contains(target) || mobilePickToggle.contains(target)) {
       return;
     }
     if (pendingCreatedId) {
@@ -782,14 +1026,18 @@ export function setupReaderAnnotations() {
   });
 
   window.addEventListener("resize", () => {
+    syncAnnotatingMode();
+    syncMobilePickToggle();
     applyFabPosition(fabX, fabY);
     if (!toolbar.hidden) {
       setToolbarPosition(lastSelectionRect ?? getToolbarFallbackRect());
     }
   });
 
+  syncAnnotatingMode();
   const initialFabPosition = loadFabPosition();
   applyFabPosition(initialFabPosition.x, initialFabPosition.y);
   renderList();
+  syncMobilePickToggle();
   syncNotesPanel();
 }

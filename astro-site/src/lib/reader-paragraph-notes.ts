@@ -1,8 +1,8 @@
 import {
   NOTE_STORAGE_KEY,
   POSITION_STORAGE_KEY,
-  createBrowserNoteStore,
-  createBrowserPositionStore,
+  createNoteStore,
+  createPositionStore,
   type ReaderNoteColor,
   type ReaderNotePosition,
   type ReaderNotePositions,
@@ -106,8 +106,8 @@ export function setupReaderParagraphNotes() {
   }
 
   const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
-  const store = createBrowserNoteStore();
-  const positionStore = createBrowserPositionStore();
+  const store = createNoteStore();
+  const positionStore = createPositionStore();
   let notes = store.list(pageId);
   let panelOpen = !mediaQuery.matches;
   let pickMode = false;

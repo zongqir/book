@@ -38,6 +38,13 @@ export type PositionStore = {
   write(payload: ReaderNotePositions): void;
 };
 
+export type ReaderStorageProvider = {
+  createNoteStore(): NoteStore;
+  createPositionStore(): PositionStore;
+};
+
+export type ReaderStorageProviderFactory = () => ReaderStorageProvider;
+
 type StorePayload = {
   version: 1;
   notes: ReaderParagraphNote[];
@@ -48,13 +55,18 @@ export const POSITION_STORAGE_KEY = "book-reader-paragraph-notes-position:v1";
 const DEFAULT_COLOR: ReaderNoteColor = "amber";
 const NOTE_COLORS: ReaderNoteColor[] = ["amber", "teal", "rose", "violet"];
 
+let providerFactory: ReaderStorageProviderFactory | null = null;
+let activeProvider: ReaderStorageProvider | null = null;
+
 class BrowserLocalNoteStore implements NoteStore {
   private load(): StorePayload {
     try {
       const raw = window.localStorage.getItem(NOTE_STORAGE_KEY);
       if (!raw) return { version: 1, notes: [] };
       const parsed = JSON.parse(raw) as Partial<StorePayload>;
-      const notes = Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredNote).filter((note): note is ReaderParagraphNote => !!note) : [];
+      const notes = Array.isArray(parsed.notes)
+        ? parsed.notes.map(normalizeStoredNote).filter((note): note is ReaderParagraphNote => !!note)
+        : [];
       return { version: 1, notes };
     } catch {
       return { version: 1, notes: [] };
@@ -122,6 +134,16 @@ class BrowserLocalPositionStore implements PositionStore {
   }
 }
 
+class BrowserLocalReaderStorageProvider implements ReaderStorageProvider {
+  createNoteStore(): NoteStore {
+    return new BrowserLocalNoteStore();
+  }
+
+  createPositionStore(): PositionStore {
+    return new BrowserLocalPositionStore();
+  }
+}
+
 function isReaderNoteColor(value: unknown): value is ReaderNoteColor {
   return typeof value === "string" && NOTE_COLORS.includes(value as ReaderNoteColor);
 }
@@ -151,10 +173,35 @@ function createId() {
   return "note-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
+function resolveProvider(): ReaderStorageProvider {
+  if (!activeProvider) {
+    activeProvider = providerFactory ? providerFactory() : new BrowserLocalReaderStorageProvider();
+  }
+  return activeProvider;
+}
+
 export function createBrowserNoteStore(): NoteStore {
   return new BrowserLocalNoteStore();
 }
 
 export function createBrowserPositionStore(): PositionStore {
   return new BrowserLocalPositionStore();
+}
+
+export function createNoteStore(): NoteStore {
+  return resolveProvider().createNoteStore();
+}
+
+export function createPositionStore(): PositionStore {
+  return resolveProvider().createPositionStore();
+}
+
+export function registerReaderStorageProviderFactory(factory: ReaderStorageProviderFactory) {
+  providerFactory = factory;
+  activeProvider = null;
+}
+
+export function resetReaderStorageProviderFactory() {
+  providerFactory = null;
+  activeProvider = null;
 }

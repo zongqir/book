@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "build:page-content": "python3 ../scripts/export_site_page_content.py"
   },
   "dependencies": {
     "astro": "^5.13.5",

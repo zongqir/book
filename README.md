@@ -139,12 +139,13 @@ NotebookLM 的角色和专题工作流说明见：
 - 研究按专题推进，不把所有问题都塞进同一个目录。
 - 同一份资料可以服务多个专题，不必强求只归属一个问题。
 
-## Hugo 展示层
+## Astro 展示层
 
-当前博客已经改为直接在 `site/` 下维护内容：
+当前站点已经完全切到 Astro：
 
-- 资料库层：仓库根目录（长期分类、专题研究、原始资料）
-- 站点层：`site/`（Hugo 主题、模板、样式和实际发布内容）
+- 内容源：`site/content/library/`
+- 静态资源：`site/static/`
+- 展示层：`astro-site/`
 
 本地预览命令：
 
@@ -152,6 +153,8 @@ NotebookLM 的角色和专题工作流说明见：
 ./scripts/start-site.ps1
 ```
 
-这个命令会直接启动 Hugo 本地站点，内容以 `site/content/` 为准。
+这个命令会启动 Astro 开发服务器；正式构建可运行：
 
-`./scripts/sync-to-site.ps1` 已废弃，只保留兼容提示，不再承担实际同步职责。
+```bash
+python scripts/check-astro-build.py
+```

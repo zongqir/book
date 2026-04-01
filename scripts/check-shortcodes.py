@@ -36,7 +36,7 @@ class Finding:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Check markdown files for Hugo shortcode formatting issues."
+        description="Check markdown files for shortcode formatting issues."
     )
     parser.add_argument(
         "--root",
@@ -97,7 +97,7 @@ def audit_file(path: Path) -> list[Finding]:
                     Finding(
                         path,
                         line_no,
-                        "commented shortcode marker found; Hugo will not render it as a shortcode",
+                        "commented shortcode marker found; the site will not render it as a shortcode",
                         snippet,
                     )
                 )

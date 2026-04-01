@@ -1,8 +1,7 @@
-const CACHE_NAME = "book-site-v1";
+const CACHE_NAME = "book-site-v2";
 const CORE_ASSETS = [
   "/",
   "/library/",
-  "/css/main.css",
   "/favicon.svg",
   "/manifest.webmanifest",
   "/data/site-content.json",
@@ -40,7 +39,7 @@ self.addEventListener("fetch", (event) => {
 
   const isDocument = event.request.mode === "navigate";
   const isStaticAsset =
-    url.pathname.startsWith("/css/") ||
+    url.pathname.startsWith("/_astro/") ||
     url.pathname.startsWith("/data/") ||
     url.pathname === "/favicon.svg" ||
     url.pathname === "/manifest.webmanifest";

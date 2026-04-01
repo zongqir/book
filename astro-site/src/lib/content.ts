@@ -75,6 +75,29 @@ export type QuoteSummary = {
   url: string;
 };
 
+export type RelatedBook = {
+  book: BookSummary;
+  shared_tags: string[];
+};
+
+export type RelatedPage = {
+  page: PageSummary;
+  book: BookSummary | undefined;
+  shared_tags: string[];
+};
+
+export type DiscoverData = {
+  counts: {
+    sections: number;
+    books: number;
+    pages: number;
+    quotes: number;
+  };
+  sections: SectionSummary[];
+  slots: string[];
+  tags: { tag: string; count: number }[];
+};
+
 export type PageNode =
   | {
       kind: "section";
@@ -89,6 +112,7 @@ export type PageNode =
       url: string;
       book: BookSummary;
       pages: PageSummary[];
+      relatedBooks: RelatedBook[];
     }
   | {
       kind: "page";
@@ -102,9 +126,13 @@ export type PageNode =
       siblingPages: PageSummary[];
       previousPage: PageSummary | null;
       nextPage: PageSummary | null;
+      relatedPages: RelatedPage[];
+      relatedBooks: RelatedBook[];
     };
 
 let cachedIndex: SiteIndex | null = null;
+
+const HIDDEN_SECTION_KEYS = new Set(["02_专业技术"]);
 
 export function loadSiteIndex(): SiteIndex {
   if (cachedIndex) return cachedIndex;
@@ -115,19 +143,53 @@ export function loadSiteIndex(): SiteIndex {
 
 export function getHomeData() {
   const index = loadSiteIndex();
-  const sections = index.sections.filter((item) => item.key !== "02_专业技术");
-  const books = index.books.filter((item) => item.section_key !== "02_专业技术");
+  const sections = index.sections.filter((item) => !HIDDEN_SECTION_KEYS.has(item.key));
+  const books = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
   const quotes = index.quotes;
   return {
     counts: {
       sections: sections.length,
       books: books.length,
-      pages: index.pages.filter((item) => item.section_key !== "02_专业技术").length,
+      pages: index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key)).length,
       quotes: quotes.length,
     },
     sections,
     books,
     quotes,
+  };
+}
+
+export function getDiscoverData(): DiscoverData {
+  const index = loadSiteIndex();
+  const sections = index.sections.filter((item) => !HIDDEN_SECTION_KEYS.has(item.key));
+  const books = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const pages = index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const tagCounts = new Map<string, number>();
+
+  for (const item of [...books, ...pages]) {
+    for (const tag of uniqueTags(item.tags)) {
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
+  }
+
+  const tags = [...tagCounts.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "zh-CN"));
+
+  const slots = [...new Set(pages.map((item) => item.slot).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, "zh-CN"),
+  );
+
+  return {
+    counts: {
+      sections: sections.length,
+      books: books.length,
+      pages: pages.length,
+      quotes: index.quotes.length,
+    },
+    sections,
+    slots,
+    tags,
   };
 }
 
@@ -169,14 +231,16 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
 
   const book = index.books.find((item) => item.id === joined);
   if (book) {
+    const pages = index.pages
+      .filter((page) => page.book_id === book.id)
+      .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
     return {
       kind: "book",
       title: book.title,
       url: book.url,
       book,
-      pages: index.pages
-        .filter((page) => page.book_id === book.id)
-        .sort((a, b) => a.url.localeCompare(b.url, "zh-CN")),
+      pages,
+      relatedBooks: getRelatedBooks(index, book, 4),
     };
   }
 
@@ -195,6 +259,8 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     .filter((item) => item.book_id === page.book_id)
     .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
   const pageIndex = siblingPages.findIndex((item) => item.id === page.id);
+  const parentBook = index.books.find((item) => item.id === page.book_id);
+  const sectionForPage = index.sections.find((item) => item.key === page.section_key);
   return {
     kind: "page",
     title: page.title,
@@ -202,12 +268,64 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     page,
     html,
     headings,
-    book: index.books.find((item) => item.id === page.book_id),
-    section: index.sections.find((item) => item.key === page.section_key),
+    book: parentBook,
+    section: sectionForPage,
     siblingPages,
     previousPage: pageIndex > 0 ? siblingPages[pageIndex - 1] : null,
     nextPage: pageIndex >= 0 && pageIndex < siblingPages.length - 1 ? siblingPages[pageIndex + 1] : null,
+    relatedPages: getRelatedPages(index, page, 4),
+    relatedBooks: parentBook ? getRelatedBooks(index, parentBook, 3) : [],
   };
+}
+
+function getRelatedBooks(index: SiteIndex, currentBook: BookSummary, limit: number): RelatedBook[] {
+  return index.books
+    .filter((item) => item.id !== currentBook.id && item.section_key === currentBook.section_key)
+    .map((book) => {
+      const sharedTags = getSharedTags(currentBook.tags, book.tags);
+      return {
+        book,
+        shared_tags: sharedTags,
+        score: sharedTags.length * 10 + Math.min(book.page_count, 8),
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        b.book.page_count - a.book.page_count ||
+        a.book.title.localeCompare(b.book.title, "zh-CN"),
+    )
+    .slice(0, limit)
+    .map(({ book, shared_tags }) => ({ book, shared_tags }));
+}
+
+function getRelatedPages(index: SiteIndex, currentPage: PageSummary, limit: number): RelatedPage[] {
+  return index.pages
+    .filter((item) => item.id !== currentPage.id && item.book_id !== currentPage.book_id)
+    .map((page) => {
+      const sharedTags = getSharedTags(currentPage.tags, page.tags);
+      const sameSection = page.section_key === currentPage.section_key ? 1 : 0;
+      const sameSlot = page.slot === currentPage.slot ? 1 : 0;
+      return {
+        page,
+        book: index.books.find((item) => item.id === page.book_id),
+        shared_tags: sharedTags,
+        score: sameSection * 18 + sameSlot * 14 + sharedTags.length * 6,
+      };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.page.title.localeCompare(b.page.title, "zh-CN"))
+    .slice(0, limit)
+    .map(({ page, book, shared_tags }) => ({ page, book, shared_tags }));
+}
+
+function getSharedTags(left: string[], right: string[]): string[] {
+  const rightSet = new Set(uniqueTags(right));
+  return uniqueTags(left).filter((tag) => rightSet.has(tag));
+}
+
+function uniqueTags(tags: string[]): string[] {
+  return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))];
 }
 
 function resolvePageFile(page: PageSummary): string {
@@ -266,10 +384,7 @@ function replaceSelfClosingShortcodes(
   name: string,
   render: (attrs: Record<string, string>, inner: string) => string,
 ): string {
-  const pattern = new RegExp(
-    String.raw`\{\{<\s*${escapeRegex(name)}\b([^>]*?)\/?>\}\}`,
-    "g",
-  );
+  const pattern = new RegExp(String.raw`\{\{<\s*${escapeRegex(name)}\b([^>]*?)\/?>\}\}`, "g");
   return input.replace(pattern, (match, attrsSource) => {
     if (match.includes(`/${name}`)) return match;
     return render(parseAttrs(attrsSource), "");
@@ -304,9 +419,7 @@ function renderCallout(attrs: Record<string, string>, inner: string): string {
     source: "来源提示",
   };
   const title = attrs.title ?? titleMap[type] ?? "提示";
-  const subtitle = attrs.subtitle
-    ? `<span class="callout-subtitle">${escapeHtml(attrs.subtitle)}</span>`
-    : "";
+  const subtitle = attrs.subtitle ? `<span class="callout-subtitle">${escapeHtml(attrs.subtitle)}</span>` : "";
   return `
 <aside class="callout callout-${escapeHtml(type)}">
   <div class="callout-head">
@@ -320,7 +433,10 @@ function renderCallout(attrs: Record<string, string>, inner: string): string {
 function renderSentence(attrs: Record<string, string>, inner: string): string {
   const quote = attrs.quote ?? "";
   const showNo = attrs.show_no === "true";
-  const no = showNo && attrs.no ? `<header class="sentence-card-head"><span class="sentence-card-no">${escapeHtml(attrs.no)}</span></header>` : "";
+  const no =
+    showNo && attrs.no
+      ? `<header class="sentence-card-head"><span class="sentence-card-no">${escapeHtml(attrs.no)}</span></header>`
+      : "";
   const quoteHtml = quote ? md.render(quote) : inner ? md.render(inner) : "";
   const body = quote && inner ? `<div class="sentence-card-body">${md.render(inner)}</div>` : "";
   return `

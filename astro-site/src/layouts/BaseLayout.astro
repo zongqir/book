@@ -6,6 +6,7 @@ type Props = {
   description?: string;
   isHome?: boolean;
   isLibrary?: boolean;
+  isDiscover?: boolean;
 };
 
 const {
@@ -13,6 +14,7 @@ const {
   description = "个人读书与研究资料库",
   isHome = false,
   isLibrary = false,
+  isDiscover = false,
 } = Astro.props;
 const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
 ---
@@ -35,7 +37,7 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
       rel="stylesheet"
     />
   </head>
-  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home"]}>
+  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home", isDiscover && "is-discover"]}>
     <div class="page-frame">
       <header class="site-header-wrap">
         <div class="site-header shell">
@@ -48,13 +50,14 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
           </div>
           <nav class="top-nav" aria-label="主导航">
             <a class:list={["nav-pill", isHome && "is-active"]} href="/">首页</a>
+            <a class:list={["nav-pill", isDiscover && "is-active"]} href="/discover/">发现</a>
+            <a class:list={["nav-pill", isLibrary && "is-active"]} href="/library/">目录</a>
             {isHome && (
               <>
                 <a class="nav-pill nav-pill--subtle" href="#home-tools">随机翻书</a>
                 <a class="nav-pill nav-pill--subtle" href="#home-categories">分类</a>
               </>
             )}
-            <a class:list={["nav-pill", isLibrary && "is-active"]} href="/library/">目录</a>
           </nav>
         </div>
       </header>
@@ -64,7 +67,7 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
     </main>
     <footer class="site-footer shell">
       <div class="site-footer-inner">
-        <p>书，判断，句子，案例。都留在这里。</p>
+        <p>书、判断、句子、案例，都留在这里。</p>
         <p class="site-footer-meta">{new Date().getFullYear()} · book.zongqir.com</p>
       </div>
     </footer>

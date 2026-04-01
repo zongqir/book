@@ -606,6 +606,168 @@ img { display: block; max-width: 100%; }
 .content-card,
 .toc-card,
 .meta-card { animation: rise-in 520ms ease both; }
+.discover-panel {
+  gap: 24px;
+}
+
+.discover-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(150px, 1fr)) minmax(140px, 0.8fr);
+  gap: 14px;
+}
+
+.field-control {
+  display: grid;
+  gap: 10px;
+}
+
+.field-control > span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.field-control input,
+.field-control select {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1px solid rgba(23, 48, 67, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font: inherit;
+}
+
+.field-control input:focus,
+.field-control select:focus {
+  outline: none;
+  border-color: rgba(29, 109, 116, 0.4);
+  box-shadow: 0 0 0 4px rgba(29, 109, 116, 0.08);
+}
+
+.field-control--wide {
+  grid-column: span 2;
+}
+
+.field-control--action {
+  align-content: end;
+}
+
+.discover-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-pill--button {
+  cursor: pointer;
+  gap: 8px;
+}
+
+.tag-pill--button span {
+  color: var(--text-faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+}
+
+.discover-summary {
+  color: var(--text-soft);
+}
+
+.discover-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.discover-result-card {
+  min-height: 250px;
+}
+
+.discover-empty {
+  display: grid;
+  gap: 10px;
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px dashed rgba(23, 48, 67, 0.18);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.discover-empty h3,
+.slot-link strong,
+.slot-link-subtitle {
+  margin: 0;
+}
+
+.slot-rail,
+.doc-book-rail {
+  display: grid;
+  gap: 12px;
+}
+
+.slot-rail {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 22px;
+}
+
+.doc-book-rail {
+  max-height: min(70vh, 720px);
+  overflow: auto;
+}
+
+.slot-link {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.slot-link:hover,
+.slot-link:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(23, 48, 67, 0.1);
+}
+
+.slot-link--current {
+  background: linear-gradient(160deg, rgba(23, 48, 67, 0.92), rgba(36, 75, 105, 0.9));
+  color: #f8f3ea;
+  box-shadow: 0 20px 34px rgba(23, 48, 67, 0.22);
+}
+
+.slot-link--current .slot-link-no,
+.slot-link--current .slot-link-subtitle {
+  color: rgba(248, 243, 234, 0.78);
+}
+
+.slot-link-no,
+.slot-link-subtitle {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.compact-stack {
+  gap: 20px;
+}
+
+.meta-chip--link {
+  cursor: pointer;
+}
+
+.meta-chip--link:hover,
+.meta-chip--link:focus-visible {
+  color: var(--navy);
+  border-color: rgba(23, 48, 67, 0.16);
+  background: rgba(255, 255, 255, 0.86);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-panel,
@@ -621,7 +783,8 @@ img { display: block; max-width: 100%; }
 @media (max-width: 1080px) {
   .home-stage-head,
   .hero-tools--stage,
-  .doc-grid { grid-template-columns: 1fr; }
+  .doc-grid,
+  .discover-controls { grid-template-columns: 1fr; }
   .doc-side { order: -1; }
   .toc-card,
   .meta-card { position: static; }
@@ -630,6 +793,7 @@ img { display: block; max-width: 100%; }
   .section-card,
   .library-index-card { grid-column: span 1; }
   .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field-control--wide { grid-column: span 1; }
 }
 @media (max-width: 760px) {
   :root { --container: min(100vw - 24px, 1180px); --radius-xl: 26px; }
@@ -664,6 +828,8 @@ img { display: block; max-width: 100%; }
   .home-sections,
   .library-sections,
   .memory-card-grid,
-  .page-nav { grid-template-columns: 1fr; }
+  .page-nav,
+  .slot-rail,
+  .discover-results { grid-template-columns: 1fr; }
   .quote-display { font-size: 1.6rem; }
 }

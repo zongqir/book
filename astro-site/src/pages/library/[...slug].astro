@@ -28,7 +28,7 @@ if (!node) {
             <span>/</span>
             <span>{node.title}</span>
           </nav>
-          <p class="hero-kicker">Section</p>
+          <p class="hero-kicker">分类页</p>
           <h1>{node.title}</h1>
           <div class="stats-strip">
             <div class="stat-block">
@@ -39,6 +39,9 @@ if (!node) {
               <span class="stat-label">文稿</span>
               <span class="stat-value">{node.section.page_count}</span>
             </div>
+          </div>
+          <div class="actions">
+            <a class="btn btn-ghost" href={`/discover/?section=${encodeURIComponent(node.section.key)}`}>只看这个分类</a>
           </div>
         </div>
       </section>
@@ -78,12 +81,22 @@ if (!node) {
             <span>/</span>
             <span>{node.title}</span>
           </nav>
-          <p class="hero-kicker">Book dossier</p>
+          <p class="hero-kicker">书目录</p>
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
           <div class="detail-line">
             <span class="meta-chip">{node.book.section_title}</span>
             <span class="meta-chip">{node.pages.length} 篇文稿</span>
+            {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
+          </div>
+          <div class="slot-rail">
+            {node.pages.map((page) => (
+              <a class="slot-link" href={page.url}>
+                <span class="slot-link-no">{page.slot}</span>
+                <strong>{page.title}</strong>
+                <span class="slot-link-subtitle">打开这篇文稿</span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -111,6 +124,40 @@ if (!node) {
           </article>
         ))}
       </section>
+
+      {node.relatedBooks.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">继续往下看</p>
+              <h2>这一类里还能接着读</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedBooks.map((item) => (
+              <article class="book-card">
+                <a href={item.book.url}>
+                  <div class="card-topline">
+                    <span class="section-index">{item.book.section_title}</span>
+                    <span class="preview-pill">{item.book.page_count} 篇文稿</span>
+                  </div>
+                  <h3>{item.book.title}</h3>
+                  {item.book.summary && <p>{item.book.summary}</p>}
+                  <div class="book-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>继续这类书</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )}
 
@@ -133,12 +180,19 @@ if (!node) {
               </>
             )}
           </nav>
+          <p class="hero-kicker">文稿页</p>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
           <div class="detail-line">
             {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
             {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
             {node.page.status && <span class="meta-chip">{node.page.status}</span>}
+            <a
+              class="meta-chip meta-chip--link"
+              href={`/discover/?section=${encodeURIComponent(node.page.section_key)}&slot=${encodeURIComponent(node.page.slot)}`}
+            >
+              同槽位继续看
+            </a>
           </div>
         </div>
       </section>
@@ -185,6 +239,24 @@ if (!node) {
             </div>
           )}
 
+          {node.book && node.siblingPages.length > 0 && (
+            <div class="meta-card">
+              <h3>继续这本书</h3>
+              <div class="doc-book-rail">
+                {node.siblingPages.map((item) => (
+                  <a
+                    class:list={["slot-link", item.id === node.page.id && "slot-link--current"]}
+                    href={item.url}
+                    aria-current={item.id === node.page.id ? "page" : undefined}
+                  >
+                    <span class="slot-link-no">{item.slot}</span>
+                    <strong>{item.title}</strong>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div class="meta-card">
             <h3>所在位置</h3>
             <div class="mini-grid">
@@ -195,6 +267,76 @@ if (!node) {
           </div>
         </aside>
       </div>
+
+      {node.relatedPages.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">往外延伸</p>
+              <h2>同槽位与同主题延伸</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedPages.map((item) => (
+              <article class="doc-card">
+                <a href={item.page.url}>
+                  <div class="card-topline">
+                    <span class="slot-badge">{item.page.slot}</span>
+                    <div class="meta-row">
+                      {item.book && <span class="meta-chip">{item.book.title}</span>}
+                    </div>
+                  </div>
+                  <h3>{item.page.title}</h3>
+                  {(item.page.summary || item.page.intent) && <p>{item.page.summary || item.page.intent}</p>}
+                  <div class="doc-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.page.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>打开延伸阅读</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {node.relatedBooks.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">留在这个书架</p>
+              <h2>同分类继续看</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedBooks.map((item) => (
+              <article class="book-card">
+                <a href={item.book.url}>
+                  <div class="card-topline">
+                    <span class="section-index">{item.book.section_title}</span>
+                    <span class="preview-pill">{item.book.page_count} 篇文稿</span>
+                  </div>
+                  <h3>{item.book.title}</h3>
+                  {item.book.summary && <p>{item.book.summary}</p>}
+                  <div class="book-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>继续这类书</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )}
 </BaseLayout>

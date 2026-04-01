@@ -20,103 +20,181 @@ if (!node) {
 
 <BaseLayout title={node.title} isLibrary={true}>
   {node.kind === "section" && (
-    <>
-      <section class="page-head">
-        <p class="eyebrow">目录</p>
-        <h1>{node.title}</h1>
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="page-intro">
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            <span>/</span>
+            <span>{node.title}</span>
+          </nav>
+          <p class="hero-kicker">Section</p>
+          <h1>{node.title}</h1>
+          <div class="stats-strip">
+            <div class="stat-block">
+              <span class="stat-label">书目</span>
+              <span class="stat-value">{node.books.length}</span>
+            </div>
+            <div class="stat-block">
+              <span class="stat-label">文稿</span>
+              <span class="stat-value">{node.section.page_count}</span>
+            </div>
+          </div>
+        </div>
       </section>
-      <section>
-        <h2>书目</h2>
-        <ul class="card-list">
-          {node.books.map((book) => (
-            <li class="card-item">
-              <a class="card-link" href={book.url}>
-                <span class="card-copy">
-                  <span class="card-title">{book.title}</span>
-                  {book.summary && <span class="card-summary">{book.summary}</span>}
-                  <span class="card-meta">{book.page_count} 篇文档</span>
-                </span>
-                <span class="arrow" aria-hidden="true">→</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+
+      <section class="section-shelf">
+        {node.books.map((book) => (
+          <article class="book-card">
+            <a href={book.url}>
+              <div class="card-topline">
+                <span class="section-index">{book.section_title}</span>
+                <span class="preview-pill">{book.page_count} 篇文稿</span>
+              </div>
+              <h3>{book.title}</h3>
+              {book.summary && <p>{book.summary}</p>}
+              <div class="book-card-footer">
+                {book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+              </div>
+              <div class="section-enter">
+                <span>进入这本书</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        ))}
       </section>
-    </>
+    </div>
   )}
 
   {node.kind === "book" && (
-    <>
-      <section class="page-head">
-        <p class="eyebrow">目录</p>
-        <h1>{node.title}</h1>
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="page-intro">
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            <span>/</span>
+            <a href={`/library/${node.book.section_key}/`}>{node.book.section_title}</a>
+            <span>/</span>
+            <span>{node.title}</span>
+          </nav>
+          <p class="hero-kicker">Book dossier</p>
+          <h1>{node.title}</h1>
+          {node.book.summary && <p>{node.book.summary}</p>}
+          <div class="detail-line">
+            <span class="meta-chip">{node.book.section_title}</span>
+            <span class="meta-chip">{node.pages.length} 篇文稿</span>
+          </div>
+        </div>
       </section>
-      <section class="book-compact-meta">
-        <p class="meta">共 {node.pages.length} 篇 · 按序号阅读 · 所属分类：{node.book.section_title}</p>
-      </section>
-      <section>
-        <h2>文章</h2>
-        <ul class="doc-list">
-          {node.pages.map((page) => (
-            <li>
-              <div class="doc-row-main">
-                <a class="doc-row-title" href={page.url}>{page.title}</a>
-                {page.summary && <p class="doc-row-summary">{page.summary}</p>}
+
+      <section class="book-shelf">
+        {node.pages.map((page) => (
+          <article class="doc-card">
+            <a href={page.url}>
+              <div class="card-topline">
+                <span class="slot-badge">{page.slot}</span>
+                <div class="meta-row">
+                  {page.evidence_status && <span class="meta-chip">{page.evidence_status}</span>}
+                </div>
               </div>
-            </li>
-          ))}
-        </ul>
+              <h3>{page.title}</h3>
+              {page.summary && <p>{page.summary}</p>}
+              <div class="doc-card-footer">
+                {page.tags.slice(0, 4).map((tag) => <span class="tag-pill">{tag}</span>)}
+              </div>
+              <div class="section-enter">
+                <span>打开文稿</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        ))}
       </section>
-    </>
+    </div>
   )}
 
   {node.kind === "page" && (
-    <div class="doc-layout">
-      <article class="doc doc-main">
-        <header>
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="doc-hero">
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a href="/library/">目录</a>
             {node.section && (
               <>
-                <span class="breadcrumb-sep">/</span>
+                <span>/</span>
                 <a href={node.section.url}>{node.section.title}</a>
               </>
             )}
             {node.book && (
               <>
-                <span class="breadcrumb-sep">/</span>
+                <span>/</span>
                 <a href={node.book.url}>{node.book.title}</a>
               </>
             )}
           </nav>
-          <div class="page-context">
-            <div class="page-meta-line">
-              {node.page.updated_at && <span class="meta">更新于 {node.page.updated_at.slice(0, 10)}</span>}
-              {node.book && (
-                <>
-                  <span class="page-meta-sep">·</span>
-                  <span class="meta">所属目录：<a href={node.book.url}>{node.book.title}</a></span>
-                </>
+          <h1 class="page-title">{node.page.title}</h1>
+          {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
+          <div class="detail-line">
+            {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
+            {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
+            {node.page.status && <span class="meta-chip">{node.page.status}</span>}
+          </div>
+        </div>
+      </section>
+
+      <div class="doc-grid">
+        <article class="content-card">
+          <section class="doc-content" set:html={node.html} />
+
+          {(node.previousPage || node.nextPage) && (
+            <nav class="page-nav" aria-label="继续阅读">
+              {node.previousPage ? (
+                <a class="page-nav-card" href={node.previousPage.url}>
+                  <span class="page-nav-label">上一页</span>
+                  <strong>{node.previousPage.title}</strong>
+                </a>
+              ) : (
+                <div class="page-nav-card page-nav-card--empty" aria-hidden="true"></div>
               )}
+              {node.nextPage ? (
+                <a class="page-nav-card" href={node.nextPage.url}>
+                  <span class="page-nav-label">下一页</span>
+                  <strong>{node.nextPage.title}</strong>
+                </a>
+              ) : (
+                <div class="page-nav-card page-nav-card--empty" aria-hidden="true"></div>
+              )}
+            </nav>
+          )}
+        </article>
+
+        <aside class="doc-side">
+          {node.headings.length > 0 && (
+            <div class="toc-card">
+              <h3 class="toc-title">本页目录</h3>
+              <ul class="toc-list">
+                {node.headings
+                  .filter((item) => item.level <= 2)
+                  .map((heading) => (
+                    <li>
+                      <a href={`#${heading.id}`}>{heading.title}</a>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+          <div class="meta-card">
+            <h3>所在位置</h3>
+            <div class="mini-grid">
+              {node.section && <a class="preview-item" href={node.section.url}>{node.section.title}</a>}
+              {node.book && <a class="preview-item" href={node.book.url}>{node.book.title}</a>}
+              <span class="preview-item preview-item--muted">本书共 {node.siblingPages.length} 篇文稿</span>
             </div>
           </div>
-        </header>
-        <section class="doc-content" set:html={node.html} />
-      </article>
-
-      {node.headings.length > 0 && (
-        <aside class="doc-side">
-          <details class="toc-panel" open>
-            <summary>
-              <span class="eyebrow">本页目录</span>
-              <span class="toc-toggle-icon" aria-hidden="true">+</span>
-            </summary>
-            <ul>
-              {node.headings.filter((item) => item.level <= 2).map((heading) => <li>{heading.title}</li>)}
-            </ul>
-          </details>
         </aside>
-      )}
+      </div>
     </div>
   )}
 </BaseLayout>

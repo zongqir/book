@@ -60,6 +60,12 @@ export type PageSummary = {
   url: string;
 };
 
+export type HeadingLink = {
+  level: number;
+  title: string;
+  id: string;
+};
+
 export type QuoteSummary = {
   id: string;
   page_id: string;
@@ -90,9 +96,12 @@ export type PageNode =
       url: string;
       page: PageSummary;
       html: string;
-      headings: { level: number; title: string }[];
+      headings: HeadingLink[];
       book: BookSummary | undefined;
       section: SectionSummary | undefined;
+      siblingPages: PageSummary[];
+      previousPage: PageSummary | null;
+      nextPage: PageSummary | null;
     };
 
 let cachedIndex: SiteIndex | null = null;
@@ -177,16 +186,27 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
   const filePath = resolvePageFile(page);
   const raw = fs.readFileSync(filePath, "utf-8");
   const parsed = matter(raw);
-  const html = renderMarkdown(parsed.content);
+  const headings = page.headings.map((item, index) => ({
+    ...item,
+    id: `section-${index + 1}`,
+  }));
+  const html = addHeadingIds(renderMarkdown(parsed.content), headings);
+  const siblingPages = index.pages
+    .filter((item) => item.book_id === page.book_id)
+    .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
+  const pageIndex = siblingPages.findIndex((item) => item.id === page.id);
   return {
     kind: "page",
     title: page.title,
     url: page.url,
     page,
     html,
-    headings: page.headings,
+    headings,
     book: index.books.find((item) => item.id === page.book_id),
     section: index.sections.find((item) => item.key === page.section_key),
+    siblingPages,
+    previousPage: pageIndex > 0 ? siblingPages[pageIndex - 1] : null,
+    nextPage: pageIndex >= 0 && pageIndex < siblingPages.length - 1 ? siblingPages[pageIndex + 1] : null,
   };
 }
 
@@ -206,6 +226,17 @@ function resolvePageFile(page: PageSummary): string {
 function renderMarkdown(markdown: string): string {
   const transformed = transformShortcodes(markdown);
   return md.render(transformed);
+}
+
+function addHeadingIds(html: string, headings: HeadingLink[]): string {
+  if (!headings.length) return html;
+  let cursor = 0;
+  return html.replace(/<h([1-6])>([\s\S]*?)<\/h\1>/g, (match, level) => {
+    const current = headings[cursor];
+    if (!current || Number(level) !== current.level) return match;
+    cursor += 1;
+    return `<h${level} id="${current.id}">${current.title}</h${level}>`;
+  });
 }
 
 function transformShortcodes(markdown: string): string {

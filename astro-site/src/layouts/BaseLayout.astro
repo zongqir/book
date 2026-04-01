@@ -1,4 +1,6 @@
 ---
+import "../styles/astro-theme.css";
+
 type Props = {
   title?: string;
   description?: string;
@@ -32,14 +34,14 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/main.css" />
   </head>
-  <body class:list={[isLibrary && "is-library"]}>
+  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home"]}>
     <div class="page-frame">
       <header class="site-header-wrap">
         <div class="site-header shell">
           <div class="identity">
             <a class="brand" href="/">
+              <span class="brand-mark" aria-hidden="true">BQ</span>
               <span>读书库</span>
             </a>
             <span class="tagline">个人读书与研究资料库</span>
@@ -57,12 +59,14 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
         </div>
       </header>
     </div>
-    <main class="container shell">
+    <main class="site-main shell">
       <slot />
     </main>
     <footer class="site-footer shell">
-      <p>Book Lab 用来沉淀阅读判断、专题研究和结构化笔记。</p>
-      <p class="site-footer-meta">{new Date().getFullYear()} · 个人读书与研究资料库</p>
+      <div class="site-footer-inner">
+        <p>书，判断，句子，案例。都留在这里。</p>
+        <p class="site-footer-meta">{new Date().getFullYear()} · book.zongqir.com</p>
+      </div>
     </footer>
     <script is:inline>
       if ("serviceWorker" in navigator) {

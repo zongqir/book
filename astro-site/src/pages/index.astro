@@ -2,104 +2,167 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData } from "../lib/content";
 
-const { books, quotes, sections } = getHomeData();
+const { books, counts, quotes, sections } = getHomeData();
 const firstBook = books[0];
 const firstQuote = quotes[0];
+const sectionPreviewMap = Object.fromEntries(
+  sections.map((section) => [
+    section.key,
+    books
+      .filter((book) => book.section_key === section.key)
+      .slice(0, 3)
+      .map((book) => ({ title: book.title, url: book.url })),
+  ]),
+);
 ---
 
 <BaseLayout isHome={true} isLibrary={false}>
-  <section class="home-section home-tools-section" id="home-tools">
-    <div class="section-head section-head--home">
-      <p class="eyebrow">随机浏览</p>
-      <h1>随机看看</h1>
-    </div>
+  <div class="page-stack">
+    <section class="home-hero" id="home-tools">
+      <article class="hero-panel">
+        <div class="hero-copy">
+          <div>
+            <p class="hero-kicker">Reading archive</p>
+            <h1>先随机翻一本到。<br />再决定今天往哪走。</h1>
+            <p class="hero-lead">
+              入口就两个。抽一本到书，或者抽一句话。剩下的按分类进去。
+            </p>
+          </div>
 
-    <div class="home-tools">
-      <article class="home-tool-card home-tool-card--book" data-book-dice>
-        <header class="home-tool-head">
-          <p class="eyebrow">筛子轮播</p>
-          <h2>随机挑一本书目录</h2>
-        </header>
-        {firstBook ? (
-          <>
-            <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
-              <p class="book-dice-meta">
-                <span id="book-dice-index">01</span>
-                <span>/</span>
-                <span id="book-dice-total">{String(books.length).padStart(2, "0")}</span>
-                <span class="book-dice-dot">·</span>
-                <span id="book-dice-category">{firstBook.section_title}</span>
-              </p>
-              <h3 id="book-dice-title">{firstBook.title}</h3>
-              <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
-              <div class="book-dice-tags" id="book-dice-tags">
-                {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
-              </div>
-              <p class="book-dice-count" id="book-dice-count">{firstBook.page_count} 篇文稿</p>
+          <div class="hero-stats">
+            <div class="stat-block">
+              <span class="stat-label">分类</span>
+              <span class="stat-value">{counts.sections}</span>
             </div>
-            <div class="actions book-dice-actions">
-              <button class="btn btn-ghost" type="button" id="book-dice-shuffle">掷一下</button>
-              <a class="btn" id="book-dice-open" href={firstBook.url}>打开当前目录</a>
+            <div class="stat-block">
+              <span class="stat-label">书目</span>
+              <span class="stat-value">{counts.books}</span>
             </div>
-          </>
-        ) : (
-          <p class="tool-empty">现在还没有可随机的书目录。</p>
-        )}
+            <div class="stat-block">
+              <span class="stat-label">文稿</span>
+              <span class="stat-value">{counts.pages}</span>
+            </div>
+            <div class="stat-block">
+              <span class="stat-label">句子卡</span>
+              <span class="stat-value">{counts.quotes}</span>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <a class="btn" href="#book-dice-card">现在开翻</a>
+            <a class="btn btn-ghost" href="/library/">全部目录</a>
+          </div>
+
+          <div class="hero-links">
+            <a class="hero-link-pill" href="#book-dice-card">随机一本到</a>
+            <a class="hero-link-pill" href="#random-quote-card">随机一句话</a>
+            <a class="hero-link-pill" href="#home-categories">分类入口</a>
+          </div>
+        </div>
       </article>
 
-      <article class="home-tool-card home-tool-card--quote" data-random-quote>
-        <header class="home-tool-head">
-          <p class="eyebrow">随机句子</p>
-          <h2>从博客句子卡抽一句</h2>
-        </header>
-        {firstQuote ? (
-          <>
-            <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
-              <p class="random-quote-text" id="random-quote-text">“{firstQuote.quote}”</p>
-              <p class="random-quote-source">
-                <span id="random-quote-book">{firstQuote.book_title}</span>
-                <a id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-              </p>
-            </div>
-            <div class="actions random-quote-actions">
-              <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
-            </div>
-          </>
-        ) : (
-          <p class="tool-empty">暂时还没有句子卡可抽。</p>
-        )}
-      </article>
-    </div>
-  </section>
-
-  <section class="home-section home-categories" id="home-categories">
-    <div class="section-head">
-      <p class="eyebrow">分类浏览</p>
-      <h2>按分类看</h2>
-    </div>
-    <div class="category-grid">
-      {sections.map((section) => (
-        <article class="category-card">
-          <a class="category-link" href={section.url}>
-            <div class="category-card-top">
-              <span class="category-index">{section.key.slice(0, 2)}</span>
-              <div class="category-stats">
-                <span>{section.book_count} 本书</span>
-                <span>{section.page_count} 篇文稿</span>
+      <aside class="hero-panel">
+        <div class="hero-tools">
+          <article class="hero-tool-card" data-book-dice>
+            <header class="hero-tool-head">
+              <div>
+                <p class="eyebrow">随机书目</p>
+                <h2>先看一本</h2>
               </div>
-            </div>
-            <div class="category-copy">
-              <h3>{section.title}</h3>
-            </div>
-            <div class="category-card-foot">
-              <span>进入分类</span>
-              <span class="arrow">→</span>
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
-  </section>
+            </header>
+            {firstBook ? (
+              <>
+                <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
+                  <p class="book-dice-meta">
+                    <span id="book-dice-index">01</span>
+                    <span>/</span>
+                    <span id="book-dice-total">{String(books.length).padStart(2, "0")}</span>
+                    <span class="book-dice-dot">·</span>
+                    <span id="book-dice-category">{firstBook.section_title}</span>
+                  </p>
+                  <h3 id="book-dice-title">{firstBook.title}</h3>
+                  <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
+                  <div class="book-dice-tags" id="book-dice-tags">
+                    {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
+                  </div>
+                  <p class="book-dice-count" id="book-dice-count">{firstBook.page_count} 篇文稿</p>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-ghost" type="button" id="book-dice-shuffle">换一本</button>
+                  <a class="btn" id="book-dice-open" href={firstBook.url}>打开目录</a>
+                </div>
+              </>
+            ) : (
+              <p class="tool-empty">现在还没有可随机的书目录。</p>
+            )}
+          </article>
+
+          <article class="hero-tool-card" data-random-quote>
+            <header class="hero-tool-head">
+              <div>
+                <p class="eyebrow">随机句子</p>
+                <h2>再读一句</h2>
+              </div>
+            </header>
+            {firstQuote ? (
+              <>
+                <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
+                  <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
+                  <p class="random-quote-source">
+                    <span id="random-quote-book">{firstQuote.book_title}</span>
+                    <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+                  </p>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
+                </div>
+              </>
+            ) : (
+              <p class="tool-empty">暂时还没有句子卡可抽。</p>
+            )}
+          </article>
+        </div>
+      </aside>
+    </section>
+
+    <section id="home-categories">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Library map</p>
+          <h2>从这几条线往里走</h2>
+        </div>
+      </div>
+
+      <div class="home-sections">
+        {sections.map((section) => (
+          <article class="section-card">
+            <a href={section.url}>
+              <div class="section-top">
+                <span class="section-index">{section.key.slice(0, 2)}</span>
+                <span class="preview-pill">{section.book_count} 本书</span>
+              </div>
+              <div>
+                <h3>{section.title}</h3>
+                <p class="section-volume">
+                  <strong>{section.page_count}</strong>
+                  <span>篇文稿</span>
+                </p>
+                <div class="section-preview">
+                  {(sectionPreviewMap[section.key] ?? []).map((book) => (
+                    <span class="preview-pill">{book.title}</span>
+                  ))}
+                </div>
+              </div>
+              <div class="section-enter">
+                <span>进入分类</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
 
   <script is:inline>
     (function () {
@@ -175,7 +238,6 @@ const firstQuote = quotes[0];
       var quoteBook = document.getElementById("random-quote-book");
       var quoteLink = document.getElementById("random-quote-link");
       var quoteShuffle = document.getElementById("random-quote-shuffle");
-      var quoteCard = document.getElementById("random-quote-card");
       var currentQuote = 0;
 
       function renderQuote(index) {

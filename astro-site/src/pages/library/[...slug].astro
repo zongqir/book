@@ -187,6 +187,21 @@ if (!node) {
 
       <div class="doc-grid">
         <article class="content-card">
+          {node.headings.length > 0 && (
+            <details class="toc-card toc-card--mobile">
+              <summary class="toc-summary">本页目录</summary>
+              <ul class="toc-list">
+                {node.headings
+                  .filter((item) => item.level <= 2)
+                  .map((heading) => (
+                    <li>
+                      <a href={`#${heading.id}`}>{heading.title}</a>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
+
           <section class="doc-content" set:html={node.html} />
 
           {(node.previousPage || node.nextPage) && (
@@ -213,7 +228,7 @@ if (!node) {
 
         <aside class="doc-side">
           {node.headings.length > 0 && (
-            <div class="toc-card">
+            <div class="toc-card toc-card--desktop">
               <h3 class="toc-title">本页目录</h3>
               <ul class="toc-list">
                 {node.headings
@@ -228,7 +243,7 @@ if (!node) {
           )}
 
           {node.book && node.siblingPages.length > 0 && (
-            <div class="meta-card">
+            <div class="meta-card meta-card--book-rail">
               <h3>继续这本书</h3>
               <div class="doc-book-rail">
                 {node.siblingPages.map((item) => (

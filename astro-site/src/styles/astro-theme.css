@@ -536,6 +536,24 @@ img { display: block; max-width: 100%; }
 .meta-card { top: 300px; }
 .toc-title,
 .meta-card h3 { margin: 0 0 14px; font-family: "Noto Serif SC", serif; font-size: 1.15rem; }
+.toc-card--mobile { display: none; }
+.toc-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  list-style: none;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.02rem;
+}
+.toc-summary::-webkit-details-marker { display: none; }
+.toc-summary::after {
+  content: "+";
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--text-faint);
+}
+.toc-card--mobile[open] .toc-summary::after { content: "-"; }
+.toc-card--mobile .toc-list { margin-top: 12px; }
 .toc-list { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
 .toc-list a {
   display: block;
@@ -844,15 +862,25 @@ img { display: block; max-width: 100%; }
 @media (max-width: 760px) {
   :root { --container: min(100vw - 24px, 1180px); --radius-xl: 26px; }
   .page-frame { position: static; padding-top: 12px; }
-  .site-header,
-  .site-footer-inner,
-  .identity,
-  .top-nav { flex-direction: column; align-items: flex-start; }
-  .site-header,
-  .site-footer-inner { border-radius: 28px; }
+  .site-header { align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 24px; }
+  .site-footer-inner { flex-direction: column; align-items: flex-start; border-radius: 28px; }
+  .identity { flex-direction: row; align-items: center; }
   .tagline { white-space: normal; }
-  .top-nav { width: 100%; }
-  .nav-pill { width: 100%; justify-content: flex-start; }
+  .top-nav {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .nav-pill {
+    width: auto;
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+  .nav-pill--subtle { display: none; }
   .site-main { padding-top: 18px; }
   .home-stage,
   .library-hero,
@@ -897,6 +925,14 @@ img { display: block; max-width: 100%; }
   .section-card .section-enter { margin-top: 6px; padding-top: 0; }
   .doc-grid { gap: 14px; }
   .doc-side { order: 1; gap: 12px; }
+  .toc-card--mobile {
+    display: block;
+    margin-bottom: 2px;
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+  .toc-card--desktop,
+  .meta-card--book-rail { display: none; }
   .toc-card,
   .meta-card {
     padding: 16px;

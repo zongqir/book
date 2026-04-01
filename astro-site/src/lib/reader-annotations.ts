@@ -393,7 +393,7 @@ export function setupReaderAnnotations() {
       setActivePickTarget(null);
     }
     mobilePickToggle.hidden = !shouldShow;
-    mobilePickToggle.textContent = mobilePickMode ? "点一段正文" : "划线模式";
+    mobilePickToggle.textContent = mobilePickMode ? "点正文以划线" : "点段落划线";
     mobilePickToggle.classList.toggle("is-active", mobilePickMode && shouldShow);
     root.classList.toggle("reader-mobile-pick-root", mobilePickMode && shouldShow);
   }
@@ -624,7 +624,7 @@ export function setupReaderAnnotations() {
     setActivePickTarget(null);
     if (mobilePickMode) {
       clearNativeSelection();
-      setStatus("已进入划线模式。点一段正文，再决定划线还是记笔记。");
+      setStatus("已进入划线模式：点一段正文，再选划线或记笔记。");
     } else {
       setStatus("");
     }
@@ -725,7 +725,7 @@ export function setupReaderAnnotations() {
           const selection = captureBlockSelection(block);
           if (!selection) {
             setActivePickTarget(null);
-            setStatus("这一段已经划过，换一段试试。");
+            setStatus("这一段已经划过了，换一段试试。");
             return;
           }
           setActivePickTarget(block);

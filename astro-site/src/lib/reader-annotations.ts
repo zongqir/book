@@ -55,6 +55,8 @@ const STORAGE_KEY = "book-reader-annotations:v1";
 const CONTEXT_WINDOW = 48;
 const HIGHLIGHT_CLASS = "reader-highlight";
 const ACTIVE_CLASS = "is-active";
+const MOBILE_BREAKPOINT = 760;
+const MOBILE_HIDE_DELAY_MS = 260;
 
 class LocalAnnotationStore implements AnnotationStore {
   private load(): StorePayload {
@@ -350,13 +352,32 @@ export function setupReaderAnnotations() {
   let pendingSelection: PendingSelection | null = null;
   let editingId: string | null = null;
   let activeId: string | null = null;
+  let hideToolbarTimer = 0;
 
   function setStatus(message: string) {
     status.textContent = message;
     status.hidden = !message;
   }
 
+  function isMobileSelectionUI() {
+    return window.innerWidth <= MOBILE_BREAKPOINT || window.matchMedia("(pointer: coarse)").matches;
+  }
+
+  function clearHideToolbarTimer() {
+    if (!hideToolbarTimer) return;
+    window.clearTimeout(hideToolbarTimer);
+    hideToolbarTimer = 0;
+  }
+
   function setToolbarPosition(rect: DOMRect) {
+    if (isMobileSelectionUI()) {
+      toolbar.classList.add("reader-toolbar--docked");
+      toolbar.style.removeProperty("left");
+      toolbar.style.removeProperty("top");
+      return;
+    }
+
+    toolbar.classList.remove("reader-toolbar--docked");
     const left = Math.min(window.innerWidth - 180, Math.max(12, rect.left + rect.width / 2 - 78));
     const top = Math.max(12, rect.top + window.scrollY - 52);
     toolbar.style.left = left + "px";
@@ -364,11 +385,23 @@ export function setupReaderAnnotations() {
   }
 
   function hideToolbar() {
+    clearHideToolbarTimer();
     toolbar.hidden = true;
+    toolbar.classList.remove("reader-toolbar--docked");
+    toolbar.style.removeProperty("left");
+    toolbar.style.removeProperty("top");
     pendingSelection = null;
   }
 
+  function scheduleToolbarHide() {
+    clearHideToolbarTimer();
+    hideToolbarTimer = window.setTimeout(() => {
+      hideToolbar();
+    }, MOBILE_HIDE_DELAY_MS);
+  }
+
   function openToolbar(selection: PendingSelection) {
+    clearHideToolbarTimer();
     pendingSelection = selection;
     toolbar.hidden = false;
     setToolbarPosition(selection.rect);
@@ -512,6 +545,7 @@ export function setupReaderAnnotations() {
     if (!editor.hidden) return;
     const nextSelection = captureSelection();
     if (!nextSelection) {
+      if (isMobileSelectionUI() && pendingSelection && !toolbar.hidden) return;
       hideToolbar();
       return;
     }
@@ -552,7 +586,12 @@ export function setupReaderAnnotations() {
   document.addEventListener("selectionchange", () => {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) {
-      if (editor.hidden) hideToolbar();
+      if (!editor.hidden) return;
+      if (isMobileSelectionUI() && pendingSelection && !toolbar.hidden) {
+        scheduleToolbarHide();
+        return;
+      }
+      hideToolbar();
     }
   });
 
@@ -562,6 +601,15 @@ export function setupReaderAnnotations() {
 
   document.addEventListener("touchend", () => {
     window.setTimeout(syncSelectionToolbar, 20);
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (toolbar.contains(target) || editor.contains(target)) return;
+    if (pendingSelection && !toolbar.hidden) {
+      hideToolbar();
+    }
   });
 
   list.addEventListener("click", (event) => {
@@ -610,6 +658,11 @@ export function setupReaderAnnotations() {
   window.addEventListener("storage", (event) => {
     if (event.key !== STORAGE_KEY) return;
     refresh();
+  });
+
+  window.addEventListener("resize", () => {
+    if (!pendingSelection || toolbar.hidden) return;
+    setToolbarPosition(pendingSelection.rect);
   });
 
   refresh();

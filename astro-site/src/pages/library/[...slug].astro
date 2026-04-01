@@ -29,15 +29,6 @@ if (!node) {
             <span>{node.title}</span>
           </nav>
           <h1>{node.title}</h1>
-          <div class="stats-strip">
-            <div class="stat-block">
-              <span class="stat-label">书目</span>
-              <span class="stat-value">{node.books.length}</span>
-            </div>
-          </div>
-          <div class="actions">
-            <a class="btn btn-ghost" href={`/discover/?section=${encodeURIComponent(node.section.key)}`}>只看这个分类</a>
-          </div>
         </div>
       </section>
 

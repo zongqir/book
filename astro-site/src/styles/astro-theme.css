@@ -862,7 +862,8 @@ img { display: block; max-width: 100%; }
   .book-card,
   .doc-card,
   .toc-card,
-  .meta-card { padding-left: 20px; padding-right: 20px; }
+  .meta-card,
+  .hero-tool-card { padding-left: 20px; padding-right: 20px; }
   .section-card a,
   .library-index-card a { padding-left: 20px; padding-right: 20px; }
   .home-stage h1,
@@ -876,5 +877,25 @@ img { display: block; max-width: 100%; }
   .page-nav,
   .slot-rail,
   .discover-results { grid-template-columns: 1fr; }
-  .quote-display { font-size: 1.6rem; }
+  .hero-tools--stage,
+  .hero-tools { gap: 14px; }
+  .hero-tool-head,
+  .actions,
+  .random-quote-source { flex-direction: column; align-items: flex-start; }
+  .hero-tool-head { gap: 10px; margin-bottom: 14px; }
+  .book-dice-card,
+  .random-quote-card { padding: 18px; gap: 12px; }
+  .hero-tool-card--primary .book-dice-card { min-height: 0; }
+  .book-dice-card h3 { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+  .quote-display { font-size: 1.45rem; line-height: 1.5; }
+  .book-dice-tags,
+  .section-preview { gap: 6px; }
+  .section-preview { margin-top: 12px; }
+  .section-card,
+  .library-index-card { min-height: auto; }
+  .section-card a { gap: 10px; }
+  .section-card .section-enter { margin-top: 6px; padding-top: 0; }
+  .btn,
+  .btn-ghost,
+  .tool-switch { width: 100%; }
 }

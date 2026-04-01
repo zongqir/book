@@ -21,7 +21,6 @@ const sectionPreviewMap = Object.fromEntries(
     <section class="hero-panel home-stage" id="home-tools">
       <div class="home-stage-head">
         <div>
-          <p class="hero-kicker">Reading archive</p>
           <h1>随机翻一本到</h1>
         </div>
 
@@ -35,11 +34,7 @@ const sectionPreviewMap = Object.fromEntries(
             <span class="stat-value">{counts.books}</span>
           </div>
           <div class="stat-block">
-            <span class="stat-label">文稿</span>
-            <span class="stat-value">{counts.pages}</span>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">句子卡</span>
+            <span class="stat-label">摘句</span>
             <span class="stat-value">{counts.quotes}</span>
           </div>
         </div>
@@ -47,70 +42,66 @@ const sectionPreviewMap = Object.fromEntries(
 
       <div class="hero-tools hero-tools--stage">
         <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
-            <header class="hero-tool-head">
-              <div>
-                <p class="eyebrow">随机书目</p>
-                <h2>先看一本</h2>
+          <header class="hero-tool-head">
+            <div>
+              <h2>先看一本</h2>
+            </div>
+          </header>
+          {firstBook ? (
+            <>
+              <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
+                <p class="book-dice-meta">
+                  <span id="book-dice-index">01</span>
+                  <span>/</span>
+                  <span id="book-dice-total">{String(books.length).padStart(2, "0")}</span>
+                  <span class="book-dice-dot">·</span>
+                  <span id="book-dice-category">{firstBook.section_title}</span>
+                </p>
+                <h3 id="book-dice-title">{firstBook.title}</h3>
+                <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
+                <div class="book-dice-tags" id="book-dice-tags">
+                  {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
+                </div>
               </div>
-            </header>
-            {firstBook ? (
-              <>
-                <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
-                  <p class="book-dice-meta">
-                    <span id="book-dice-index">01</span>
-                    <span>/</span>
-                    <span id="book-dice-total">{String(books.length).padStart(2, "0")}</span>
-                    <span class="book-dice-dot">·</span>
-                    <span id="book-dice-category">{firstBook.section_title}</span>
-                  </p>
-                  <h3 id="book-dice-title">{firstBook.title}</h3>
-                  <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
-                  <div class="book-dice-tags" id="book-dice-tags">
-                    {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
-                  </div>
-                  <p class="book-dice-count" id="book-dice-count">{firstBook.page_count} 篇文稿</p>
-                </div>
-                <div class="actions">
-                  <button class="btn btn-ghost" type="button" id="book-dice-shuffle">换一本</button>
-                  <a class="btn" id="book-dice-open" href={firstBook.url}>打开目录</a>
-                </div>
-              </>
-            ) : (
-              <p class="tool-empty">现在还没有可随机的书目录。</p>
-            )}
-          </article>
+              <div class="actions">
+                <button class="btn btn-ghost" type="button" id="book-dice-shuffle">换一本</button>
+                <a class="btn" id="book-dice-open" href={firstBook.url}>打开目录</a>
+              </div>
+            </>
+          ) : (
+            <p class="tool-empty">现在还没有可随机的书。</p>
+          )}
+        </article>
 
         <article class="hero-tool-card" data-random-quote>
-            <header class="hero-tool-head">
-              <div>
-                <p class="eyebrow">随机句子</p>
-                <h2>再读一句</h2>
+          <header class="hero-tool-head">
+            <div>
+              <h2>再读一句</h2>
+            </div>
+          </header>
+          {firstQuote ? (
+            <>
+              <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
+                <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
+                <p class="random-quote-source">
+                  <span id="random-quote-book">{firstQuote.book_title}</span>
+                  <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+                </p>
               </div>
-            </header>
-            {firstQuote ? (
-              <>
-                <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
-                  <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
-                  <p class="random-quote-source">
-                    <span id="random-quote-book">{firstQuote.book_title}</span>
-                    <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-                  </p>
-                </div>
-                <div class="actions">
-                  <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
-                </div>
-              </>
-            ) : (
-              <p class="tool-empty">暂时还没有句子卡可抽。</p>
-            )}
-          </article>
+              <div class="actions">
+                <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
+              </div>
+            </>
+          ) : (
+            <p class="tool-empty">暂时还没有句子卡可抽。</p>
+          )}
+        </article>
       </div>
     </section>
 
     <section id="home-categories">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Library map</p>
           <h2>从这几条线往里走</h2>
         </div>
       </div>
@@ -126,8 +117,8 @@ const sectionPreviewMap = Object.fromEntries(
               <div>
                 <h3>{section.title}</h3>
                 <p class="section-volume">
-                  <strong>{section.page_count}</strong>
-                  <span>篇文稿</span>
+                  <strong>{section.book_count}</strong>
+                  <span>本书</span>
                 </p>
                 <div class="section-preview">
                   {(sectionPreviewMap[section.key] ?? []).map((book) => (
@@ -160,7 +151,6 @@ const sectionPreviewMap = Object.fromEntries(
       var bookCategory = document.getElementById("book-dice-category");
       var bookIndex = document.getElementById("book-dice-index");
       var bookTotal = document.getElementById("book-dice-total");
-      var bookCount = document.getElementById("book-dice-count");
       var bookTags = document.getElementById("book-dice-tags");
       var bookOpen = document.getElementById("book-dice-open");
       var bookShuffle = document.getElementById("book-dice-shuffle");
@@ -178,7 +168,6 @@ const sectionPreviewMap = Object.fromEntries(
         if (bookCategory) bookCategory.textContent = current.category || "未分类";
         if (bookIndex) bookIndex.textContent = formatIndex(currentBook + 1);
         if (bookTotal) bookTotal.textContent = formatIndex(books.length);
-        if (bookCount) bookCount.textContent = String(current.docCount || 0) + " 篇文稿";
         if (bookOpen) bookOpen.href = current.url || "#";
         if (bookTags) {
           bookTags.innerHTML = "";
@@ -278,7 +267,6 @@ const sectionPreviewMap = Object.fromEntries(
                     url: item.url || "#",
                     summary: item.summary || "",
                     category: item.section_title || "未分类",
-                    docCount: item.page_count || 0,
                     tags: Array.isArray(item.tags) ? item.tags : [],
                   };
                 })

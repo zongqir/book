@@ -11,7 +11,7 @@ type Props = {
 
 const {
   title = "读书库",
-  description = "个人读书与研究资料库",
+  description = "读书库",
   isHome = false,
   isLibrary = false,
   isDiscover = false,
@@ -46,7 +46,6 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
               <span class="brand-mark" aria-hidden="true">BQ</span>
               <span>读书库</span>
             </a>
-            <span class="tagline">个人读书与研究资料库</span>
           </div>
           <nav class="top-nav" aria-label="主导航">
             <a class:list={["nav-pill", isHome && "is-active"]} href="/">首页</a>
@@ -67,8 +66,7 @@ const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
     </main>
     <footer class="site-footer shell">
       <div class="site-footer-inner">
-        <p>书、判断、句子、案例，都留在这里。</p>
-        <p class="site-footer-meta">{new Date().getFullYear()} · book.zongqir.com</p>
+        <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
       </div>
     </footer>
     <script is:inline>

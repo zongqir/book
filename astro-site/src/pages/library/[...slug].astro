@@ -28,16 +28,11 @@ if (!node) {
             <span>/</span>
             <span>{node.title}</span>
           </nav>
-          <p class="hero-kicker">分类页</p>
           <h1>{node.title}</h1>
           <div class="stats-strip">
             <div class="stat-block">
               <span class="stat-label">书目</span>
               <span class="stat-value">{node.books.length}</span>
-            </div>
-            <div class="stat-block">
-              <span class="stat-label">文稿</span>
-              <span class="stat-value">{node.section.page_count}</span>
             </div>
           </div>
           <div class="actions">
@@ -52,7 +47,6 @@ if (!node) {
             <a href={book.url}>
               <div class="card-topline">
                 <span class="section-index">{book.section_title}</span>
-                <span class="preview-pill">{book.page_count} 篇文稿</span>
               </div>
               <h3>{book.title}</h3>
               {book.summary && <p>{book.summary}</p>}
@@ -81,12 +75,10 @@ if (!node) {
             <span>/</span>
             <span>{node.title}</span>
           </nav>
-          <p class="hero-kicker">书目录</p>
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
           <div class="detail-line">
             <span class="meta-chip">{node.book.section_title}</span>
-            <span class="meta-chip">{node.pages.length} 篇文稿</span>
             {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
           </div>
           <div class="slot-rail">
@@ -94,7 +86,6 @@ if (!node) {
               <a class="slot-link" href={page.url}>
                 <span class="slot-link-no">{page.slot}</span>
                 <strong>{page.title}</strong>
-                <span class="slot-link-subtitle">打开这篇文稿</span>
               </a>
             ))}
           </div>
@@ -129,7 +120,6 @@ if (!node) {
         <section class="page-stack compact-stack">
           <div class="section-head">
             <div>
-              <p class="eyebrow">继续往下看</p>
               <h2>这一类里还能接着读</h2>
             </div>
           </div>
@@ -139,7 +129,6 @@ if (!node) {
                 <a href={item.book.url}>
                   <div class="card-topline">
                     <span class="section-index">{item.book.section_title}</span>
-                    <span class="preview-pill">{item.book.page_count} 篇文稿</span>
                   </div>
                   <h3>{item.book.title}</h3>
                   {item.book.summary && <p>{item.book.summary}</p>}
@@ -180,7 +169,6 @@ if (!node) {
               </>
             )}
           </nav>
-          <p class="hero-kicker">文稿页</p>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
           <div class="detail-line">
@@ -262,7 +250,6 @@ if (!node) {
             <div class="mini-grid">
               {node.section && <a class="preview-item" href={node.section.url}>{node.section.title}</a>}
               {node.book && <a class="preview-item" href={node.book.url}>{node.book.title}</a>}
-              <span class="preview-item preview-item--muted">本书共 {node.siblingPages.length} 篇文稿</span>
             </div>
           </div>
         </aside>
@@ -272,7 +259,6 @@ if (!node) {
         <section class="page-stack compact-stack">
           <div class="section-head">
             <div>
-              <p class="eyebrow">往外延伸</p>
               <h2>同槽位与同主题延伸</h2>
             </div>
           </div>
@@ -308,7 +294,6 @@ if (!node) {
         <section class="page-stack compact-stack">
           <div class="section-head">
             <div>
-              <p class="eyebrow">留在这个书架</p>
               <h2>同分类继续看</h2>
             </div>
           </div>
@@ -318,7 +303,6 @@ if (!node) {
                 <a href={item.book.url}>
                   <div class="card-topline">
                     <span class="section-index">{item.book.section_title}</span>
-                    <span class="preview-pill">{item.book.page_count} 篇文稿</span>
                   </div>
                   <h3>{item.book.title}</h3>
                   {item.book.summary && <p>{item.book.summary}</p>}

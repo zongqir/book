@@ -10,9 +10,8 @@ const featuredTags = discover.tags.slice(0, 12);
   <div class="page-stack">
     <section class="library-panel">
       <div class="library-hero">
-        <p class="hero-kicker">发现页</p>
         <h1>搜索与筛选</h1>
-        <p>按书名、文稿名、标签、槽位和分类，把想看的内容直接找出来。</p>
+        <p>按书名、标题、标签、槽位和分类找。</p>
         <div class="stats-strip">
           <div class="stat-block">
             <span class="stat-label">分类</span>
@@ -23,8 +22,8 @@ const featuredTags = discover.tags.slice(0, 12);
             <span class="stat-value">{discover.counts.books}</span>
           </div>
           <div class="stat-block">
-            <span class="stat-label">文稿</span>
-            <span class="stat-value">{discover.counts.pages}</span>
+            <span class="stat-label">摘句</span>
+            <span class="stat-value">{discover.counts.quotes}</span>
           </div>
           <div class="stat-block">
             <span class="stat-label">标签</span>
@@ -38,7 +37,7 @@ const featuredTags = discover.tags.slice(0, 12);
       <div class="discover-controls">
         <label class="field-control field-control--wide">
           <span>搜索词</span>
-          <input id="discover-query" type="search" placeholder="输入书名、文稿名、标签或一句关键词" />
+          <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
         </label>
         <label class="field-control">
           <span>范围</span>
@@ -176,7 +175,7 @@ const featuredTags = discover.tags.slice(0, 12);
 
       function renderCard(item) {
         if (item.kind === "book") {
-          return '<article class="book-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="section-index">' + escapeHtml(item.section_title) + '</span><span class="preview-pill">' + escapeHtml(String(item.page_count)) + ' 篇文稿</span></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || "还没有摘要。") + '</p><div class="book-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>打开书目录</span><span>→</span></div></a></article>';
+          return '<article class="book-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="section-index">' + escapeHtml(item.section_title) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || "还没有摘要。") + '</p><div class="book-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>进入书页</span><span>→</span></div></a></article>';
         }
         return '<article class="doc-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="slot-badge">' + escapeHtml(item.slot || "--") + '</span><div class="meta-row"><span class="meta-chip">' + escapeHtml(item.book_title) + '</span></div></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || item.intent || "还没有摘要。") + '</p><div class="doc-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>打开文稿</span><span>→</span></div></a></article>';
       }

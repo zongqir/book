@@ -328,25 +328,29 @@ img { display: block; max-width: 100%; }
 .preview-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: 12px;
+  max-width: 100%;
+  min-height: 21px;
+  padding: 0 8px;
+  border-radius: 8px;
   border: 1px solid rgba(23, 48, 67, 0.06);
   background: rgba(23, 48, 67, 0.04);
   color: var(--text-soft);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   line-height: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .book-dice-tag {
-  padding: 0 12px;
-  border-radius: 999px;
+  min-height: 20px;
+  padding: 0 8px;
+  border-radius: 7px;
 }
 .preview-pill {
-  min-height: 23px;
-  padding: 0 9px;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  min-height: 20px;
+  padding: 0 7px;
+  border-radius: 7px;
+  font-size: 0.72rem;
 }
 .book-dice-count { margin: 0; color: var(--text); font-weight: 600; }
 .quote-display { font-size: clamp(1.8rem, 2.8vw, 2.7rem); line-height: 1.45; }
@@ -357,8 +361,8 @@ img { display: block; max-width: 100%; }
 .preview-item:hover,
 .preview-item:focus-visible { color: var(--accent-strong); }
 .section-preview {
-  margin-top: 16px;
-  gap: 10px;
+  margin-top: 18px;
+  gap: 8px;
 }
 .home-sections { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; }
 .section-card {
@@ -367,8 +371,14 @@ img { display: block; max-width: 100%; }
   padding: 0;
 }
 .section-card a {
+  display: flex;
+  flex-direction: column;
   padding: 26px;
-  align-content: space-between;
+  gap: 14px;
+}
+.section-card .section-enter {
+  margin-top: auto;
+  padding-top: 12px;
 }
 .section-card:nth-child(4n + 1),
 .section-card:nth-child(4n) { grid-column: span 7; }

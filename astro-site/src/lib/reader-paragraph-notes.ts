@@ -1,35 +1,13 @@
-type ReaderNoteColor = "amber" | "teal" | "rose" | "violet";
-
-type ReaderParagraphNote = {
-  id: string;
-  pageId: string;
-  blockId: string;
-  quote: string;
-  note: string;
-  color: ReaderNoteColor;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type ReaderParagraphNoteDraft = {
-  pageId: string;
-  blockId: string;
-  quote: string;
-  note: string;
-  color: ReaderNoteColor;
-};
-
-type StorePayload = {
-  version: 1;
-  notes: ReaderParagraphNote[];
-};
-
-type ReaderNotePosition = {
-  x: number;
-  y: number;
-};
-
-type ReaderNotePositions = Partial<Record<"desktop" | "mobile", ReaderNotePosition>>;
+import {
+  NOTE_STORAGE_KEY,
+  POSITION_STORAGE_KEY,
+  createBrowserNoteStore,
+  createBrowserPositionStore,
+  type ReaderNoteColor,
+  type ReaderNotePosition,
+  type ReaderNotePositions,
+  type ReaderParagraphNote,
+} from "./reader-storage";
 
 type DragState = {
   pointerId: number;
@@ -40,8 +18,6 @@ type DragState = {
   moved: boolean;
 };
 
-const STORAGE_KEY = "book-reader-paragraph-notes:v1";
-const POSITION_STORAGE_KEY = "book-reader-paragraph-notes-position:v1";
 const PICK_SELECTOR = "p, li, blockquote, pre, td, th, h2, h3";
 const ACTIVE_CLASS = "reader-note-block--active";
 const SAVED_CLASS = "reader-note-block--saved";
@@ -54,103 +30,14 @@ const DESKTOP_FAB_SIZE = 54;
 const DEFAULT_COLOR: ReaderNoteColor = "amber";
 const NOTE_COLORS: ReaderNoteColor[] = ["amber", "teal", "rose", "violet"];
 
-type NoteStore = {
-  list(pageId: string): ReaderParagraphNote[];
-  create(draft: ReaderParagraphNoteDraft): ReaderParagraphNote;
-  update(id: string, payload: { note: string; color: ReaderNoteColor }): ReaderParagraphNote | null;
-  remove(id: string): void;
-};
-
-class LocalParagraphNoteStore implements NoteStore {
-  private load(): StorePayload {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { version: 1, notes: [] };
-      const parsed = JSON.parse(raw) as Partial<StorePayload>;
-      const notes = Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredNote).filter((note): note is ReaderParagraphNote => !!note) : [];
-      return { version: 1, notes };
-    } catch {
-      return { version: 1, notes: [] };
-    }
-  }
-
-  private save(payload: StorePayload) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }
-
-  list(pageId: string) {
-    return this.load().notes.filter((note) => note.pageId === pageId).sort((left, right) => left.createdAt.localeCompare(right.createdAt));
-  }
-
-  create(draft: ReaderParagraphNoteDraft) {
-    const payload = this.load();
-    const now = new Date().toISOString();
-    const note: ReaderParagraphNote = {
-      id: createId(),
-      pageId: draft.pageId,
-      blockId: draft.blockId,
-      quote: draft.quote,
-      note: draft.note,
-      color: draft.color,
-      createdAt: now,
-      updatedAt: now,
-    };
-    payload.notes.push(note);
-    this.save(payload);
-    return note;
-  }
-
-  update(id: string, payload: { note: string; color: ReaderNoteColor }) {
-    const store = this.load();
-    const target = store.notes.find((item) => item.id === id);
-    if (!target) return null;
-    target.note = payload.note;
-    target.color = payload.color;
-    target.updatedAt = new Date().toISOString();
-    this.save(store);
-    return target;
-  }
-
-  remove(id: string) {
-    const payload = this.load();
-    payload.notes = payload.notes.filter((item) => item.id !== id);
-    this.save(payload);
-  }
-}
-
 function isReaderNoteColor(value: unknown): value is ReaderNoteColor {
   return typeof value === "string" && NOTE_COLORS.includes(value as ReaderNoteColor);
-}
-
-function normalizeStoredNote(value: unknown): ReaderParagraphNote | null {
-  if (!value || typeof value !== "object") return null;
-  const candidate = value as Partial<ReaderParagraphNote>;
-  if (!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string" && typeof candidate.createdAt === "string" && typeof candidate.updatedAt === "string")) {
-    return null;
-  }
-  return {
-    id: candidate.id,
-    pageId: candidate.pageId,
-    blockId: candidate.blockId,
-    quote: candidate.quote,
-    note: candidate.note,
-    color: isReaderNoteColor(candidate.color) ? candidate.color : DEFAULT_COLOR,
-    createdAt: candidate.createdAt,
-    updatedAt: candidate.updatedAt,
-  };
 }
 
 function isValidPosition(value: unknown): value is ReaderNotePosition {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<ReaderNotePosition>;
   return Number.isFinite(candidate.x) && Number.isFinite(candidate.y);
-}
-
-function createId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-  return "note-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
 function hashText(value: string) {
@@ -219,7 +106,8 @@ export function setupReaderParagraphNotes() {
   }
 
   const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
-  const store = new LocalParagraphNoteStore();
+  const store = createBrowserNoteStore();
+  const positionStore = createBrowserPositionStore();
   let notes = store.list(pageId);
   let panelOpen = !mediaQuery.matches;
   let pickMode = false;
@@ -261,14 +149,7 @@ export function setupReaderParagraphNotes() {
   }
 
   function readSavedPositions(): ReaderNotePositions {
-    try {
-      const raw = window.localStorage.getItem(POSITION_STORAGE_KEY);
-      if (!raw) return {};
-      const parsed = JSON.parse(raw) as ReaderNotePositions;
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch {
-      return {};
-    }
+    return positionStore.read();
   }
 
   function getSavedPosition() {
@@ -281,7 +162,7 @@ export function setupReaderParagraphNotes() {
   function savePosition(position: ReaderNotePosition) {
     const positions = readSavedPositions();
     positions[currentMode()] = normalizePosition(position);
-    window.localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(positions));
+    positionStore.write(positions);
   }
 
   function getDefaultPosition() {
@@ -652,7 +533,7 @@ export function setupReaderParagraphNotes() {
   });
 
   window.addEventListener("storage", (event) => {
-    if (event.key === STORAGE_KEY) {
+    if (event.key === NOTE_STORAGE_KEY) {
       refresh();
       return;
     }

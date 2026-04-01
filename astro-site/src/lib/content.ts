@@ -1,26 +1,11 @@
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
 import MarkdownIt from "markdown-it";
-
-const astroRoot = process.cwd();
-const repoRoot = path.resolve(astroRoot, "..");
-const libraryRoot = path.join(repoRoot, "site", "content", "library");
-const siteIndexPath = path.join(repoRoot, "site", "static", "data", "site-content.json");
+import { getContentSource, type SiteIndex } from "./content-source";
 
 const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: false,
 });
-
-type SiteIndex = {
-  sections: SectionSummary[];
-  books: BookSummary[];
-  pages: PageSummary[];
-  quotes: QuoteSummary[];
-  counts: Record<string, number>;
-};
 
 export type SectionSummary = {
   key: string;
@@ -130,15 +115,11 @@ export type PageNode =
       relatedBooks: RelatedBook[];
     };
 
-let cachedIndex: SiteIndex | null = null;
-
 const HIDDEN_SECTION_KEYS = new Set(["02_专业技术"]);
+const contentSource = getContentSource();
 
 export function loadSiteIndex(): SiteIndex {
-  if (cachedIndex) return cachedIndex;
-  const raw = fs.readFileSync(siteIndexPath, "utf-8");
-  cachedIndex = JSON.parse(raw) as SiteIndex;
-  return cachedIndex;
+  return contentSource.loadSiteIndex();
 }
 
 export function getHomeData() {
@@ -247,14 +228,12 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
   const page = index.pages.find((item) => item.id === joined);
   if (!page) return null;
 
-  const filePath = resolvePageFile(page);
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const parsed = matter(raw);
   const headings = page.headings.map((item, index) => ({
     ...item,
     id: `section-${index + 1}`,
   }));
-  const html = addHeadingIds(renderMarkdown(parsed.content), headings);
+  const markdown = contentSource.loadPageMarkdown(page.book_id, page.slot);
+  const html = addHeadingIds(renderMarkdown(markdown), headings);
   const siblingPages = index.pages
     .filter((item) => item.book_id === page.book_id)
     .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
@@ -326,19 +305,6 @@ function getSharedTags(left: string[], right: string[]): string[] {
 
 function uniqueTags(tags: string[]): string[] {
   return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))];
-}
-
-function resolvePageFile(page: PageSummary): string {
-  const bookDir = path.join(libraryRoot, page.book_id);
-  const files = fs
-    .readdirSync(bookDir)
-    .filter((name) => name.endsWith(".md") && name !== "_index.md" && !name.endsWith(".QA.md"))
-    .sort();
-  const matched = files.find((name) => name.startsWith(`${page.slot}_`));
-  if (!matched) {
-    throw new Error(`Cannot resolve markdown file for page ${page.id}`);
-  }
-  return path.join(bookDir, matched);
 }
 
 function renderMarkdown(markdown: string): string {

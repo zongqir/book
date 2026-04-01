@@ -362,10 +362,13 @@ export function setupReaderParagraphNotes() {
   function syncPanel() {
     panel.hidden = !panelOpen;
     shell.classList.toggle("is-panel-open", panelOpen);
+    shell.classList.toggle("is-pick-mode", pickMode);
     toggleButton.classList.toggle("is-active", panelOpen);
+    toggleButton.classList.toggle("is-picking", pickMode);
     toggleButton.setAttribute("aria-expanded", panelOpen ? "true" : "false");
-    toggleButton.setAttribute("aria-label", panelOpen ? "收起段落笔记" : "打开段落笔记");
-    toggleButton.title = panelOpen ? "收起段落笔记" : "打开段落笔记";
+    const toggleLabel = pickMode ? "退出选段模式" : panelOpen ? "收起段落笔记" : "打开段落笔记";
+    toggleButton.setAttribute("aria-label", toggleLabel);
+    toggleButton.title = toggleLabel;
     toggleButton.dataset.count = String(notes.length);
   }
 
@@ -375,6 +378,10 @@ export function setupReaderParagraphNotes() {
     captureButton.classList.toggle("is-active", next);
     captureButton.textContent = next ? "退出选段" : "开始选段";
     hint.textContent = next ? "现在直接点正文。" : "点“开始选段”后，再点正文。";
+    if (currentMode() === "mobile" && next) {
+      panelOpen = false;
+    }
+    syncPanel();
   }
 
   function setActive(id: string | null) {
@@ -541,9 +548,16 @@ export function setupReaderParagraphNotes() {
       suppressToggleClick = false;
       return;
     }
+    if (currentMode() === "mobile" && pickMode) {
+      setPickMode(false);
+      panelOpen = true;
+      syncPanel();
+      return;
+    }
     panelOpen = !panelOpen;
     if (!panelOpen) {
       setPickMode(false);
+      return;
     }
     syncPanel();
   });

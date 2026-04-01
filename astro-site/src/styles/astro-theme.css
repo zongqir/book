@@ -519,9 +519,42 @@ img { display: block; max-width: 100%; }
   box-shadow: 0 0 0 1px rgba(164, 91, 42, 0.16);
 }
 .reader-note-block--saved {
+  --reader-note-tint: rgba(224, 191, 106, 0.14);
+  --reader-note-tint-soft: rgba(224, 191, 106, 0.05);
+  --reader-note-accent: rgba(164, 91, 42, 0.42);
+  --reader-note-accent-strong: rgba(124, 65, 29, 0.7);
+  --reader-note-dot: rgba(164, 91, 42, 0.84);
   border-radius: 16px;
-  background: linear-gradient(90deg, rgba(224, 191, 106, 0.14), rgba(224, 191, 106, 0.05));
-  box-shadow: inset 3px 0 0 rgba(164, 91, 42, 0.42);
+  background: linear-gradient(90deg, var(--reader-note-tint), var(--reader-note-tint-soft));
+  box-shadow: inset 3px 0 0 var(--reader-note-accent);
+}
+.reader-note-block--saved[data-reader-note-color="amber"] {
+  --reader-note-tint: rgba(224, 191, 106, 0.14);
+  --reader-note-tint-soft: rgba(224, 191, 106, 0.05);
+  --reader-note-accent: rgba(164, 91, 42, 0.42);
+  --reader-note-accent-strong: rgba(124, 65, 29, 0.7);
+  --reader-note-dot: rgba(164, 91, 42, 0.84);
+}
+.reader-note-block--saved[data-reader-note-color="teal"] {
+  --reader-note-tint: rgba(106, 201, 197, 0.16);
+  --reader-note-tint-soft: rgba(106, 201, 197, 0.05);
+  --reader-note-accent: rgba(33, 126, 127, 0.42);
+  --reader-note-accent-strong: rgba(18, 96, 102, 0.72);
+  --reader-note-dot: rgba(23, 121, 129, 0.84);
+}
+.reader-note-block--saved[data-reader-note-color="rose"] {
+  --reader-note-tint: rgba(233, 129, 153, 0.16);
+  --reader-note-tint-soft: rgba(233, 129, 153, 0.05);
+  --reader-note-accent: rgba(173, 67, 91, 0.4);
+  --reader-note-accent-strong: rgba(136, 42, 68, 0.7);
+  --reader-note-dot: rgba(183, 58, 91, 0.84);
+}
+.reader-note-block--saved[data-reader-note-color="violet"] {
+  --reader-note-tint: rgba(159, 132, 232, 0.16);
+  --reader-note-tint-soft: rgba(159, 132, 232, 0.05);
+  --reader-note-accent: rgba(102, 77, 164, 0.42);
+  --reader-note-accent-strong: rgba(77, 56, 132, 0.72);
+  --reader-note-dot: rgba(108, 80, 182, 0.84);
 }
 .reader-note-block--saved::after {
   content: "";
@@ -531,12 +564,12 @@ img { display: block; max-width: 100%; }
   width: 0.62rem;
   height: 0.62rem;
   border-radius: 999px;
-  background: rgba(164, 91, 42, 0.84);
+  background: var(--reader-note-dot);
   box-shadow: 0 0 0 4px rgba(255, 251, 245, 0.92);
 }
 .reader-note-block--active {
-  background: rgba(224, 191, 106, 0.24);
-  box-shadow: inset 3px 0 0 rgba(124, 65, 29, 0.7), 0 0 0 1px rgba(164, 91, 42, 0.14);
+  background: color-mix(in srgb, var(--reader-note-tint) 75%, white 25%);
+  box-shadow: inset 3px 0 0 var(--reader-note-accent-strong), 0 0 0 1px color-mix(in srgb, var(--reader-note-accent) 42%, white 58%);
 }
 .reader-notes-shell {
   position: fixed;
@@ -687,6 +720,55 @@ img { display: block; max-width: 100%; }
   background: linear-gradient(135deg, var(--navy), #2a5e7f);
   color: #fff;
   border-color: transparent;
+}
+.reader-notes-color-field {
+  gap: 10px;
+}
+.reader-notes-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.reader-notes-color {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(23, 48, 67, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 7px var(--reader-color-swatch, rgba(224, 191, 106, 0.92));
+}
+.reader-notes-color[data-reader-notes-color="amber"] {
+  --reader-color-swatch: rgba(224, 191, 106, 0.92);
+}
+.reader-notes-color[data-reader-notes-color="teal"] {
+  --reader-color-swatch: rgba(74, 177, 173, 0.92);
+}
+.reader-notes-color[data-reader-notes-color="rose"] {
+  --reader-color-swatch: rgba(215, 101, 127, 0.92);
+}
+.reader-notes-color[data-reader-notes-color="violet"] {
+  --reader-color-swatch: rgba(130, 104, 210, 0.92);
+}
+.reader-notes-color.is-selected {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 8px var(--reader-color-swatch, rgba(224, 191, 106, 0.92)), 0 0 0 3px rgba(23, 48, 67, 0.1);
+}
+.reader-notes-item--amber {
+  border-color: rgba(164, 91, 42, 0.14);
+  background: rgba(255, 247, 236, 0.72);
+}
+.reader-notes-item--teal {
+  border-color: rgba(23, 121, 129, 0.14);
+  background: rgba(240, 251, 250, 0.74);
+}
+.reader-notes-item--rose {
+  border-color: rgba(183, 58, 91, 0.14);
+  background: rgba(255, 241, 244, 0.76);
+}
+.reader-notes-item--violet {
+  border-color: rgba(108, 80, 182, 0.14);
+  background: rgba(245, 241, 255, 0.76);
 }
 .reader-notes-list {
   display: grid;

@@ -1,9 +1,12 @@
+type ReaderNoteColor = "amber" | "teal" | "rose" | "violet";
+
 type ReaderParagraphNote = {
   id: string;
   pageId: string;
   blockId: string;
   quote: string;
   note: string;
+  color: ReaderNoteColor;
   createdAt: string;
   updatedAt: string;
 };
@@ -13,6 +16,7 @@ type ReaderParagraphNoteDraft = {
   blockId: string;
   quote: string;
   note: string;
+  color: ReaderNoteColor;
 };
 
 type StorePayload = {
@@ -47,11 +51,13 @@ const DRAG_THRESHOLD = 6;
 const FAB_MARGIN = 12;
 const MOBILE_FAB_SIZE = 52;
 const DESKTOP_FAB_SIZE = 54;
+const DEFAULT_COLOR: ReaderNoteColor = "amber";
+const NOTE_COLORS: ReaderNoteColor[] = ["amber", "teal", "rose", "violet"];
 
 type NoteStore = {
   list(pageId: string): ReaderParagraphNote[];
   create(draft: ReaderParagraphNoteDraft): ReaderParagraphNote;
-  update(id: string, note: string): ReaderParagraphNote | null;
+  update(id: string, payload: { note: string; color: ReaderNoteColor }): ReaderParagraphNote | null;
   remove(id: string): void;
 };
 
@@ -61,7 +67,7 @@ class LocalParagraphNoteStore implements NoteStore {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) return { version: 1, notes: [] };
       const parsed = JSON.parse(raw) as Partial<StorePayload>;
-      const notes = Array.isArray(parsed.notes) ? parsed.notes.filter(isValidNote) : [];
+      const notes = Array.isArray(parsed.notes) ? parsed.notes.map(normalizeStoredNote).filter((note): note is ReaderParagraphNote => !!note) : [];
       return { version: 1, notes };
     } catch {
       return { version: 1, notes: [] };
@@ -85,6 +91,7 @@ class LocalParagraphNoteStore implements NoteStore {
       blockId: draft.blockId,
       quote: draft.quote,
       note: draft.note,
+      color: draft.color,
       createdAt: now,
       updatedAt: now,
     };
@@ -93,13 +100,14 @@ class LocalParagraphNoteStore implements NoteStore {
     return note;
   }
 
-  update(id: string, note: string) {
-    const payload = this.load();
-    const target = payload.notes.find((item) => item.id === id);
+  update(id: string, payload: { note: string; color: ReaderNoteColor }) {
+    const store = this.load();
+    const target = store.notes.find((item) => item.id === id);
     if (!target) return null;
-    target.note = note;
+    target.note = payload.note;
+    target.color = payload.color;
     target.updatedAt = new Date().toISOString();
-    this.save(payload);
+    this.save(store);
     return target;
   }
 
@@ -110,10 +118,26 @@ class LocalParagraphNoteStore implements NoteStore {
   }
 }
 
-function isValidNote(value: unknown): value is ReaderParagraphNote {
-  if (!value || typeof value !== "object") return false;
+function isReaderNoteColor(value: unknown): value is ReaderNoteColor {
+  return typeof value === "string" && NOTE_COLORS.includes(value as ReaderNoteColor);
+}
+
+function normalizeStoredNote(value: unknown): ReaderParagraphNote | null {
+  if (!value || typeof value !== "object") return null;
   const candidate = value as Partial<ReaderParagraphNote>;
-  return !!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string");
+  if (!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string" && typeof candidate.createdAt === "string" && typeof candidate.updatedAt === "string")) {
+    return null;
+  }
+  return {
+    id: candidate.id,
+    pageId: candidate.pageId,
+    blockId: candidate.blockId,
+    quote: candidate.quote,
+    note: candidate.note,
+    color: isReaderNoteColor(candidate.color) ? candidate.color : DEFAULT_COLOR,
+    createdAt: candidate.createdAt,
+    updatedAt: candidate.updatedAt,
+  };
 }
 
 function isValidPosition(value: unknown): value is ReaderNotePosition {
@@ -188,8 +212,9 @@ export function setupReaderParagraphNotes() {
   const editorCancel = document.querySelector<HTMLButtonElement>("[data-reader-notes-cancel]");
   const editorSave = document.querySelector<HTMLButtonElement>("[data-reader-notes-save]");
   const status = document.querySelector<HTMLElement>("[data-reader-notes-status]");
+  const colorButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-reader-notes-color]"));
 
-  if (!shell || !toggleButton || !panel || !closeButton || !captureButton || !count || !hint || !list || !empty || !editor || !editorTitle || !editorQuote || !editorInput || !editorCancel || !editorSave || !status) {
+  if (!shell || !toggleButton || !panel || !closeButton || !captureButton || !count || !hint || !list || !empty || !editor || !editorTitle || !editorQuote || !editorInput || !editorCancel || !editorSave || !status || colorButtons.length === 0) {
     return;
   }
 
@@ -201,6 +226,7 @@ export function setupReaderParagraphNotes() {
   let activeId: string | null = null;
   let editingId: string | null = null;
   let pickedBlock: HTMLElement | null = null;
+  let selectedColor: ReaderNoteColor = DEFAULT_COLOR;
   let shellPosition: ReaderNotePosition = { x: 0, y: 0 };
   let dragState: DragState | null = null;
   let suppressToggleClick = false;
@@ -312,6 +338,15 @@ export function setupReaderParagraphNotes() {
     return notes.find((note) => note.blockId === blockId) ?? null;
   }
 
+  function syncColorPicker() {
+    colorButtons.forEach((button) => {
+      const color = button.dataset.readerNotesColor;
+      const selected = color === selectedColor;
+      button.classList.toggle("is-selected", selected);
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
+  }
+
   function setStatus(message: string) {
     status.textContent = message;
     status.hidden = !message;
@@ -344,11 +379,15 @@ export function setupReaderParagraphNotes() {
 
   function setActive(id: string | null) {
     activeId = id;
-    blocks.forEach((block) => block.classList.remove(ACTIVE_CLASS, SAVED_CLASS));
+    blocks.forEach((block) => {
+      block.classList.remove(ACTIVE_CLASS, SAVED_CLASS);
+      delete block.dataset.readerNoteColor;
+    });
     notes.forEach((note) => {
       const block = findBlock(note.blockId);
       if (!block) return;
       block.classList.add(SAVED_CLASS);
+      block.dataset.readerNoteColor = note.color;
       if (note.id === activeId) {
         block.classList.add(ACTIVE_CLASS);
       }
@@ -363,12 +402,12 @@ export function setupReaderParagraphNotes() {
       .map((note) => {
         const isActive = note.id === activeId;
         return (
-          '<article class="reader-notes-item' + (isActive ? ' is-active' : '') + '">' +
+          '<article class="reader-notes-item reader-notes-item--' + note.color + (isActive ? ' is-active' : '') + '">' +
             '<button class="reader-notes-item-focus" type="button" data-reader-note-focus="' + escapeHtml(note.id) + '">' +
               '<span class="reader-notes-item-quote">' + escapeHtml(note.quote) + '</span>' +
               '<span class="reader-notes-item-time">' + escapeHtml(formatTime(note.updatedAt)) + '</span>' +
             '</button>' +
-            '<p class="reader-notes-item-copy">' + escapeHtml(note.note || '未写内容') + '</p>' +
+            '<p class="reader-notes-item-copy">' + escapeHtml(note.note || '仅划线') + '</p>' +
             '<div class="reader-notes-item-actions">' +
               '<button class="tool-switch tool-switch--compact" type="button" data-reader-note-edit="' + escapeHtml(note.id) + '">编辑</button>' +
               '<button class="tool-switch tool-switch--compact" type="button" data-reader-note-delete="' + escapeHtml(note.id) + '">删除</button>' +
@@ -388,6 +427,7 @@ export function setupReaderParagraphNotes() {
   function openEditor(block: HTMLElement, existing?: ReaderParagraphNote | null) {
     pickedBlock = block;
     editingId = existing?.id ?? null;
+    selectedColor = existing?.color ?? DEFAULT_COLOR;
     editor.hidden = false;
     panelOpen = false;
     syncPanel();
@@ -395,6 +435,7 @@ export function setupReaderParagraphNotes() {
     editorTitle.textContent = existing ? "编辑这一段" : "记下这一段";
     editorQuote.textContent = getBlockText(block);
     editorInput.value = existing?.note ?? "";
+    syncColorPicker();
     editorInput.focus();
   }
 
@@ -413,19 +454,14 @@ export function setupReaderParagraphNotes() {
     const noteText = editorInput.value.trim();
     const existing = editingId ? notes.find((note) => note.id === editingId) ?? null : findNoteByBlockId(blockId);
 
-    if (!noteText) {
-      setStatus("先写一句提醒再保存。");
-      return;
-    }
-
     if (existing) {
-      store.update(existing.id, noteText);
+      store.update(existing.id, { note: noteText, color: selectedColor });
       activeId = existing.id;
-      setStatus("这段笔记已更新。");
+      setStatus(noteText ? "这段笔记已更新。" : "这段划线已更新。");
     } else {
-      const created = store.create({ pageId, blockId, quote, note: noteText });
+      const created = store.create({ pageId, blockId, quote, note: noteText, color: selectedColor });
       activeId = created.id;
-      setStatus("这段笔记已保存到本地。");
+      setStatus(noteText ? "这段笔记已保存到本地。" : "这段划线已保存到本地。");
     }
 
     closeEditor();
@@ -522,6 +558,15 @@ export function setupReaderParagraphNotes() {
     panelOpen = true;
     syncPanel();
     setPickMode(!pickMode);
+  });
+
+  colorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const color = button.dataset.readerNotesColor;
+      if (!isReaderNoteColor(color)) return;
+      selectedColor = color;
+      syncColorPicker();
+    });
   });
 
   editorCancel.addEventListener("click", () => {
@@ -635,5 +680,6 @@ export function setupReaderParagraphNotes() {
 
   refresh();
   syncLayoutMode(true);
+  syncColorPicker();
   setPickMode(false);
 }

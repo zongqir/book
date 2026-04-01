@@ -292,9 +292,18 @@ if (!node) {
               </div>
             </div>
             <p class="reader-notes-quote" data-reader-notes-quote></p>
+            <div class="reader-notes-field reader-notes-color-field">
+              <span>颜色</span>
+              <div class="reader-notes-colors" data-reader-notes-colors>
+                <button class="reader-notes-color is-selected" type="button" data-reader-notes-color="amber" aria-label="黄色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="teal" aria-label="青绿色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="rose" aria-label="红色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="violet" aria-label="紫色高亮"></button>
+              </div>
+            </div>
             <label class="reader-notes-field">
-              <span>笔记</span>
-              <textarea data-reader-notes-input rows="5" placeholder="比如：这段为什么值得记住？和我现在的问题有什么关系？"></textarea>
+              <span>笔记（可不写）</span>
+              <textarea data-reader-notes-input rows="5" placeholder="可以直接保存，只划线；也可以顺手写一句提醒。"></textarea>
             </label>
             <div class="reader-notes-editor-actions">
               <button class="btn btn-ghost" type="button" data-reader-notes-cancel>取消</button>

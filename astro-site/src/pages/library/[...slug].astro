@@ -193,7 +193,7 @@ if (!node) {
             </details>
           )}
 
-          <section class="doc-content" set:html={node.html} />
+          <section class="doc-content" data-reader-notes-root data-page-id={node.page.id} set:html={node.html} />
 
           {(node.previousPage || node.nextPage) && (
             <nav class="page-nav" aria-label="继续阅读">
@@ -255,6 +255,49 @@ if (!node) {
             </div>
           </div>
         </aside>
+      </div>
+
+      <div class="reader-notes-shell">
+        <button class="reader-notes-toggle" type="button" data-reader-notes-toggle aria-expanded="false">段落笔记</button>
+
+        <section class="meta-card reader-notes-panel" data-reader-notes-panel hidden>
+          <div class="reader-notes-head reader-notes-head--panel">
+            <div>
+              <h3>段落笔记</h3>
+              <p>只按段落记，保存在当前浏览器。</p>
+            </div>
+            <button class="tool-switch tool-switch--compact" type="button" data-reader-notes-close>收起</button>
+          </div>
+          <div class="reader-notes-toolbar">
+            <button class="btn" type="button" data-reader-notes-capture>记一段</button>
+            <span class="meta-chip" data-reader-notes-count>0</span>
+          </div>
+          <p class="reader-notes-hint" data-reader-notes-hint>只按段落记，不用拖选文字，内容保存在当前浏览器。</p>
+          <p class="reader-notes-empty" data-reader-notes-empty>还没有笔记。点“记一段”后，再点正文里的段落。</p>
+          <div class="reader-notes-list" data-reader-notes-list></div>
+        </section>
+
+        <div class="reader-notes-editor" data-reader-notes-editor hidden>
+          <div class="reader-notes-editor-card">
+            <div class="reader-notes-head reader-notes-head--editor">
+              <div>
+                <h3 data-reader-notes-editor-title>给这一段写一句笔记</h3>
+                <p>正文不做精确划线，直接对整段留下提醒。</p>
+              </div>
+            </div>
+            <p class="reader-notes-quote" data-reader-notes-quote></p>
+            <label class="reader-notes-field">
+              <span>你的提醒</span>
+              <textarea data-reader-notes-input rows="5" placeholder="比如：这段为什么值得记住？和我现在的问题有什么关系？"></textarea>
+            </label>
+            <div class="reader-notes-editor-actions">
+              <button class="btn btn-ghost" type="button" data-reader-notes-cancel>取消</button>
+              <button class="btn" type="button" data-reader-notes-save>保存到本地</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="reader-notes-status" data-reader-notes-status hidden></p>
       </div>
 
       {node.relatedPages.length > 0 && (
@@ -326,17 +369,10 @@ if (!node) {
     </div>
   )}
 {node.kind === "page" && (
-  <>
-    <script is:inline>
-      window.hypothesisConfig = function () {
-        return {
-          openSidebar: false,
-          showHighlights: true,
-          theme: "clean",
-        };
-      };
-    </script>
-    <script async src="https://hypothes.is/embed.js"></script>
-  </>
+  <script>
+    import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";
+
+    setupReaderParagraphNotes();
+  </script>
 )}
 </BaseLayout>

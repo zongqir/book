@@ -504,6 +504,222 @@ img { display: block; max-width: 100%; }
 .doc-content th,
 .doc-content td { padding: 14px 16px; border: 1px solid rgba(23, 48, 67, 0.08); text-align: left; vertical-align: top; }
 .doc-content th { background: rgba(23, 48, 67, 0.05); }
+.reader-note-block {
+  position: relative;
+  scroll-margin-top: 112px;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.doc-content.reader-notes-pick-mode .reader-note-block {
+  cursor: pointer;
+  border-radius: 16px;
+}
+.doc-content.reader-notes-pick-mode .reader-note-block:hover,
+.doc-content.reader-notes-pick-mode .reader-note-block:active {
+  background: rgba(224, 191, 106, 0.18);
+  box-shadow: 0 0 0 1px rgba(164, 91, 42, 0.16);
+}
+.reader-note-block--saved {
+  border-radius: 16px;
+  background: rgba(224, 191, 106, 0.14);
+  box-shadow: inset 3px 0 0 rgba(164, 91, 42, 0.42);
+}
+.reader-note-block--active {
+  background: rgba(224, 191, 106, 0.24);
+  box-shadow: inset 3px 0 0 rgba(124, 65, 29, 0.7), 0 0 0 1px rgba(164, 91, 42, 0.14);
+}
+.reader-notes-shell {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 35;
+}
+.reader-notes-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid rgba(23, 48, 67, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 251, 245, 0.96);
+  color: var(--text);
+  font: inherit;
+  box-shadow: 0 18px 34px rgba(23, 48, 67, 0.16);
+  backdrop-filter: blur(14px);
+}
+.reader-notes-toggle::after {
+  content: attr(data-count);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 10px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(23, 48, 67, 0.1);
+  color: var(--text-soft);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+}
+.reader-notes-toggle.is-active {
+  background: linear-gradient(135deg, var(--navy), #2a5e7f);
+  color: #fff;
+  border-color: transparent;
+}
+.reader-notes-toggle.is-active::after {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+.reader-notes-panel {
+  position: fixed;
+  right: 18px;
+  bottom: calc(78px + env(safe-area-inset-bottom));
+  z-index: 34;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(68vh, 620px);
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+}
+.reader-notes-panel[hidden],
+.reader-notes-editor[hidden],
+.reader-notes-status[hidden] {
+  display: none;
+}
+.reader-notes-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.reader-notes-head h3,
+.reader-notes-head p,
+.reader-notes-empty,
+.reader-notes-hint,
+.reader-notes-quote,
+.reader-notes-item-copy {
+  margin: 0;
+}
+.reader-notes-head p,
+.reader-notes-empty,
+.reader-notes-hint,
+.reader-notes-item-copy {
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+.reader-notes-toolbar,
+.reader-notes-editor-actions,
+.reader-notes-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.reader-notes-toolbar {
+  justify-content: space-between;
+}
+.reader-notes-list {
+  display: grid;
+  gap: 12px;
+}
+.reader-notes-item {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.52);
+}
+.reader-notes-item.is-active {
+  border-color: rgba(124, 65, 29, 0.18);
+  background: rgba(255, 247, 236, 0.82);
+}
+.reader-notes-item-focus {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.reader-notes-item-quote,
+.reader-notes-quote {
+  font-family: "Noto Serif SC", serif;
+  line-height: 1.72;
+}
+.reader-notes-item-time,
+.reader-notes-field > span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.reader-notes-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 42;
+  display: grid;
+  place-items: end center;
+  padding: 24px;
+  background: rgba(23, 48, 67, 0.16);
+  backdrop-filter: blur(6px);
+}
+.reader-notes-editor-card {
+  width: min(560px, calc(100vw - 32px));
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 251, 245, 0.96);
+  box-shadow: 0 22px 44px rgba(23, 48, 67, 0.22);
+}
+.reader-notes-field {
+  display: grid;
+  gap: 8px;
+}
+.reader-notes-field textarea {
+  width: 100%;
+  min-height: 132px;
+  padding: 14px 16px;
+  border: 1px solid rgba(23, 48, 67, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.7;
+  resize: vertical;
+}
+.reader-notes-field textarea:focus {
+  outline: none;
+  border-color: rgba(29, 109, 116, 0.4);
+  box-shadow: 0 0 0 4px rgba(29, 109, 116, 0.08);
+}
+.reader-notes-editor-actions {
+  justify-content: flex-end;
+}
+.reader-notes-status {
+  position: fixed;
+  right: 18px;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  z-index: 33;
+  max-width: min(360px, calc(100vw - 32px));
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(23, 48, 67, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 251, 245, 0.94);
+  box-shadow: 0 16px 30px rgba(23, 48, 67, 0.16);
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
 .toc-card--desktop { position: static; }
 .meta-card { position: static; }
 .toc-title,
@@ -1026,6 +1242,44 @@ img { display: block; max-width: 100%; }
     font-size: 0.94rem;
   }
   .doc-grid { gap: 14px; }
+  .reader-notes-shell {
+    right: 12px;
+    left: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .reader-notes-toggle {
+    width: 100%;
+    min-height: 46px;
+  }
+  .reader-notes-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: calc(70px + env(safe-area-inset-bottom));
+    max-height: min(58vh, 520px);
+    padding: 16px;
+  }
+  .reader-notes-toolbar,
+  .reader-notes-editor-actions,
+  .reader-notes-item-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .reader-notes-editor {
+    padding: 12px;
+    place-items: end stretch;
+  }
+  .reader-notes-editor-card {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+  }
+  .reader-notes-status {
+    right: 12px;
+    left: 12px;
+    bottom: calc(68px + env(safe-area-inset-bottom));
+    max-width: none;
+  }
   .doc-side { order: 1; gap: 12px; }
   .toc-card--mobile {
     display: block;

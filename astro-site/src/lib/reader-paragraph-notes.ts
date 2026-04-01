@@ -20,11 +20,33 @@ type StorePayload = {
   notes: ReaderParagraphNote[];
 };
 
+type ReaderNotePosition = {
+  x: number;
+  y: number;
+};
+
+type ReaderNotePositions = Partial<Record<"desktop" | "mobile", ReaderNotePosition>>;
+
+type DragState = {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+  moved: boolean;
+};
+
 const STORAGE_KEY = "book-reader-paragraph-notes:v1";
+const POSITION_STORAGE_KEY = "book-reader-paragraph-notes-position:v1";
 const PICK_SELECTOR = "p, li, blockquote, pre, td, th, h2, h3";
 const ACTIVE_CLASS = "reader-note-block--active";
 const SAVED_CLASS = "reader-note-block--saved";
 const PICK_MODE_CLASS = "reader-notes-pick-mode";
+const MOBILE_BREAKPOINT_QUERY = "(max-width: 760px)";
+const DRAG_THRESHOLD = 6;
+const FAB_MARGIN = 12;
+const MOBILE_FAB_SIZE = 52;
+const DESKTOP_FAB_SIZE = 54;
 
 type NoteStore = {
   list(pageId: string): ReaderParagraphNote[];
@@ -94,6 +116,12 @@ function isValidNote(value: unknown): value is ReaderParagraphNote {
   return !!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string");
 }
 
+function isValidPosition(value: unknown): value is ReaderNotePosition {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<ReaderNotePosition>;
+  return Number.isFinite(candidate.x) && Number.isFinite(candidate.y);
+}
+
 function createId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
@@ -144,6 +172,7 @@ export function setupReaderParagraphNotes() {
   const pageId = root.dataset.pageId;
   if (!pageId) return;
 
+  const shell = document.querySelector<HTMLElement>("[data-reader-notes-shell]");
   const toggleButton = document.querySelector<HTMLButtonElement>("[data-reader-notes-toggle]");
   const panel = document.querySelector<HTMLElement>("[data-reader-notes-panel]");
   const closeButton = document.querySelector<HTMLButtonElement>("[data-reader-notes-close]");
@@ -160,23 +189,115 @@ export function setupReaderParagraphNotes() {
   const editorSave = document.querySelector<HTMLButtonElement>("[data-reader-notes-save]");
   const status = document.querySelector<HTMLElement>("[data-reader-notes-status]");
 
-  if (!toggleButton || !panel || !closeButton || !captureButton || !count || !hint || !list || !empty || !editor || !editorTitle || !editorQuote || !editorInput || !editorCancel || !editorSave || !status) {
+  if (!shell || !toggleButton || !panel || !closeButton || !captureButton || !count || !hint || !list || !empty || !editor || !editorTitle || !editorQuote || !editorInput || !editorCancel || !editorSave || !status) {
     return;
   }
 
+  const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
   const store = new LocalParagraphNoteStore();
   let notes = store.list(pageId);
-  let panelOpen = false;
+  let panelOpen = !mediaQuery.matches;
   let pickMode = false;
   let activeId: string | null = null;
   let editingId: string | null = null;
   let pickedBlock: HTMLElement | null = null;
+  let shellPosition: ReaderNotePosition = { x: 0, y: 0 };
+  let dragState: DragState | null = null;
+  let suppressToggleClick = false;
+  let lastMode: "desktop" | "mobile" = mediaQuery.matches ? "mobile" : "desktop";
 
   const blocks = Array.from(root.querySelectorAll<HTMLElement>(PICK_SELECTOR)).filter((block) => getBlockText(block).length >= 12);
   blocks.forEach((block, index) => {
     block.classList.add("reader-note-block");
     block.dataset.readerBlockId = createBlockId(block, index);
   });
+
+  function currentMode(): "desktop" | "mobile" {
+    return mediaQuery.matches ? "mobile" : "desktop";
+  }
+
+  function clamp(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function getFabSize() {
+    return currentMode() === "mobile" ? MOBILE_FAB_SIZE : DESKTOP_FAB_SIZE;
+  }
+
+  function normalizePosition(position: ReaderNotePosition): ReaderNotePosition {
+    const size = getFabSize();
+    const maxX = Math.max(FAB_MARGIN, window.innerWidth - size - FAB_MARGIN);
+    const maxY = Math.max(FAB_MARGIN, window.innerHeight - size - FAB_MARGIN);
+    return {
+      x: clamp(position.x, FAB_MARGIN, maxX),
+      y: clamp(position.y, FAB_MARGIN, maxY),
+    };
+  }
+
+  function readSavedPositions(): ReaderNotePositions {
+    try {
+      const raw = window.localStorage.getItem(POSITION_STORAGE_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw) as ReaderNotePositions;
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function getSavedPosition() {
+    const positions = readSavedPositions();
+    const saved = positions[currentMode()];
+    if (!isValidPosition(saved)) return null;
+    return normalizePosition(saved);
+  }
+
+  function savePosition(position: ReaderNotePosition) {
+    const positions = readSavedPositions();
+    positions[currentMode()] = normalizePosition(position);
+    window.localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(positions));
+  }
+
+  function getDefaultPosition() {
+    const size = getFabSize();
+    if (currentMode() === "mobile") {
+      return normalizePosition({
+        x: window.innerWidth - size - FAB_MARGIN,
+        y: window.innerHeight - size - (FAB_MARGIN + 8),
+      });
+    }
+
+    const rect = root.getBoundingClientRect();
+    const maxDesktopY = Math.max(110, window.innerHeight - 420);
+    return normalizePosition({
+      x: rect.right + 18,
+      y: Math.min(Math.max(110, rect.top + 72), maxDesktopY),
+    });
+  }
+
+  function applyShellPosition(position: ReaderNotePosition) {
+    shellPosition = normalizePosition(position);
+    shell.style.left = `${shellPosition.x}px`;
+    shell.style.top = `${shellPosition.y}px`;
+    shell.style.right = "auto";
+    shell.style.bottom = "auto";
+    shell.dataset.panelSide = currentMode() === "mobile" ? "center" : shellPosition.x < 380 ? "right" : "left";
+  }
+
+  function syncLayoutMode(forceDefault = false) {
+    const nextMode = currentMode();
+    const modeChanged = nextMode !== lastMode;
+
+    if (modeChanged) {
+      lastMode = nextMode;
+      setPickMode(false);
+      panelOpen = nextMode === "desktop";
+    }
+
+    const targetPosition = getSavedPosition() ?? (modeChanged || forceDefault ? getDefaultPosition() : shellPosition);
+    applyShellPosition(targetPosition);
+    syncPanel();
+  }
 
   function createBlockId(block: HTMLElement, index: number) {
     const text = getBlockText(block).slice(0, 180);
@@ -205,8 +326,11 @@ export function setupReaderParagraphNotes() {
 
   function syncPanel() {
     panel.hidden = !panelOpen;
+    shell.classList.toggle("is-panel-open", panelOpen);
     toggleButton.classList.toggle("is-active", panelOpen);
     toggleButton.setAttribute("aria-expanded", panelOpen ? "true" : "false");
+    toggleButton.setAttribute("aria-label", panelOpen ? "收起段落笔记" : "打开段落笔记");
+    toggleButton.title = panelOpen ? "收起段落笔记" : "打开段落笔记";
     toggleButton.dataset.count = String(notes.length);
   }
 
@@ -327,7 +451,60 @@ export function setupReaderParagraphNotes() {
     return true;
   }
 
+  function finishDrag(pointerId: number) {
+    if (!dragState || dragState.pointerId !== pointerId) return;
+    const moved = dragState.moved;
+    dragState = null;
+    if (toggleButton.hasPointerCapture?.(pointerId)) {
+      toggleButton.releasePointerCapture(pointerId);
+    }
+    if (moved) {
+      savePosition(shellPosition);
+      suppressToggleClick = true;
+    }
+  }
+
+  toggleButton.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    dragState = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: shellPosition.x,
+      originY: shellPosition.y,
+      moved: false,
+    };
+    if (toggleButton.setPointerCapture) {
+      toggleButton.setPointerCapture(event.pointerId);
+    }
+  });
+
+  toggleButton.addEventListener("pointermove", (event) => {
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - dragState.startX;
+    const deltaY = event.clientY - dragState.startY;
+    if (!dragState.moved && Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD) return;
+    dragState.moved = true;
+    event.preventDefault();
+    applyShellPosition({
+      x: dragState.originX + deltaX,
+      y: dragState.originY + deltaY,
+    });
+  });
+
+  toggleButton.addEventListener("pointerup", (event) => {
+    finishDrag(event.pointerId);
+  });
+
+  toggleButton.addEventListener("pointercancel", (event) => {
+    finishDrag(event.pointerId);
+  });
+
   toggleButton.addEventListener("click", () => {
+    if (suppressToggleClick) {
+      suppressToggleClick = false;
+      return;
+    }
     panelOpen = !panelOpen;
     if (!panelOpen) {
       setPickMode(false);
@@ -349,7 +526,7 @@ export function setupReaderParagraphNotes() {
 
   editorCancel.addEventListener("click", () => {
     closeEditor();
-    panelOpen = true;
+    panelOpen = currentMode() === "desktop";
     syncPanel();
   });
 
@@ -415,25 +592,48 @@ export function setupReaderParagraphNotes() {
   });
 
   window.addEventListener("storage", (event) => {
-    if (event.key !== STORAGE_KEY) return;
-    refresh();
+    if (event.key === STORAGE_KEY) {
+      refresh();
+      return;
+    }
+    if (event.key === POSITION_STORAGE_KEY && !dragState) {
+      syncLayoutMode(false);
+    }
   });
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     if (!editor.hidden) {
       closeEditor();
-      panelOpen = true;
+      panelOpen = currentMode() === "desktop";
       syncPanel();
       return;
     }
     if (pickMode) {
       setPickMode(false);
+      return;
+    }
+    if (panelOpen && currentMode() === "mobile") {
+      panelOpen = false;
+      syncPanel();
     }
   });
 
+  const handleMediaChange = () => {
+    syncLayoutMode(true);
+  };
+
+  if (typeof mediaQuery.addEventListener === "function") {
+    mediaQuery.addEventListener("change", handleMediaChange);
+  } else if (typeof mediaQuery.addListener === "function") {
+    mediaQuery.addListener(handleMediaChange);
+  }
+
+  window.addEventListener("resize", () => {
+    syncLayoutMode(false);
+  });
+
   refresh();
-  renderList();
-  syncPanel();
+  syncLayoutMode(true);
   setPickMode(false);
 }

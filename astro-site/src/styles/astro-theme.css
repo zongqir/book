@@ -540,9 +540,20 @@ img { display: block; max-width: 100%; }
 }
 .reader-notes-shell {
   position: fixed;
-  right: 18px;
-  bottom: calc(18px + env(safe-area-inset-bottom));
+  left: calc(100vw - 72px);
+  top: calc(100vh - 96px);
   z-index: 35;
+}
+.reader-notes-shell.is-panel-open {
+  z-index: 39;
+}
+.reader-notes-shell[data-panel-side="left"] .reader-notes-panel {
+  right: calc(100% + 18px);
+  left: auto;
+}
+.reader-notes-shell[data-panel-side="right"] .reader-notes-panel {
+  left: calc(100% + 18px);
+  right: auto;
 }
 .reader-notes-toggle {
   position: relative;
@@ -559,6 +570,12 @@ img { display: block; max-width: 100%; }
   font: inherit;
   box-shadow: 0 18px 34px rgba(23, 48, 67, 0.16);
   backdrop-filter: blur(14px);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.reader-notes-toggle:active {
+  cursor: grabbing;
 }
 .reader-notes-toggle::before {
   content: "✎";
@@ -593,12 +610,12 @@ img { display: block; max-width: 100%; }
   color: #fff;
 }
 .reader-notes-panel {
-  position: fixed;
-  right: 18px;
-  bottom: calc(74px + env(safe-area-inset-bottom));
+  position: absolute;
+  top: -4px;
+  right: calc(100% + 18px);
   z-index: 34;
-  width: min(340px, calc(100vw - 32px));
-  max-height: min(64vh, 560px);
+  width: min(340px, calc(100vw - 96px));
+  max-height: min(68vh, 560px);
   overflow: auto;
   display: grid;
   gap: 12px;
@@ -616,9 +633,22 @@ img { display: block; max-width: 100%; }
 }
 .reader-notes-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+.reader-notes-head > div {
+  min-width: 0;
+}
+.reader-notes-head h3 {
+  white-space: nowrap;
+}
+.reader-notes-head [data-reader-notes-close] {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 0.82rem;
 }
 .reader-notes-head h3,
 .reader-notes-head p,
@@ -1293,21 +1323,19 @@ img { display: block; max-width: 100%; }
   }
   .doc-grid { gap: 14px; }
   .reader-notes-shell {
-    right: 12px;
-    left: auto;
-    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 38;
   }
   .reader-notes-toggle {
     width: 52px;
     height: 52px;
   }
   .reader-notes-panel {
-    right: 12px;
-    left: 12px;
+    position: fixed;
+    inset: 12px 12px calc(12px + env(safe-area-inset-bottom)) 12px;
     width: auto;
-    bottom: calc(70px + env(safe-area-inset-bottom));
-    max-height: min(58vh, 520px);
+    max-height: none;
     padding: 16px;
+    border-radius: 24px;
   }
   .reader-notes-toolbar,
   .reader-notes-editor-actions,

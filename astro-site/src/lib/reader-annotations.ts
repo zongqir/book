@@ -360,6 +360,7 @@ export function setupReaderAnnotations() {
   mobilePickToggle.type = "button";
   mobilePickToggle.className = "reader-mobile-pick-toggle tool-switch";
   mobilePickToggle.hidden = true;
+  mobilePickToggle.setAttribute("aria-label", "切换划线模式");
   document.body.appendChild(mobilePickToggle);
 
   function setStatus(message: string) {
@@ -386,13 +387,13 @@ export function setupReaderAnnotations() {
   }
 
   function syncMobilePickToggle() {
-    const shouldShow = isMobileSelectionUI() && editor.hidden && toolbar.hidden;
+    const shouldShow = editor.hidden && toolbar.hidden;
     if (!shouldShow && mobilePickMode) {
       mobilePickMode = false;
       setActivePickTarget(null);
     }
     mobilePickToggle.hidden = !shouldShow;
-    mobilePickToggle.textContent = mobilePickMode ? "点一段正文" : "手机划线";
+    mobilePickToggle.textContent = mobilePickMode ? "点一段正文" : "划线模式";
     mobilePickToggle.classList.toggle("is-active", mobilePickMode && shouldShow);
     root.classList.toggle("reader-mobile-pick-root", mobilePickMode && shouldShow);
   }
@@ -623,7 +624,7 @@ export function setupReaderAnnotations() {
     setActivePickTarget(null);
     if (mobilePickMode) {
       clearNativeSelection();
-      setStatus("点一段正文，再决定划线还是记笔记。");
+      setStatus("已进入划线模式。点一段正文，再决定划线还是记笔记。");
     } else {
       setStatus("");
     }
@@ -714,7 +715,7 @@ export function setupReaderAnnotations() {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
 
-    if (mobilePickMode && isMobileSelectionUI()) {
+    if (mobilePickMode) {
       const mark = target.closest<HTMLElement>("[data-annotation-id]");
       if (!mark) {
         const block = findPickableBlock(target);

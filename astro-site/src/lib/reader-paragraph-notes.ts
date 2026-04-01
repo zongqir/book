@@ -214,7 +214,8 @@ export function setupReaderParagraphNotes() {
     pickMode = next;
     root.classList.toggle(PICK_MODE_CLASS, next);
     captureButton.classList.toggle("is-active", next);
-    hint.textContent = next ? "现在直接点正文里的段落，就会打开笔记框。" : "只按段落记，不用拖选文字，内容保存在当前浏览器。";
+    captureButton.textContent = next ? "退出选段" : "开始选段";
+    hint.textContent = next ? "现在直接点正文。" : "点“开始选段”后，再点正文。";
   }
 
   function setActive(id: string | null) {
@@ -267,7 +268,7 @@ export function setupReaderParagraphNotes() {
     panelOpen = false;
     syncPanel();
     setPickMode(false);
-    editorTitle.textContent = existing ? "编辑这段笔记" : "给这一段写一句笔记";
+    editorTitle.textContent = existing ? "编辑这一段" : "记下这一段";
     editorQuote.textContent = getBlockText(block);
     editorInput.value = existing?.note ?? "";
     editorInput.focus();
@@ -315,6 +316,15 @@ export function setupReaderParagraphNotes() {
     if (!block) return;
     setActive(note.id);
     block.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function openExistingNoteByBlock(block: HTMLElement) {
+    const blockId = block.dataset.readerBlockId;
+    if (!blockId) return false;
+    const existing = findNoteByBlockId(blockId);
+    if (!existing) return false;
+    focusNote(existing);
+    return true;
   }
 
   toggleButton.addEventListener("click", () => {
@@ -383,20 +393,25 @@ export function setupReaderParagraphNotes() {
   });
 
   root.addEventListener("click", (event) => {
-    if (!pickMode) return;
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
     const interactive = target.closest("a, button, input, textarea, select, summary");
     if (interactive) return;
     const block = target.closest<HTMLElement>(PICK_SELECTOR);
     if (!block || !root.contains(block)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const blockId = block.dataset.readerBlockId;
-    if (!blockId) return;
-    const existing = findNoteByBlockId(blockId);
-    setActive(existing?.id ?? null);
-    openEditor(block, existing);
+
+    if (pickMode) {
+      event.preventDefault();
+      event.stopPropagation();
+      const blockId = block.dataset.readerBlockId;
+      if (!blockId) return;
+      const existing = findNoteByBlockId(blockId);
+      setActive(existing?.id ?? null);
+      openEditor(block, existing);
+      return;
+    }
+
+    openExistingNoteByBlock(block);
   });
 
   window.addEventListener("storage", (event) => {

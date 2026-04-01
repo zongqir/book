@@ -57,6 +57,7 @@ const HIGHLIGHT_CLASS = "reader-highlight";
 const ACTIVE_CLASS = "is-active";
 const MOBILE_BREAKPOINT = 760;
 const MOBILE_HIDE_DELAY_MS = 260;
+const MOBILE_PICK_SELECTOR = "p, li, blockquote, pre, td, th";
 
 class LocalAnnotationStore implements AnnotationStore {
   private load(): StorePayload {
@@ -353,6 +354,13 @@ export function setupReaderAnnotations() {
   let editingId: string | null = null;
   let activeId: string | null = null;
   let hideToolbarTimer = 0;
+  let mobilePickMode = false;
+  let activePickTarget: HTMLElement | null = null;
+  const mobilePickToggle = document.createElement("button");
+  mobilePickToggle.type = "button";
+  mobilePickToggle.className = "reader-mobile-pick-toggle tool-switch";
+  mobilePickToggle.hidden = true;
+  document.body.appendChild(mobilePickToggle);
 
   function setStatus(message: string) {
     status.textContent = message;
@@ -367,6 +375,26 @@ export function setupReaderAnnotations() {
     if (!hideToolbarTimer) return;
     window.clearTimeout(hideToolbarTimer);
     hideToolbarTimer = 0;
+  }
+
+  function setActivePickTarget(element: HTMLElement | null) {
+    if (activePickTarget && activePickTarget !== element) {
+      activePickTarget.classList.remove("reader-mobile-pick-target");
+    }
+    activePickTarget = element;
+    activePickTarget?.classList.add("reader-mobile-pick-target");
+  }
+
+  function syncMobilePickToggle() {
+    const shouldShow = isMobileSelectionUI() && editor.hidden && toolbar.hidden;
+    if (!shouldShow && mobilePickMode) {
+      mobilePickMode = false;
+      setActivePickTarget(null);
+    }
+    mobilePickToggle.hidden = !shouldShow;
+    mobilePickToggle.textContent = mobilePickMode ? "点一段正文" : "手机划线";
+    mobilePickToggle.classList.toggle("is-active", mobilePickMode && shouldShow);
+    root.classList.toggle("reader-mobile-pick-root", mobilePickMode && shouldShow);
   }
 
   function setToolbarPosition(rect: DOMRect) {
@@ -391,6 +419,8 @@ export function setupReaderAnnotations() {
     toolbar.style.removeProperty("left");
     toolbar.style.removeProperty("top");
     pendingSelection = null;
+    setActivePickTarget(null);
+    syncMobilePickToggle();
   }
 
   function scheduleToolbarHide() {
@@ -402,19 +432,23 @@ export function setupReaderAnnotations() {
 
   function openToolbar(selection: PendingSelection) {
     clearHideToolbarTimer();
+    mobilePickMode = false;
     pendingSelection = selection;
     toolbar.hidden = false;
     setToolbarPosition(selection.rect);
+    syncMobilePickToggle();
   }
 
   function closeEditor() {
     editor.hidden = true;
     editorInput.value = "";
     editingId = null;
+    syncMobilePickToggle();
   }
 
   function openEditor(mode: "create" | "edit", annotation?: ReaderAnnotation) {
     editor.hidden = false;
+    syncMobilePickToggle();
     editorInput.focus();
 
     if (mode === "edit" && annotation) {
@@ -518,6 +552,25 @@ export function setupReaderAnnotations() {
     } satisfies PendingSelection;
   }
 
+  function captureBlockSelection(block: HTMLElement) {
+    const range = document.createRange();
+    range.selectNodeContents(block);
+    const anchor = buildAnchor(root, range);
+    if (!anchor) return null;
+    if (hasOverlap(anchor)) return null;
+    return {
+      quote: anchor.quote.trim(),
+      anchor,
+      rect: block.getBoundingClientRect(),
+    } satisfies PendingSelection;
+  }
+
+  function findPickableBlock(target: HTMLElement) {
+    const block = target.closest<HTMLElement>(MOBILE_PICK_SELECTOR);
+    if (!block || !root.contains(block)) return null;
+    return block;
+  }
+
   function addSelectionAsHighlight(note: string) {
     if (!pendingSelection) return;
     const draft: AnnotationDraft = {
@@ -563,6 +616,18 @@ export function setupReaderAnnotations() {
   addNoteButton.addEventListener("click", () => {
     if (!pendingSelection) return;
     openEditor("create");
+  });
+
+  mobilePickToggle.addEventListener("click", () => {
+    mobilePickMode = !mobilePickMode;
+    setActivePickTarget(null);
+    if (mobilePickMode) {
+      clearNativeSelection();
+      setStatus("点一段正文，再决定划线还是记笔记。");
+    } else {
+      setStatus("");
+    }
+    syncMobilePickToggle();
   });
 
   saveButton.addEventListener("click", () => {
@@ -648,6 +713,27 @@ export function setupReaderAnnotations() {
   root.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+
+    if (mobilePickMode && isMobileSelectionUI()) {
+      const mark = target.closest<HTMLElement>("[data-annotation-id]");
+      if (!mark) {
+        const block = findPickableBlock(target);
+        if (block) {
+          event.preventDefault();
+          event.stopPropagation();
+          const selection = captureBlockSelection(block);
+          if (!selection) {
+            setActivePickTarget(null);
+            setStatus("这一段已经划过，换一段试试。");
+            return;
+          }
+          setActivePickTarget(block);
+          openToolbar(selection);
+          return;
+        }
+      }
+    }
+
     const mark = target.closest<HTMLElement>("[data-annotation-id]");
     if (!mark) return;
     const id = mark.dataset.annotationId;
@@ -661,10 +747,12 @@ export function setupReaderAnnotations() {
   });
 
   window.addEventListener("resize", () => {
+    syncMobilePickToggle();
     if (!pendingSelection || toolbar.hidden) return;
     setToolbarPosition(pendingSelection.rect);
   });
 
   refresh();
   renderList();
+  syncMobilePickToggle();
 }

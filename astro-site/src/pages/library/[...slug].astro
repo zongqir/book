@@ -270,15 +270,6 @@ if (!node) {
             </div>
           )}
 
-          <div class="meta-card reader-notes-card">
-            <div class="reader-notes-head">
-              <h3>本页划线与笔记</h3>
-              <span class="meta-chip" data-reader-count>0</span>
-            </div>
-            <p class="reader-notes-empty" data-reader-empty>选中文章里的句子后，就能把划线和笔记留在这个浏览器里。</p>
-            <div class="reader-note-list" data-reader-list></div>
-          </div>
-
           <div class="meta-card">
             <h3>所在位置</h3>
             <div class="mini-grid">
@@ -287,6 +278,18 @@ if (!node) {
             </div>
           </div>
         </aside>
+      </div>
+
+      <div class="meta-card reader-notes-card reader-notes-panel" data-reader-panel hidden>
+        <div class="reader-notes-head">
+          <h3>本页划线与笔记</h3>
+          <div class="reader-notes-head-actions">
+            <span class="meta-chip" data-reader-count>0</span>
+            <button class="tool-switch tool-switch--compact" type="button" data-reader-panel-close>收起</button>
+          </div>
+        </div>
+        <p class="reader-notes-empty" data-reader-empty>选中文章里的句子后，就能把划线和笔记留在这个浏览器里。</p>
+        <div class="reader-note-list" data-reader-list></div>
       </div>
 
       {node.relatedPages.length > 0 && (

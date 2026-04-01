@@ -411,6 +411,11 @@ img { display: block; max-width: 100%; }
   border-color: rgba(23, 48, 67, 0.18);
   background: rgba(255, 255, 255, 0.78);
 }
+.tool-switch--compact {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 0.88rem;
+}
 
 .section-card h3,
 .book-card h3,
@@ -444,8 +449,10 @@ img { display: block; max-width: 100%; }
 .library-index-card a { padding: 24px; align-content: space-between; gap: 14px; }
 .library-hero-actions { margin-top: 2px; }
 .library-index-preview,
-.doc-side,
 .mini-grid { display: grid; }
+.doc-side { display: flex; flex-direction: column; gap: 14px; align-self: start; }
+.doc-side > .toc-card,
+.doc-side > .meta-card { width: 100%; min-width: 0; }
 .book-shelf,
 .section-shelf {
   display: grid;
@@ -573,8 +580,8 @@ img { display: block; max-width: 100%; }
 }
 .reader-mobile-pick-toggle {
   position: fixed;
-  right: 14px;
-  bottom: calc(14px + env(safe-area-inset-bottom));
+  right: 82px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
   z-index: 39;
   min-height: 42px;
   padding: 0 16px;
@@ -667,7 +674,8 @@ img { display: block; max-width: 100%; }
 }
 .reader-editor-actions,
 .reader-notes-head,
-.reader-note-actions {
+.reader-note-actions,
+.reader-notes-head-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -696,6 +704,73 @@ img { display: block; max-width: 100%; }
 }
 .reader-notes-card {
   gap: 14px;
+}
+.reader-notes-panel {
+  position: fixed;
+  right: 18px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: 37;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(68vh, 560px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.reader-notes-panel .reader-notes-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: -2px -2px 0;
+  padding: 2px 2px 8px;
+  background: rgba(255, 251, 245, 0.96);
+}
+.reader-notes-fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 38;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(23, 48, 67, 0.14);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), #2a5e7f);
+  color: #fff;
+  font: inherit;
+  font-size: 0;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(23, 48, 67, 0.22);
+}
+.reader-notes-fab::before {
+  content: "✎";
+  font-size: 1.18rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+.reader-notes-fab::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  line-height: 22px;
+  box-shadow: 0 10px 18px rgba(23, 48, 67, 0.16);
+}
+.reader-notes-fab[data-count="0"]::after {
+  display: none;
+}
+.reader-notes-fab.is-active {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 36px rgba(23, 48, 67, 0.26);
 }
 .reader-notes-empty,
 .reader-note-copy {
@@ -1005,8 +1080,7 @@ img { display: block; max-width: 100%; }
 }
 
 .doc-book-rail {
-  max-height: min(70vh, 720px);
-  overflow: auto;
+  overflow: visible;
 }
 
 .slot-link {
@@ -1267,14 +1341,27 @@ img { display: block; max-width: 100%; }
     padding: 6px;
   }
   .reader-mobile-pick-toggle {
-    right: 12px;
+    right: 76px;
     bottom: calc(12px + env(safe-area-inset-bottom));
     min-height: 44px;
     padding-left: 15px;
     padding-right: 15px;
   }
+  .reader-notes-fab {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: 50px;
+    height: 50px;
+  }
+  .reader-notes-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    max-height: min(62vh, 520px);
+  }
   .reader-status {
-    bottom: calc(64px + env(safe-area-inset-bottom));
+    bottom: calc(72px + env(safe-area-inset-bottom));
     max-width: calc(100vw - 24px);
     padding: 10px 12px;
     font-size: 0.88rem;

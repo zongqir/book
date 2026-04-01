@@ -338,12 +338,14 @@ export function setupReaderAnnotations() {
   const empty = document.querySelector<HTMLElement>("[data-reader-empty]");
   const count = document.querySelector<HTMLElement>("[data-reader-count]");
   const status = document.querySelector<HTMLElement>("[data-reader-status]");
+  const notesPanel = document.querySelector<HTMLElement>("[data-reader-panel]");
+  const panelCloseButton = document.querySelector<HTMLButtonElement>("[data-reader-panel-close]");
   const saveButton = document.querySelector<HTMLButtonElement>("[data-reader-save]");
   const cancelButton = document.querySelector<HTMLButtonElement>("[data-reader-cancel]");
   const addHighlightButton = document.querySelector<HTMLButtonElement>("[data-reader-add-highlight]");
   const addNoteButton = document.querySelector<HTMLButtonElement>("[data-reader-add-note]");
 
-  if (!toolbar || !editor || !editorQuote || !editorInput || !list || !empty || !count || !status || !saveButton || !cancelButton || !addHighlightButton || !addNoteButton) {
+  if (!toolbar || !editor || !editorQuote || !editorInput || !list || !empty || !count || !status || !notesPanel || !panelCloseButton || !saveButton || !cancelButton || !addHighlightButton || !addNoteButton) {
     return;
   }
 
@@ -355,6 +357,7 @@ export function setupReaderAnnotations() {
   let activeId: string | null = null;
   let hideToolbarTimer = 0;
   let mobilePickMode = false;
+  let isNotesPanelOpen = false;
   let activePickTarget: HTMLElement | null = null;
   const mobilePickToggle = document.createElement("button");
   mobilePickToggle.type = "button";
@@ -362,6 +365,13 @@ export function setupReaderAnnotations() {
   mobilePickToggle.hidden = true;
   mobilePickToggle.setAttribute("aria-label", "切换划线模式");
   document.body.appendChild(mobilePickToggle);
+
+  const notesFab = document.createElement("button");
+  notesFab.type = "button";
+  notesFab.className = "reader-notes-fab";
+  notesFab.setAttribute("aria-label", "打开本页划线与笔记");
+  notesFab.title = "本页划线与笔记";
+  document.body.appendChild(notesFab);
 
   function setStatus(message: string) {
     status.textContent = message;
@@ -378,6 +388,17 @@ export function setupReaderAnnotations() {
     hideToolbarTimer = 0;
   }
 
+  function syncNotesPanel() {
+    const shouldShowFab = editor.hidden && toolbar.hidden;
+    if (!shouldShowFab) {
+      isNotesPanelOpen = false;
+    }
+    notesFab.hidden = !shouldShowFab;
+    notesPanel.hidden = !isNotesPanelOpen;
+    notesFab.classList.toggle("is-active", isNotesPanelOpen);
+    notesFab.dataset.count = String(annotations.length);
+  }
+
   function setActivePickTarget(element: HTMLElement | null) {
     if (activePickTarget && activePickTarget !== element) {
       activePickTarget.classList.remove("reader-mobile-pick-target");
@@ -387,7 +408,7 @@ export function setupReaderAnnotations() {
   }
 
   function syncMobilePickToggle() {
-    const shouldShow = editor.hidden && toolbar.hidden;
+    const shouldShow = isMobileSelectionUI() && editor.hidden && toolbar.hidden;
     if (!shouldShow && mobilePickMode) {
       mobilePickMode = false;
       setActivePickTarget(null);
@@ -434,10 +455,12 @@ export function setupReaderAnnotations() {
   function openToolbar(selection: PendingSelection) {
     clearHideToolbarTimer();
     mobilePickMode = false;
+    isNotesPanelOpen = false;
     pendingSelection = selection;
     toolbar.hidden = false;
     setToolbarPosition(selection.rect);
     syncMobilePickToggle();
+    syncNotesPanel();
   }
 
   function closeEditor() {
@@ -445,11 +468,14 @@ export function setupReaderAnnotations() {
     editorInput.value = "";
     editingId = null;
     syncMobilePickToggle();
+    syncNotesPanel();
   }
 
   function openEditor(mode: "create" | "edit", annotation?: ReaderAnnotation) {
     editor.hidden = false;
+    isNotesPanelOpen = false;
     syncMobilePickToggle();
+    syncNotesPanel();
     editorInput.focus();
 
     if (mode === "edit" && annotation) {
@@ -520,6 +546,7 @@ export function setupReaderAnnotations() {
     annotations = store.list(pageId);
     renderHighlights();
     renderList();
+    syncNotesPanel();
   }
 
   function hasOverlap(anchor: AnnotationAnchor, excludeId?: string) {
@@ -619,6 +646,16 @@ export function setupReaderAnnotations() {
     openEditor("create");
   });
 
+  notesFab.addEventListener("click", () => {
+    isNotesPanelOpen = !isNotesPanelOpen;
+    syncNotesPanel();
+  });
+
+  panelCloseButton.addEventListener("click", () => {
+    isNotesPanelOpen = false;
+    syncNotesPanel();
+  });
+
   mobilePickToggle.addEventListener("click", () => {
     mobilePickMode = !mobilePickMode;
     setActivePickTarget(null);
@@ -686,6 +723,8 @@ export function setupReaderAnnotations() {
     if (focusButton) {
       const id = focusButton.dataset.annotationFocus;
       if (id) focusAnnotation(id);
+      isNotesPanelOpen = false;
+      syncNotesPanel();
       return;
     }
 
@@ -747,6 +786,15 @@ export function setupReaderAnnotations() {
     refresh();
   });
 
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (!isNotesPanelOpen) return;
+    if (notesPanel.contains(target) || notesFab.contains(target)) return;
+    isNotesPanelOpen = false;
+    syncNotesPanel();
+  });
+
   window.addEventListener("resize", () => {
     syncMobilePickToggle();
     if (!pendingSelection || toolbar.hidden) return;
@@ -756,4 +804,5 @@ export function setupReaderAnnotations() {
   refresh();
   renderList();
   syncMobilePickToggle();
+  syncNotesPanel();
 }

@@ -305,7 +305,7 @@ export function setupReaderParagraphNotes() {
     }
 
     closeEditor();
-    panelOpen = true;
+    panelOpen = false;
     refresh();
   }
 

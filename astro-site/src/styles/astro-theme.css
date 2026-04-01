@@ -549,10 +549,9 @@ img { display: block; max-width: 100%; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-width: 104px;
-  min-height: 46px;
-  padding: 0 16px;
+  width: 54px;
+  height: 54px;
+  padding: 0;
   border: 1px solid rgba(23, 48, 67, 0.12);
   border-radius: 999px;
   background: rgba(255, 251, 245, 0.96);
@@ -563,23 +562,26 @@ img { display: block; max-width: 100%; }
 }
 .reader-notes-toggle::before {
   content: "✎";
-  font-size: 0.98rem;
+  font-size: 1.02rem;
   line-height: 1;
 }
 .reader-notes-toggle::after {
   content: attr(data-count);
+  position: absolute;
+  top: -4px;
+  right: -2px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  margin-left: 10px;
-  padding: 0 6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
   border-radius: 999px;
   background: rgba(23, 48, 67, 0.1);
   color: var(--text-soft);
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  line-height: 1;
 }
 .reader-notes-toggle.is-active {
   background: linear-gradient(135deg, var(--navy), #2a5e7f);
@@ -1292,12 +1294,12 @@ img { display: block; max-width: 100%; }
   .doc-grid { gap: 14px; }
   .reader-notes-shell {
     right: 12px;
-    left: 12px;
+    left: auto;
     bottom: calc(12px + env(safe-area-inset-bottom));
   }
   .reader-notes-toggle {
-    width: 100%;
-    min-height: 46px;
+    width: 52px;
+    height: 52px;
   }
   .reader-notes-panel {
     right: 12px;

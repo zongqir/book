@@ -11,7 +11,7 @@ const featuredTags = discover.tags.slice(0, 12);
     <section class="library-panel">
       <div class="library-hero">
         <h1>搜索与筛选</h1>
-        <p>按书名、标题、标签、槽位和分类找。</p>
+        <p>按书名、标题、标签和分类找。</p>
         <div class="stats-strip discover-stats-strip">
           <div class="stat-block">
             <span class="stat-label">分类</span>
@@ -60,13 +60,6 @@ const featuredTags = discover.tags.slice(0, 12);
               {discover.sections.map((section) => <option value={section.key}>{section.title}</option>)}
             </select>
           </label>
-          <label class="field-control" id="discover-slot-field">
-            <span>槽位</span>
-            <select id="discover-slot">
-              <option value="">全部槽位</option>
-              {discover.slots.map((slot) => <option value={slot}>{slot}</option>)}
-            </select>
-          </label>
           <label class="field-control">
             <span>标签</span>
             <input id="discover-tag" list="discover-tag-list" placeholder="比如 投资 / 心理学 / 学习科学" />
@@ -101,8 +94,6 @@ const featuredTags = discover.tags.slice(0, 12);
       var queryInput = document.getElementById("discover-query");
       var kindSelect = document.getElementById("discover-kind");
       var sectionSelect = document.getElementById("discover-section");
-      var slotSelect = document.getElementById("discover-slot");
-      var slotField = document.getElementById("discover-slot-field");
       var filtersPanel = document.querySelector(".discover-filters");
       var filtersState = document.getElementById("discover-filters-state");
       var tagInput = document.getElementById("discover-tag");
@@ -127,23 +118,9 @@ const featuredTags = discover.tags.slice(0, 12);
           q: params.get("q") || "",
           kind: params.get("kind") || "all",
           section: params.get("section") || "",
-          slot: params.get("slot") || "",
           tag: params.get("tag") || "",
         };
       }
-
-      function syncSlotAvailability() {
-        if (!(slotSelect instanceof HTMLSelectElement)) return;
-        var isBookMode = kindSelect instanceof HTMLSelectElement && kindSelect.value === "book";
-        slotSelect.disabled = isBookMode;
-        if (slotField instanceof HTMLElement) {
-          slotField.hidden = isBookMode;
-        }
-        if (isBookMode) {
-          slotSelect.value = "";
-        }
-      }
-
 
       function syncFilterPanel() {
         if (!(filtersPanel instanceof HTMLDetailsElement)) return;
@@ -160,9 +137,6 @@ const featuredTags = discover.tags.slice(0, 12);
           var sectionLabel = sectionSelect.selectedOptions.length ? sectionSelect.selectedOptions[0].textContent : "";
           if (sectionLabel) labels.push(sectionLabel.trim());
         }
-        if (filters.slot && filters.kind !== "book") {
-          labels.push("槽位 " + filters.slot);
-        }
         if (filters.tag) {
           labels.push(filters.tag);
         }
@@ -174,9 +148,7 @@ const featuredTags = discover.tags.slice(0, 12);
         if (queryInput) queryInput.value = params.q;
         if (kindSelect) kindSelect.value = params.kind;
         if (sectionSelect) sectionSelect.value = params.section;
-        if (slotSelect) slotSelect.value = params.slot;
         if (tagInput) tagInput.value = params.tag;
-        syncSlotAvailability();
         syncFilterPanel();
       }
 
@@ -185,7 +157,6 @@ const featuredTags = discover.tags.slice(0, 12);
         if (next.q) params.set("q", next.q);
         if (next.kind && next.kind !== "all") params.set("kind", next.kind);
         if (next.section) params.set("section", next.section);
-        if (next.slot) params.set("slot", next.slot);
         if (next.tag) params.set("tag", next.tag);
         var query = params.toString();
         var target = query ? window.location.pathname + "?" + query : window.location.pathname;
@@ -197,7 +168,6 @@ const featuredTags = discover.tags.slice(0, 12);
           q: queryInput ? queryInput.value.trim().toLowerCase() : "",
           kind: kindSelect ? kindSelect.value : "all",
           section: sectionSelect ? sectionSelect.value : "",
-          slot: slotSelect ? slotSelect.value : "",
           tag: tagInput ? tagInput.value.trim() : "",
         };
       }
@@ -216,7 +186,6 @@ const featuredTags = discover.tags.slice(0, 12);
       function passesFilters(item, filters) {
         if (filters.kind !== "all" && item.kind !== filters.kind) return false;
         if (filters.section && item.section_key !== filters.section) return false;
-        if (filters.slot && item.kind === "page" && item.slot !== filters.slot) return false;
         if (filters.tag && !item.tags.includes(filters.tag)) return false;
         if (filters.q && scoreItem(item, filters.q) === 0) return false;
         return true;
@@ -259,13 +228,10 @@ const featuredTags = discover.tags.slice(0, 12);
       }
 
       function bind() {
-        [queryInput, kindSelect, sectionSelect, slotSelect, tagInput].forEach(function (node) {
+        [queryInput, kindSelect, sectionSelect, tagInput].forEach(function (node) {
           if (!node) return;
           node.addEventListener("input", render);
-          node.addEventListener("change", function () {
-            syncSlotAvailability();
-            render();
-          });
+          node.addEventListener("change", render);
         });
 
         if (resetButton) {
@@ -273,9 +239,7 @@ const featuredTags = discover.tags.slice(0, 12);
             if (queryInput) queryInput.value = "";
             if (kindSelect) kindSelect.value = "all";
             if (sectionSelect) sectionSelect.value = "";
-            if (slotSelect) slotSelect.value = "";
             if (tagInput) tagInput.value = "";
-            syncSlotAvailability();
             render();
           });
         }

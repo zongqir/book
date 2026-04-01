@@ -691,7 +691,7 @@ img { display: block; max-width: 100%; }
 
 .discover-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(150px, 1fr)) minmax(140px, 0.8fr);
+  grid-template-columns: minmax(0, 1.15fr) repeat(2, minmax(160px, 1fr)) minmax(140px, 0.8fr);
   gap: 14px;
 }
 
@@ -947,12 +947,17 @@ img { display: block; max-width: 100%; }
     display: flex;
     gap: 8px;
     overflow-x: auto;
+    padding-right: 20px;
     padding-bottom: 2px;
     scrollbar-width: none;
   }
   .discover-stats-strip::-webkit-scrollbar { display: none; }
+  .discover-stats-strip .stat-block:last-child {
+    margin-right: 2px;
+  }
   .discover-stats-strip .stat-block {
     flex: 0 0 116px;
+    scroll-snap-align: start;
     padding: 12px 14px 14px;
     border-radius: 16px;
   }

@@ -1434,6 +1434,14 @@ img { display: block; max-width: 100%; }
     max-height: none;
     padding: 16px;
     border-radius: 24px;
+    overflow: hidden;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  }
+  .reader-notes-head {
+    align-items: flex-start;
+  }
+  .reader-notes-head h3 {
+    white-space: normal;
   }
   .reader-notes-toolbar,
   .reader-notes-editor-actions,
@@ -1441,14 +1449,41 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     align-items: stretch;
   }
+  .reader-notes-toolbar {
+    gap: 8px;
+  }
+  .reader-notes-list {
+    min-height: 0;
+    overflow: auto;
+    padding-right: 2px;
+  }
+  .reader-notes-color-field {
+    gap: 8px;
+  }
+  .reader-notes-colors {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .reader-notes-color {
+    width: 100%;
+    max-width: 42px;
+    height: 42px;
+    justify-self: start;
+  }
   .reader-notes-editor {
     padding: 12px;
     place-items: end stretch;
   }
   .reader-notes-editor-card {
     width: 100%;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-bottom));
+    overflow: auto;
     padding: 18px;
     border-radius: 20px;
+  }
+  .reader-notes-field textarea {
+    min-height: 112px;
   }
   .reader-notes-status {
     right: 12px;

@@ -230,10 +230,11 @@ img { display: block; max-width: 100%; }
   align-items: center;
   justify-content: space-between;
 }
-.hero-tool-head { align-items: flex-start; margin-bottom: 18px; }
+.hero-tool-head { align-items: flex-start; margin-bottom: 0; }
 .hero-tool-head h2,
 .section-head h2 { margin: 0; font-family: "Noto Serif SC", serif; }
 .section-head h2 { font-size: clamp(1.8rem, 2.5vw, 2.4rem); }
+.actions { margin-top: auto; }
 .eyebrow { margin: 0; font-size: 0.74rem; color: var(--accent-strong); }
 .btn {
   display: inline-flex;
@@ -258,7 +259,6 @@ img { display: block; max-width: 100%; }
 }
 .hero-tools { display: grid; gap: 16px; }
 .hero-tools--stage { grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr); align-items: stretch; }
-.hero-tool-card--primary .book-dice-card { min-height: 100%; }
 .hero-tool-card,
 .section-card,
 .book-card,
@@ -286,11 +286,20 @@ img { display: block; max-width: 100%; }
 .doc-card,
 .toc-card,
 .meta-card { padding: 22px; }
+.hero-tool-card {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  height: 100%;
+}
 .hero-tool-card--primary { background: linear-gradient(160deg, rgba(255, 245, 233, 0.88), rgba(255, 255, 255, 0.62)); }
 .book-dice-card,
 .random-quote-card {
   display: grid;
   gap: 16px;
+  height: 100%;
+  min-height: 0;
+  align-content: start;
   padding: 26px;
   border-radius: 22px;
   background: linear-gradient(155deg, rgba(243, 234, 219, 0.84), rgba(255, 255, 255, 0.82));
@@ -305,6 +314,7 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   letter-spacing: 0;
 }
+.book-dice-tags { gap: 8px; }
 .book-dice-card h3,
 .page-title,
 .quote-display,
@@ -342,9 +352,15 @@ img { display: block; max-width: 100%; }
   text-overflow: ellipsis;
 }
 .book-dice-tag {
-  min-height: 20px;
-  padding: 0 8px;
-  border-radius: 7px;
+  min-height: 18px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border-color: rgba(47, 91, 124, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(23, 48, 67, 0.76);
+  font-size: 0.68rem;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
 }
 .preview-pill {
   min-height: 20px;
@@ -1274,7 +1290,7 @@ img { display: block; max-width: 100%; }
   .hero-tool-head,
   .actions,
   .random-quote-source { flex-direction: column; align-items: flex-start; }
-  .hero-tool-head { gap: 10px; margin-bottom: 14px; }
+  .hero-tool-head { gap: 10px; margin-bottom: 0; }
   .book-dice-card,
   .random-quote-card { padding: 18px; gap: 12px; }
   .hero-tool-card--primary .book-dice-card { min-height: 0; }

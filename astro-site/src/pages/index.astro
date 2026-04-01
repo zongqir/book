@@ -70,6 +70,7 @@ const sectionPreviewMap = Object.fromEntries(
             <div>
               <h2>再读一句</h2>
             </div>
+            <button class="tool-switch" type="button" id="random-quote-shuffle">再抽一句</button>
           </header>
           {firstQuote ? (
             <>
@@ -79,9 +80,6 @@ const sectionPreviewMap = Object.fromEntries(
                   <span id="random-quote-book">{firstQuote.book_title}</span>
                   <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
                 </p>
-              </div>
-              <div class="actions">
-                <button class="btn btn-ghost" type="button" id="random-quote-shuffle">再抽一句</button>
               </div>
             </>
           ) : (

@@ -148,7 +148,7 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 .home-stage { padding: 28px; display: grid; gap: 24px; }
-.home-stage-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 0.95fr); gap: 24px; align-items: end; }
+.home-stage-head { display: block; }
 .hero-kicker { margin: 0 0 14px; color: var(--accent-strong); font-size: 0.8rem; }
 .home-stage h1,
 .page-intro h1,
@@ -327,13 +327,13 @@ img { display: block; max-width: 100%; }
 .preview-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 30px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(23, 48, 67, 0.08);
-  background: rgba(255, 255, 255, 0.62);
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(23, 48, 67, 0.06);
+  background: rgba(23, 48, 67, 0.04);
   color: var(--text-soft);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 .book-dice-count { margin: 0; color: var(--text); font-weight: 600; }
 .quote-display { font-size: clamp(1.8rem, 2.8vw, 2.7rem); line-height: 1.45; }
@@ -368,8 +368,28 @@ img { display: block; max-width: 100%; }
 .book-card:hover,
 .doc-card:hover,
 .library-index-card:hover { transform: translateY(-4px); }
-.section-index,
 .slot-badge { font-family: "IBM Plex Mono", monospace; font-size: 0.9rem; color: var(--text-faint); }
+.tool-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(23, 48, 67, 0.1);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: none;
+}
+.tool-switch:hover,
+.tool-switch:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(23, 48, 67, 0.18);
+  background: rgba(255, 255, 255, 0.78);
+}
+
 .section-card h3,
 .book-card h3,
 .doc-card h3,
@@ -782,7 +802,6 @@ img { display: block; max-width: 100%; }
   .meta-card { animation: none; }
 }
 @media (max-width: 1080px) {
-  .home-stage-head,
   .hero-tools--stage,
   .doc-grid,
   .discover-controls { grid-template-columns: 1fr; }
@@ -793,7 +812,6 @@ img { display: block; max-width: 100%; }
   .library-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .section-card,
   .library-index-card { grid-column: span 1; }
-  .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .field-control--wide { grid-column: span 1; }
 }
 @media (max-width: 760px) {
@@ -824,7 +842,6 @@ img { display: block; max-width: 100%; }
   .page-intro h1,
   .library-hero h1,
   .page-title { font-size: clamp(2.2rem, 10vw, 3.1rem); }
-  .hero-stats,
   .stats-strip,
   .home-sections,
   .library-sections,

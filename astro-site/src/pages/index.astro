@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData } from "../lib/content";
 
-const { books, counts, quotes, sections } = getHomeData();
+const { books, quotes, sections } = getHomeData();
 const firstBook = books[0];
 const firstQuote = quotes[0];
 const sectionPreviewMap = Object.fromEntries(
@@ -23,21 +23,6 @@ const sectionPreviewMap = Object.fromEntries(
         <div>
           <h1>随机翻一本到</h1>
         </div>
-
-        <div class="hero-stats">
-          <div class="stat-block">
-            <span class="stat-label">分类</span>
-            <span class="stat-value">{counts.sections}</span>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">书目</span>
-            <span class="stat-value">{counts.books}</span>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">摘句</span>
-            <span class="stat-value">{counts.quotes}</span>
-          </div>
-        </div>
       </div>
 
       <div class="hero-tools hero-tools--stage">
@@ -46,6 +31,7 @@ const sectionPreviewMap = Object.fromEntries(
             <div>
               <h2>先看一本</h2>
             </div>
+            <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
           </header>
           {firstBook ? (
             <>
@@ -64,8 +50,7 @@ const sectionPreviewMap = Object.fromEntries(
                 </div>
               </div>
               <div class="actions">
-                <button class="btn btn-ghost" type="button" id="book-dice-shuffle">换一本</button>
-                <a class="btn" id="book-dice-open" href={firstBook.url}>打开目录</a>
+                <a class="btn" id="book-dice-open" href={firstBook.url}>进入书页</a>
               </div>
             </>
           ) : (
@@ -111,7 +96,6 @@ const sectionPreviewMap = Object.fromEntries(
           <article class="section-card">
             <a href={section.url}>
               <div class="section-top">
-                <span class="section-index">{section.key.slice(0, 2)}</span>
                 <span class="preview-pill">{section.book_count} 本书</span>
               </div>
               <div>

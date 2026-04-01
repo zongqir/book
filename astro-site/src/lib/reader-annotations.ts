@@ -1,6 +1,15 @@
-type AnnotationColor = "amber";
+import {
+  UserSelectAction,
+  W3CTextFormat,
+  createTextAnnotator,
+  type TextAnnotation,
+  type W3CTextAnnotation,
+  type W3CTextAnnotationTarget,
+  type W3CTextPositionSelector,
+  type W3CTextQuoteSelector,
+} from "@recogito/text-annotator";
 
-type AnnotationAnchor = {
+type LegacyAnnotationAnchor = {
   start: number;
   end: number;
   quote: string;
@@ -8,314 +17,264 @@ type AnnotationAnchor = {
   suffix: string;
 };
 
-export type ReaderAnnotation = {
+type LegacyReaderAnnotation = {
   id: string;
   pageId: string;
   quote: string;
   note: string;
-  color: AnnotationColor;
+  color: "amber";
   createdAt: string;
   updatedAt: string;
-  anchor: AnnotationAnchor;
+  anchor: LegacyAnnotationAnchor;
 };
 
-type AnnotationDraft = {
-  pageId: string;
-  quote: string;
-  note: string;
-  color: AnnotationColor;
-  anchor: AnnotationAnchor;
+type StoredPayload = {
+  version: 2;
+  annotations: W3CTextAnnotation[];
 };
 
-type ResolvedAnnotation = {
-  annotation: ReaderAnnotation;
-  start: number;
-  end: number;
-};
-
-type PendingSelection = {
-  quote: string;
-  anchor: AnnotationAnchor;
-  rect: DOMRect;
-};
-
-type AnnotationStore = {
-  list(pageId: string): ReaderAnnotation[];
-  create(draft: AnnotationDraft): ReaderAnnotation;
-  update(id: string, patch: Partial<Pick<ReaderAnnotation, "note" | "color">>): ReaderAnnotation | null;
-  remove(id: string): void;
-};
-
-type StorePayload = {
-  version: 1;
-  annotations: ReaderAnnotation[];
+type LegacyStoredPayload = {
+  version?: 1;
+  annotations: LegacyReaderAnnotation[];
 };
 
 const STORAGE_KEY = "book-reader-annotations:v1";
 const FAB_POSITION_KEY = "book-reader-notes-fab-position:v1";
-const CONTEXT_WINDOW = 48;
-const HIGHLIGHT_CLASS = "reader-highlight";
-const ACTIVE_CLASS = "is-active";
 const MOBILE_BREAKPOINT = 760;
-const MOBILE_HIDE_DELAY_MS = 260;
 const FAB_SIZE = 54;
 const FAB_MARGIN = 18;
 const FAB_DRAG_THRESHOLD = 6;
-const MOBILE_PICK_SELECTOR = "p, li, blockquote, pre, td, th";
+const W3C_CONTEXT = "http://www.w3.org/ns/anno.jsonld";
 
-class LocalAnnotationStore implements AnnotationStore {
-  private load(): StorePayload {
+type StoredAnnotationBody = {
+  id?: string;
+  type?: string;
+  purpose?: string;
+  value?: string;
+  created?: string;
+  modified?: string;
+};
+
+function stampAnnotationPage(annotation: W3CTextAnnotation, pageId: string): W3CTextAnnotation {
+  const normalized = normalizeStoredAnnotation(annotation);
+  const target = Array.isArray(normalized.target)
+    ? normalized.target.map((item) => ({ ...item, scope: pageId }))
+    : { ...normalized.target, scope: pageId };
+
+  return {
+    ...normalized,
+    target,
+    properties: {
+      ...normalized.properties,
+      pageId,
+    },
+  };
+}
+
+class LocalAnnotationStore {
+  private loadRaw(): StoredPayload {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { version: 1, annotations: [] };
-      const parsed = JSON.parse(raw) as Partial<StorePayload>;
-      const annotations = Array.isArray(parsed.annotations) ? parsed.annotations.filter(isValidAnnotation) : [];
-      return { version: 1, annotations };
+      if (!raw) return { version: 2, annotations: [] };
+
+      const parsed = JSON.parse(raw) as Partial<StoredPayload & LegacyStoredPayload>;
+      const annotations = Array.isArray(parsed.annotations) ? parsed.annotations : [];
+      if (annotations.length === 0) {
+        return { version: 2, annotations: [] };
+      }
+
+      if (isLegacyAnnotation(annotations[0])) {
+        return {
+          version: 2,
+          annotations: annotations.filter(isLegacyAnnotation).map(convertLegacyAnnotation),
+        };
+      }
+
+      return {
+        version: 2,
+        annotations: annotations.filter(isStoredAnnotation).map(normalizeStoredAnnotation),
+      };
     } catch {
-      return { version: 1, annotations: [] };
+      return { version: 2, annotations: [] };
     }
   }
 
-  private save(payload: StorePayload) {
+  private save(payload: StoredPayload) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   }
 
   list(pageId: string) {
-    return this.load()
+    return this.loadRaw()
       .annotations
-      .filter((annotation) => annotation.pageId === pageId)
-      .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+      .filter((annotation) => getAnnotationPageId(annotation) === pageId)
+      .sort(compareAnnotations);
   }
 
-  create(draft: AnnotationDraft) {
-    const payload = this.load();
-    const now = new Date().toISOString();
-    const annotation: ReaderAnnotation = {
-      id: createId(),
-      pageId: draft.pageId,
-      quote: draft.quote,
-      note: draft.note,
-      color: draft.color,
-      createdAt: now,
-      updatedAt: now,
-      anchor: draft.anchor,
-    };
-    payload.annotations.push(annotation);
-    this.save(payload);
-    return annotation;
-  }
-
-  update(id: string, patch: Partial<Pick<ReaderAnnotation, "note" | "color">>) {
-    const payload = this.load();
-    const target = payload.annotations.find((annotation) => annotation.id === id);
-    if (!target) return null;
-    if (typeof patch.note === "string") target.note = patch.note;
-    if (patch.color) target.color = patch.color;
-    target.updatedAt = new Date().toISOString();
-    this.save(payload);
-    return target;
-  }
-
-  remove(id: string) {
-    const payload = this.load();
-    payload.annotations = payload.annotations.filter((annotation) => annotation.id !== id);
-    this.save(payload);
+  writePage(pageId: string, annotations: W3CTextAnnotation[]) {
+    const payload = this.loadRaw();
+    const others = payload.annotations.filter((annotation) => getAnnotationPageId(annotation) !== pageId);
+    this.save({
+      version: 2,
+      annotations: [...others, ...annotations.map((annotation) => stampAnnotationPage(annotation, pageId))],
+    });
   }
 }
 
-function isValidAnnotation(value: unknown): value is ReaderAnnotation {
+function isLegacyAnnotation(value: unknown): value is LegacyReaderAnnotation {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<ReaderAnnotation>;
+  const candidate = value as Partial<LegacyReaderAnnotation>;
   return !!(
     candidate.id &&
     candidate.pageId &&
-    candidate.quote !== undefined &&
-    candidate.note !== undefined &&
     candidate.anchor &&
     typeof candidate.anchor.start === "number" &&
     typeof candidate.anchor.end === "number"
   );
 }
 
-function createId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
+function isStoredAnnotation(value: unknown): value is W3CTextAnnotation {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<W3CTextAnnotation>;
+  return !!candidate.id && !!candidate.target;
+}
+
+function parseDate(value: unknown) {
+  if (!value) return undefined;
+  if (value instanceof Date) return value;
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return "ann-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  return undefined;
 }
 
-function getPlainText(root: HTMLElement) {
-  return root.textContent ?? "";
+function toIsoString(value: unknown, fallback = new Date()) {
+  return (parseDate(value) ?? fallback).toISOString();
 }
 
-function getNodeTextLength(node: Node | null): number {
-  if (!node) return 0;
-  if (node.nodeType === Node.TEXT_NODE) {
-    return node.nodeValue?.length ?? 0;
-  }
-  let total = 0;
-  node.childNodes.forEach((child) => {
-    total += getNodeTextLength(child);
-  });
-  return total;
-}
-
-function getOffsetWithinRoot(root: HTMLElement, container: Node, offset: number): number {
-  let cursor = 0;
-  let found = false;
-
-  function visit(node: Node) {
-    if (found) return;
-    if (node === container) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        cursor += offset;
-      } else {
-        const max = Math.min(offset, node.childNodes.length);
-        for (let index = 0; index < max; index += 1) {
-          cursor += getNodeTextLength(node.childNodes[index]);
-        }
-      }
-      found = true;
-      return;
-    }
-
-    if (node.nodeType === Node.TEXT_NODE) {
-      cursor += node.nodeValue?.length ?? 0;
-      return;
-    }
-
-    node.childNodes.forEach((child) => {
-      visit(child);
-    });
-  }
-
-  visit(root);
-  return cursor;
-}
-
-function buildAnchor(root: HTMLElement, range: Range): AnnotationAnchor | null {
-  const start = getOffsetWithinRoot(root, range.startContainer, range.startOffset);
-  const end = getOffsetWithinRoot(root, range.endContainer, range.endOffset);
-  if (end <= start) return null;
-  const text = getPlainText(root);
-  const quote = text.slice(start, end);
-  if (!quote.trim()) return null;
+function normalizeBody(body: StoredAnnotationBody): StoredAnnotationBody {
   return {
-    start,
-    end,
-    quote,
-    prefix: text.slice(Math.max(0, start - CONTEXT_WINDOW), start),
-    suffix: text.slice(end, Math.min(text.length, end + CONTEXT_WINDOW)),
+    ...body,
+    created: typeof body.created === "string" ? body.created : undefined,
+    modified: typeof body.modified === "string" ? body.modified : undefined,
   };
 }
 
-function resolveAnchor(root: HTMLElement, anchor: AnnotationAnchor): { start: number; end: number } | null {
-  const text = getPlainText(root);
-  if (anchor.end <= text.length && text.slice(anchor.start, anchor.end) === anchor.quote) {
-    return { start: anchor.start, end: anchor.end };
-  }
-
-  if (!anchor.quote) return null;
-  let bestMatch: { start: number; score: number } | null = null;
-  let searchFrom = 0;
-
-  while (searchFrom < text.length) {
-    const index = text.indexOf(anchor.quote, searchFrom);
-    if (index === -1) break;
-    const prefix = text.slice(Math.max(0, index - anchor.prefix.length), index);
-    const suffix = text.slice(index + anchor.quote.length, index + anchor.quote.length + anchor.suffix.length);
-    const score = commonSuffixLength(prefix, anchor.prefix) * 2 + commonPrefixLength(suffix, anchor.suffix);
-    if (!bestMatch || score > bestMatch.score) {
-      bestMatch = { start: index, score };
-      if (score >= anchor.prefix.length * 2 + anchor.suffix.length) break;
-    }
-    searchFrom = index + anchor.quote.length;
-  }
-
-  if (!bestMatch) return null;
-  return { start: bestMatch.start, end: bestMatch.start + anchor.quote.length };
+function normalizeTarget(target: W3CTextAnnotationTarget): W3CTextAnnotationTarget {
+  return {
+    ...target,
+  };
 }
 
-function commonPrefixLength(left: string, right: string) {
-  const length = Math.min(left.length, right.length);
-  let index = 0;
-  while (index < length && left[index] === right[index]) index += 1;
-  return index;
+function getAnnotationBodies(annotation: W3CTextAnnotation): StoredAnnotationBody[] {
+  const body = annotation.body;
+  if (!body) return [];
+  return Array.isArray(body) ? body : [body];
 }
 
-function commonSuffixLength(left: string, right: string) {
-  const length = Math.min(left.length, right.length);
-  let index = 0;
-  while (index < length && left[left.length - 1 - index] === right[right.length - 1 - index]) index += 1;
-  return index;
+function normalizeStoredAnnotation(annotation: W3CTextAnnotation): W3CTextAnnotation {
+  const target = Array.isArray(annotation.target)
+    ? annotation.target.map((item) => normalizeTarget(item as W3CTextAnnotationTarget))
+    : normalizeTarget(annotation.target as W3CTextAnnotationTarget);
+
+  return {
+    ...annotation,
+    "@context": annotation["@context"] ?? W3C_CONTEXT,
+    type: annotation.type ?? "Annotation",
+    target,
+    body: getAnnotationBodies(annotation).map(normalizeBody),
+    properties: annotation.properties ? { ...annotation.properties } : undefined,
+  };
 }
 
-function getTextSegments(root: HTMLElement, start: number, end: number) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const segments: Array<{ node: Text; start: number; end: number }> = [];
-  let cursor = 0;
-  let current = walker.nextNode();
+function convertLegacyAnnotation(annotation: LegacyReaderAnnotation): W3CTextAnnotation {
+  const created = parseDate(annotation.createdAt) ?? new Date();
+  const updated = parseDate(annotation.updatedAt) ?? created;
 
-  while (current) {
-    const node = current as Text;
-    const length = node.nodeValue?.length ?? 0;
-    const nodeStart = cursor;
-    const nodeEnd = cursor + length;
-    if (end > nodeStart && start < nodeEnd) {
-      segments.push({
-        node,
-        start: Math.max(0, start - nodeStart),
-        end: Math.min(length, end - nodeStart),
-      });
-    }
-    cursor = nodeEnd;
-    current = walker.nextNode();
-  }
-
-  return segments;
+  return {
+    "@context": W3C_CONTEXT,
+    type: "Annotation",
+    id: annotation.id,
+    created: created.toISOString(),
+    modified: updated.toISOString(),
+    body: annotation.note.trim()
+      ? [{
+          id: annotation.id + "#note",
+          type: "TextualBody",
+          purpose: "commenting",
+          value: annotation.note.trim(),
+          created: created.toISOString(),
+          modified: updated.toISOString(),
+        }]
+      : [],
+    properties: {
+      pageId: annotation.pageId,
+    },
+    target: {
+      source: annotation.pageId,
+      scope: annotation.pageId,
+      selector: [
+        {
+          type: "TextQuoteSelector",
+          exact: annotation.anchor.quote,
+          prefix: annotation.anchor.prefix,
+          suffix: annotation.anchor.suffix,
+        },
+        {
+          type: "TextPositionSelector",
+          start: annotation.anchor.start,
+          end: annotation.anchor.end,
+        },
+      ],
+    },
+  };
 }
 
-function unwrapHighlights(root: HTMLElement) {
-  root.querySelectorAll("mark[data-annotation-id]").forEach((mark) => {
-    const parent = mark.parentNode;
-    if (!parent) return;
-    while (mark.firstChild) {
-      parent.insertBefore(mark.firstChild, mark);
-    }
-    parent.removeChild(mark);
-  });
-  root.normalize();
+function compareAnnotations(left: W3CTextAnnotation, right: W3CTextAnnotation) {
+  return getAnnotationTimestamp(left).getTime() - getAnnotationTimestamp(right).getTime();
 }
 
-function wrapHighlight(root: HTMLElement, item: ResolvedAnnotation, activeId: string | null) {
-  const segments = getTextSegments(root, item.start, item.end);
-  [...segments].reverse().forEach((segment) => {
-    if (segment.end <= segment.start) return;
-    const rangeNode = segment.node.splitText(segment.start);
-    const tail = rangeNode.splitText(segment.end - segment.start);
-    const mark = document.createElement("mark");
-    mark.className = HIGHLIGHT_CLASS;
-    if (item.annotation.id === activeId) {
-      mark.classList.add(ACTIVE_CLASS);
-    }
-    mark.dataset.annotationId = item.annotation.id;
-    mark.dataset.annotationColor = item.annotation.color;
-    mark.tabIndex = 0;
-    if (item.annotation.note) {
-      mark.title = item.annotation.note;
-    }
-    rangeNode.parentNode?.insertBefore(mark, tail);
-    mark.appendChild(rangeNode);
-  });
+function getPrimaryTarget(annotation: W3CTextAnnotation): W3CTextAnnotationTarget {
+  return Array.isArray(annotation.target)
+    ? (annotation.target[0] as W3CTextAnnotationTarget)
+    : (annotation.target as W3CTextAnnotationTarget);
 }
 
-function formatTime(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+function getSelectors(annotation: W3CTextAnnotation) {
+  const selector = getPrimaryTarget(annotation).selector;
+  return Array.isArray(selector) ? selector : [selector];
+}
+
+function getQuoteSelector(annotation: W3CTextAnnotation) {
+  return getSelectors(annotation).find((selector): selector is W3CTextQuoteSelector => selector.type === "TextQuoteSelector");
+}
+
+function getPositionSelector(annotation: W3CTextAnnotation) {
+  return getSelectors(annotation).find((selector): selector is W3CTextPositionSelector => selector.type === "TextPositionSelector");
+}
+
+function getAnnotationPageId(annotation: W3CTextAnnotation) {
+  return String(annotation.properties?.pageId ?? getPrimaryTarget(annotation).scope ?? "");
+}
+
+function getAnnotationQuote(annotation: W3CTextAnnotation) {
+  return getQuoteSelector(annotation)?.exact?.trim() ?? "";
+}
+
+function getAnnotationNote(annotation: W3CTextAnnotation) {
+  return getAnnotationBodies(annotation).find((body) => body.purpose === "commenting")?.value?.trim() ?? "";
+}
+
+function getAnnotationTimestamp(annotation: W3CTextAnnotation) {
+  return parseDate(annotation.modified) ?? parseDate(annotation.created) ?? new Date();
+}
+
+function formatTime(value: Date | undefined) {
+  if (!value) return "";
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  const hours = String(value.getHours()).padStart(2, "0");
+  const minutes = String(value.getMinutes()).padStart(2, "0");
   return month + "-" + day + " " + hours + ":" + minutes;
 }
 
@@ -328,9 +287,16 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+function isRangeInsideRoot(root: HTMLElement, range: Range) {
+  const startNode = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer;
+  const endNode = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentNode : range.endContainer;
+  return !!startNode && !!endNode && root.contains(startNode) && root.contains(endNode);
+}
+
 export function setupReaderAnnotations() {
   const root = document.querySelector<HTMLElement>("[data-reader-root]");
   if (!root) return;
+
   const pageId = root.dataset.pageId;
   if (!pageId) return;
 
@@ -354,15 +320,26 @@ export function setupReaderAnnotations() {
   }
 
   const store = new LocalAnnotationStore();
-  let annotations = store.list(pageId);
-  let resolved = new Map<string, ResolvedAnnotation>();
-  let pendingSelection: PendingSelection | null = null;
-  let editingId: string | null = null;
+  const annotator = createTextAnnotator<TextAnnotation, W3CTextAnnotation>(root, {
+    adapter: W3CTextFormat<TextAnnotation, W3CTextAnnotation>(window.location.href.split("#")[0], root),
+    dismissOnNotAnnotatable: "ALWAYS",
+    renderer: "SPANS",
+    selectionMode: "all",
+    style: (_annotation, state) => ({
+      fill: state.selected ? "#a45b2a" : "#e0bf6a",
+      fillOpacity: state.selected ? 0.28 : 0.46,
+    }),
+    userSelectAction: UserSelectAction.SELECT,
+  });
+
+  annotator.setAnnotations(store.list(pageId), true);
+
+  let annotations = annotator.getAnnotations().sort(compareAnnotations);
   let activeId: string | null = null;
-  let hideToolbarTimer = 0;
-  let mobilePickMode = false;
+  let pendingCreatedId: string | null = null;
+  let editingId: string | null = null;
   let isNotesPanelOpen = false;
-  let activePickTarget: HTMLElement | null = null;
+  let lastSelectionRect: DOMRect | null = null;
   let fabX = 0;
   let fabY = 0;
   let fabPointerId: number | null = null;
@@ -371,12 +348,6 @@ export function setupReaderAnnotations() {
   let fabStartX = 0;
   let fabStartY = 0;
   let isDraggingFab = false;
-  const mobilePickToggle = document.createElement("button");
-  mobilePickToggle.type = "button";
-  mobilePickToggle.className = "reader-mobile-pick-toggle tool-switch";
-  mobilePickToggle.hidden = true;
-  mobilePickToggle.setAttribute("aria-label", "切换划线模式");
-  document.body.appendChild(mobilePickToggle);
 
   const notesFab = document.createElement("button");
   notesFab.type = "button";
@@ -390,14 +361,56 @@ export function setupReaderAnnotations() {
     status.hidden = !message;
   }
 
-  function isMobileSelectionUI() {
-    return window.innerWidth <= MOBILE_BREAKPOINT || window.matchMedia("(pointer: coarse)").matches;
+  function clearNativeSelection() {
+    window.getSelection()?.removeAllRanges();
   }
 
-  function clearHideToolbarTimer() {
-    if (!hideToolbarTimer) return;
-    window.clearTimeout(hideToolbarTimer);
-    hideToolbarTimer = 0;
+  function captureSelectionRect() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
+    const range = selection.getRangeAt(0);
+    if (!isRangeInsideRoot(root, range)) return null;
+    return range.getBoundingClientRect();
+  }
+
+  function hideToolbar() {
+    toolbar.hidden = true;
+    toolbar.classList.remove("reader-toolbar--docked");
+    toolbar.style.removeProperty("left");
+    toolbar.style.removeProperty("top");
+  }
+
+  function closeEditor() {
+    editor.hidden = true;
+    editorInput.value = "";
+    editingId = null;
+    syncNotesPanel();
+  }
+
+  function getToolbarFallbackRect() {
+    return root.getBoundingClientRect();
+  }
+
+  function setToolbarPosition(rect: DOMRect) {
+    if (window.innerWidth <= MOBILE_BREAKPOINT || window.matchMedia("(pointer: coarse)").matches) {
+      toolbar.classList.add("reader-toolbar--docked");
+      toolbar.style.removeProperty("left");
+      toolbar.style.removeProperty("top");
+      return;
+    }
+
+    toolbar.classList.remove("reader-toolbar--docked");
+    const left = Math.min(window.innerWidth - 180, Math.max(12, rect.left + rect.width / 2 - 78));
+    const top = Math.max(12, rect.top + window.scrollY - 52);
+    toolbar.style.left = left + "px";
+    toolbar.style.top = top + "px";
+  }
+
+  function openToolbar() {
+    toolbar.hidden = false;
+    setToolbarPosition(lastSelectionRect ?? getToolbarFallbackRect());
+    clearNativeSelection();
+    syncNotesPanel();
   }
 
   function clampFabPosition(nextX: number, nextY: number) {
@@ -479,251 +492,150 @@ export function setupReaderAnnotations() {
     positionNotesPanel();
   }
 
-  function setActivePickTarget(element: HTMLElement | null) {
-    if (activePickTarget && activePickTarget !== element) {
-      activePickTarget.classList.remove("reader-mobile-pick-target");
-    }
-    activePickTarget = element;
-    activePickTarget?.classList.add("reader-mobile-pick-target");
+  function renderList() {
+    count.textContent = String(annotations.length);
+    empty.hidden = annotations.length > 0;
+    list.innerHTML = annotations.map((annotation) => {
+      const note = getAnnotationNote(annotation);
+      const quote = getAnnotationQuote(annotation);
+      const isActive = activeId === annotation.id;
+      return (
+        '<article class="reader-note-item' + (isActive ? ' is-active' : '') + '" data-annotation-item="' + escapeHtml(annotation.id) + '">' +
+          '<button class="reader-note-focus" type="button" data-annotation-focus="' + escapeHtml(annotation.id) + '">' +
+            '<span class="reader-note-quote">' + escapeHtml(quote) + '</span>' +
+            '<span class="reader-note-meta">' + (note ? '有笔记' : '仅划线') + ' · ' + escapeHtml(formatTime(getAnnotationTimestamp(annotation))) + '</span>' +
+          '</button>' +
+          (note ? '<p class="reader-note-copy">' + escapeHtml(note) + '</p>' : '') +
+          '<div class="reader-note-actions">' +
+            '<button class="tool-switch" type="button" data-annotation-edit="' + escapeHtml(annotation.id) + '">编辑</button>' +
+            '<button class="tool-switch" type="button" data-annotation-delete="' + escapeHtml(annotation.id) + '">删除</button>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join("");
   }
 
-  function syncMobilePickToggle() {
-    const shouldShow = isMobileSelectionUI() && editor.hidden && toolbar.hidden;
-    if (!shouldShow && mobilePickMode) {
-      mobilePickMode = false;
-      setActivePickTarget(null);
-    }
-    mobilePickToggle.hidden = !shouldShow;
-    mobilePickToggle.textContent = mobilePickMode ? "点正文以划线" : "点段落划线";
-    mobilePickToggle.classList.toggle("is-active", mobilePickMode && shouldShow);
-    root.classList.toggle("reader-mobile-pick-root", mobilePickMode && shouldShow);
-  }
-
-  function setToolbarPosition(rect: DOMRect) {
-    if (isMobileSelectionUI()) {
-      toolbar.classList.add("reader-toolbar--docked");
-      toolbar.style.removeProperty("left");
-      toolbar.style.removeProperty("top");
-      return;
-    }
-
-    toolbar.classList.remove("reader-toolbar--docked");
-    const left = Math.min(window.innerWidth - 180, Math.max(12, rect.left + rect.width / 2 - 78));
-    const top = Math.max(12, rect.top + window.scrollY - 52);
-    toolbar.style.left = left + "px";
-    toolbar.style.top = top + "px";
-  }
-
-  function hideToolbar() {
-    clearHideToolbarTimer();
-    toolbar.hidden = true;
-    toolbar.classList.remove("reader-toolbar--docked");
-    toolbar.style.removeProperty("left");
-    toolbar.style.removeProperty("top");
-    pendingSelection = null;
-    setActivePickTarget(null);
-    syncMobilePickToggle();
-  }
-
-  function scheduleToolbarHide() {
-    clearHideToolbarTimer();
-    hideToolbarTimer = window.setTimeout(() => {
-      hideToolbar();
-    }, MOBILE_HIDE_DELAY_MS);
-  }
-
-  function openToolbar(selection: PendingSelection) {
-    clearHideToolbarTimer();
-    mobilePickMode = false;
-    isNotesPanelOpen = false;
-    pendingSelection = selection;
-    toolbar.hidden = false;
-    setToolbarPosition(selection.rect);
-    syncMobilePickToggle();
+  function refresh(persist = true) {
+    annotations = annotator.getAnnotations().sort(compareAnnotations);
+    renderList();
     syncNotesPanel();
-  }
-
-  function closeEditor() {
-    editor.hidden = true;
-    editorInput.value = "";
-    editingId = null;
-    syncMobilePickToggle();
-    syncNotesPanel();
-  }
-
-  function openEditor(mode: "create" | "edit", annotation?: ReaderAnnotation) {
-    editor.hidden = false;
-    isNotesPanelOpen = false;
-    syncMobilePickToggle();
-    syncNotesPanel();
-    editorInput.focus();
-
-    if (mode === "edit" && annotation) {
-      editingId = annotation.id;
-      editorQuote.textContent = annotation.quote;
-      editorInput.value = annotation.note;
-      return;
+    if (persist) {
+      store.writePage(pageId, annotations);
     }
+  }
 
-    if (!pendingSelection) return;
-    editingId = null;
-    editorQuote.textContent = pendingSelection.quote;
-    editorInput.value = "";
+  function getAnnotationById(id: string | null) {
+    return id ? annotator.getAnnotationById(id) : undefined;
   }
 
   function setActive(id: string | null) {
     activeId = id;
-    renderHighlights();
+    if (id) {
+      annotator.setSelected(id, false);
+    } else {
+      annotator.cancelSelected();
+    }
     renderList();
   }
 
-  function renderHighlights() {
-    unwrapHighlights(root);
-    resolved = new Map();
-    const items = annotations
-      .map((annotation) => {
-        const position = resolveAnchor(root, annotation.anchor);
-        if (!position) return null;
-        return { annotation, start: position.start, end: position.end } satisfies ResolvedAnnotation;
-      })
-      .filter(Boolean)
-      .sort((left, right) => left!.start - right!.start) as ResolvedAnnotation[];
-
-    let lastEnd = -1;
-    items.forEach((item) => {
-      if (item.start < lastEnd) return;
-      wrapHighlight(root, item, activeId);
-      resolved.set(item.annotation.id, item);
-      lastEnd = item.end;
-    });
+  function persistAndClearDraft(message: string) {
+    pendingCreatedId = null;
+    hideToolbar();
+    refresh(true);
+    setStatus(message);
   }
 
-  function renderList() {
-    count.textContent = String(annotations.length);
-    empty.hidden = annotations.length > 0;
-    list.innerHTML = annotations
-      .map((annotation) => {
-        const isActive = activeId === annotation.id;
-        const note = annotation.note.trim();
-        return (
-          '<article class="reader-note-item' + (isActive ? ' is-active' : '') + '" data-annotation-item="' + escapeHtml(annotation.id) + '">' +
-            '<button class="reader-note-focus" type="button" data-annotation-focus="' + escapeHtml(annotation.id) + '">' +
-              '<span class="reader-note-quote">' + escapeHtml(annotation.quote.trim()) + '</span>' +
-              '<span class="reader-note-meta">' + (note ? '有笔记' : '仅划线') + ' · ' + escapeHtml(formatTime(annotation.updatedAt)) + '</span>' +
-            '</button>' +
-            (note ? '<p class="reader-note-copy">' + escapeHtml(note) + '</p>' : '') +
-            '<div class="reader-note-actions">' +
-              '<button class="tool-switch" type="button" data-annotation-edit="' + escapeHtml(annotation.id) + '">编辑</button>' +
-              '<button class="tool-switch" type="button" data-annotation-delete="' + escapeHtml(annotation.id) + '">删除</button>' +
-            '</div>' +
-          '</article>'
-        );
-      })
-      .join("");
+  function removePendingAnnotation() {
+    const pending = pendingCreatedId;
+    if (!pending) return;
+    annotator.removeAnnotation(pending);
+    pendingCreatedId = null;
+    activeId = null;
+    hideToolbar();
+    closeEditor();
+    refresh(false);
+    clearNativeSelection();
   }
 
-  function refresh() {
-    annotations = store.list(pageId);
-    renderHighlights();
-    renderList();
+  function openEditor(annotation: W3CTextAnnotation) {
+    editingId = annotation.id;
+    editor.hidden = false;
+    editorQuote.textContent = getAnnotationQuote(annotation);
+    editorInput.value = getAnnotationNote(annotation);
+    editorInput.focus();
+    hideToolbar();
+    isNotesPanelOpen = false;
     syncNotesPanel();
   }
 
-  function hasOverlap(anchor: AnnotationAnchor, excludeId?: string) {
-    return annotations.some((annotation) => {
-      if (excludeId && annotation.id === excludeId) return false;
-      return anchor.start < annotation.anchor.end && anchor.end > annotation.anchor.start;
-    });
-  }
-
-  function clearNativeSelection() {
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-  }
-
-  function captureSelection() {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
-    const range = selection.getRangeAt(0);
-    const startNode = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentNode : range.startContainer;
-    const endNode = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentNode : range.endContainer;
-    if (!(startNode instanceof Node) || !(endNode instanceof Node)) return null;
-    if (!root.contains(startNode) || !root.contains(endNode)) return null;
-    const anchor = buildAnchor(root, range);
-    if (!anchor) return null;
-    if (hasOverlap(anchor)) return null;
-    const rect = range.getBoundingClientRect();
+  function buildNoteBody(annotation: W3CTextAnnotation, note: string) {
+    const previous = getAnnotationBodies(annotation).find((body) => body.purpose === "commenting");
     return {
-      quote: anchor.quote.trim(),
-      anchor,
-      rect,
-    } satisfies PendingSelection;
-  }
-
-  function captureBlockSelection(block: HTMLElement) {
-    const range = document.createRange();
-    range.selectNodeContents(block);
-    const anchor = buildAnchor(root, range);
-    if (!anchor) return null;
-    if (hasOverlap(anchor)) return null;
-    return {
-      quote: anchor.quote.trim(),
-      anchor,
-      rect: block.getBoundingClientRect(),
-    } satisfies PendingSelection;
-  }
-
-  function findPickableBlock(target: HTMLElement) {
-    const block = target.closest<HTMLElement>(MOBILE_PICK_SELECTOR);
-    if (!block || !root.contains(block)) return null;
-    return block;
-  }
-
-  function addSelectionAsHighlight(note: string) {
-    if (!pendingSelection) return;
-    const draft: AnnotationDraft = {
-      pageId,
-      quote: pendingSelection.quote,
-      note: note.trim(),
-      color: "amber",
-      anchor: pendingSelection.anchor,
+      id: previous?.id ?? annotation.id + "#note",
+      type: previous?.type ?? "TextualBody",
+      purpose: "commenting",
+      value: note,
+      created: previous?.created ?? toIsoString(annotation.created),
+      modified: new Date().toISOString(),
     };
-    store.create(draft);
-    hideToolbar();
-    closeEditor();
-    clearNativeSelection();
-    setStatus(note.trim() ? "笔记已保存到本地。" : "划线已保存到本地。");
-    refresh();
+  }
+
+  function saveNote(annotation: W3CTextAnnotation, note: string) {
+    const trimmed = note.trim();
+    const bodies = getAnnotationBodies(annotation).filter((body) => body.purpose !== "commenting");
+    const updated = annotator.updateAnnotation({
+      ...annotation,
+      modified: new Date().toISOString(),
+      body: trimmed ? [...bodies, buildNoteBody(annotation, trimmed)] : [],
+    });
+    refresh(true);
+    setActive(updated.id);
+    return updated;
   }
 
   function focusAnnotation(id: string) {
     setActive(id);
-    const target = root.querySelector<HTMLElement>('[data-annotation-id="' + CSS.escape(id) + '"]');
-    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    annotator.scrollIntoView(id);
   }
 
-  function syncSelectionToolbar() {
-    if (!editor.hidden) return;
-    const nextSelection = captureSelection();
-    if (!nextSelection) {
-      if (isMobileSelectionUI() && pendingSelection && !toolbar.hidden) return;
-      hideToolbar();
-      return;
+  annotator.on("createAnnotation", (annotation) => {
+    if (pendingCreatedId && pendingCreatedId !== annotation.id) {
+      annotator.removeAnnotation(pendingCreatedId);
     }
-    openToolbar(nextSelection);
-  }
+    pendingCreatedId = annotation.id;
+    activeId = annotation.id;
+    lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
+    refresh(false);
+    setActive(annotation.id);
+    isNotesPanelOpen = false;
+    openToolbar();
+  });
+
+  annotator.on("clickAnnotation", (annotation) => {
+    pendingCreatedId = null;
+    setActive(annotation.id);
+  });
+
+  annotator.on("selectionChanged", (selected) => {
+    if (!pendingCreatedId) {
+      activeId = selected[0]?.id ?? null;
+      renderList();
+    }
+  });
 
   addHighlightButton.addEventListener("click", () => {
-    addSelectionAsHighlight("");
+    if (!pendingCreatedId) return;
+    persistAndClearDraft("划线已保存到本地。");
+  });
+
+  addNoteButton.addEventListener("click", () => {
+    const annotation = getAnnotationById(pendingCreatedId);
+    if (!annotation) return;
+    openEditor(annotation);
   });
 
   toolbar.addEventListener("pointerdown", (event) => {
     event.preventDefault();
-  });
-
-  addNoteButton.addEventListener("click", () => {
-    if (!pendingSelection) return;
-    openEditor("create");
   });
 
   notesFab.addEventListener("pointerdown", (event) => {
@@ -780,63 +692,27 @@ export function setupReaderAnnotations() {
     syncNotesPanel();
   });
 
-  mobilePickToggle.addEventListener("click", () => {
-    mobilePickMode = !mobilePickMode;
-    setActivePickTarget(null);
-    if (mobilePickMode) {
-      clearNativeSelection();
-      setStatus("已进入划线模式：点一段正文，再选划线或记笔记。");
-    } else {
-      setStatus("");
-    }
-    syncMobilePickToggle();
-  });
-
   saveButton.addEventListener("click", () => {
+    const annotation = getAnnotationById(editingId);
+    if (!annotation) return;
     const note = editorInput.value.trim();
-    if (editingId) {
-      store.update(editingId, { note });
-      const currentId = editingId;
-      closeEditor();
+    const updated = saveNote(annotation, note);
+    closeEditor();
+    if (pendingCreatedId === updated.id) {
+      pendingCreatedId = null;
+      setStatus(note ? "笔记已保存到本地。" : "划线已保存到本地。");
+    } else {
       setStatus("笔记已更新。");
-      refresh();
-      setActive(currentId);
-      return;
     }
-    addSelectionAsHighlight(note);
   });
 
   cancelButton.addEventListener("click", () => {
+    if (pendingCreatedId && editingId === pendingCreatedId) {
+      closeEditor();
+      openToolbar();
+      return;
+    }
     closeEditor();
-  });
-
-  document.addEventListener("selectionchange", () => {
-    const selection = window.getSelection();
-    if (!selection || selection.isCollapsed) {
-      if (!editor.hidden) return;
-      if (isMobileSelectionUI() && pendingSelection && !toolbar.hidden) {
-        scheduleToolbarHide();
-        return;
-      }
-      hideToolbar();
-    }
-  });
-
-  document.addEventListener("mouseup", () => {
-    window.setTimeout(syncSelectionToolbar, 0);
-  });
-
-  document.addEventListener("touchend", () => {
-    window.setTimeout(syncSelectionToolbar, 20);
-  });
-
-  document.addEventListener("pointerdown", (event) => {
-    const target = event.target;
-    if (!(target instanceof Node)) return;
-    if (toolbar.contains(target) || editor.contains(target)) return;
-    if (pendingSelection && !toolbar.hidden) {
-      hideToolbar();
-    }
   });
 
   list.addEventListener("click", (event) => {
@@ -854,11 +730,10 @@ export function setupReaderAnnotations() {
 
     const editButton = target.closest<HTMLElement>("[data-annotation-edit]");
     if (editButton) {
-      const id = editButton.dataset.annotationEdit;
-      const annotation = annotations.find((item) => item.id === id);
+      const annotation = getAnnotationById(editButton.dataset.annotationEdit ?? null);
       if (!annotation) return;
       setActive(annotation.id);
-      openEditor("edit", annotation);
+      openEditor(annotation);
       return;
     }
 
@@ -866,70 +741,55 @@ export function setupReaderAnnotations() {
     if (deleteButton) {
       const id = deleteButton.dataset.annotationDelete;
       if (!id) return;
-      store.remove(id);
+      annotator.removeAnnotation(id);
+      if (pendingCreatedId === id) pendingCreatedId = null;
+      if (editingId === id) closeEditor();
       if (activeId === id) activeId = null;
+      refresh(true);
       setStatus("这条划线已从本地删除。");
-      refresh();
-      return;
     }
   });
 
-  root.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-
-    if (mobilePickMode) {
-      const mark = target.closest<HTMLElement>("[data-annotation-id]");
-      if (!mark) {
-        const block = findPickableBlock(target);
-        if (block) {
-          event.preventDefault();
-          event.stopPropagation();
-          const selection = captureBlockSelection(block);
-          if (!selection) {
-            setActivePickTarget(null);
-            setStatus("这一段已经划过了，换一段试试。");
-            return;
-          }
-          setActivePickTarget(block);
-          openToolbar(selection);
-          return;
-        }
-      }
-    }
-
-    const mark = target.closest<HTMLElement>("[data-annotation-id]");
-    if (!mark) return;
-    const id = mark.dataset.annotationId;
-    if (!id) return;
-    setActive(id);
+  document.addEventListener("mouseup", () => {
+    lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
   });
 
-  window.addEventListener("storage", (event) => {
-    if (event.key !== STORAGE_KEY) return;
-    refresh();
+  document.addEventListener("touchend", () => {
+    window.setTimeout(() => {
+      lastSelectionRect = captureSelectionRect() ?? lastSelectionRect;
+    }, 20);
   });
 
   document.addEventListener("pointerdown", (event) => {
     const target = event.target;
     if (!(target instanceof Node)) return;
-    if (!isNotesPanelOpen) return;
-    if (notesPanel.contains(target) || notesFab.contains(target)) return;
-    isNotesPanelOpen = false;
-    syncNotesPanel();
+    if (toolbar.contains(target) || editor.contains(target) || notesPanel.contains(target) || notesFab.contains(target)) {
+      return;
+    }
+    if (pendingCreatedId) {
+      removePendingAnnotation();
+    }
+    if (isNotesPanelOpen) {
+      isNotesPanelOpen = false;
+      syncNotesPanel();
+    }
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key !== STORAGE_KEY) return;
+    annotator.setAnnotations(store.list(pageId), true);
+    refresh(false);
   });
 
   window.addEventListener("resize", () => {
-    syncMobilePickToggle();
     applyFabPosition(fabX, fabY);
-    if (!pendingSelection || toolbar.hidden) return;
-    setToolbarPosition(pendingSelection.rect);
+    if (!toolbar.hidden) {
+      setToolbarPosition(lastSelectionRect ?? getToolbarFallbackRect());
+    }
   });
 
   const initialFabPosition = loadFabPosition();
   applyFabPosition(initialFabPosition.x, initialFabPosition.y);
-  refresh();
   renderList();
-  syncMobilePickToggle();
   syncNotesPanel();
 }

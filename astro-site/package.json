@@ -8,6 +8,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@recogito/text-annotator": "^3.4.9",
     "astro": "^5.13.5",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0"

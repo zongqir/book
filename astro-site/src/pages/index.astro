@@ -18,52 +18,35 @@ const sectionPreviewMap = Object.fromEntries(
 
 <BaseLayout isHome={true} isLibrary={false}>
   <div class="page-stack">
-    <section class="home-hero" id="home-tools">
-      <article class="hero-panel">
-        <div class="hero-copy">
-          <div>
-            <p class="hero-kicker">Reading archive</p>
-            <h1>先随机翻一本到。<br />再决定今天往哪走。</h1>
-            <p class="hero-lead">
-              入口就两个。抽一本到书，或者抽一句话。剩下的按分类进去。
-            </p>
-          </div>
+    <section class="hero-panel home-stage" id="home-tools">
+      <div class="home-stage-head">
+        <div>
+          <p class="hero-kicker">Reading archive</p>
+          <h1>随机翻一本到</h1>
+        </div>
 
-          <div class="hero-stats">
-            <div class="stat-block">
-              <span class="stat-label">分类</span>
-              <span class="stat-value">{counts.sections}</span>
-            </div>
-            <div class="stat-block">
-              <span class="stat-label">书目</span>
-              <span class="stat-value">{counts.books}</span>
-            </div>
-            <div class="stat-block">
-              <span class="stat-label">文稿</span>
-              <span class="stat-value">{counts.pages}</span>
-            </div>
-            <div class="stat-block">
-              <span class="stat-label">句子卡</span>
-              <span class="stat-value">{counts.quotes}</span>
-            </div>
+        <div class="hero-stats">
+          <div class="stat-block">
+            <span class="stat-label">分类</span>
+            <span class="stat-value">{counts.sections}</span>
           </div>
-
-          <div class="hero-actions">
-            <a class="btn" href="#book-dice-card">现在开翻</a>
-            <a class="btn btn-ghost" href="/library/">全部目录</a>
+          <div class="stat-block">
+            <span class="stat-label">书目</span>
+            <span class="stat-value">{counts.books}</span>
           </div>
-
-          <div class="hero-links">
-            <a class="hero-link-pill" href="#book-dice-card">随机一本到</a>
-            <a class="hero-link-pill" href="#random-quote-card">随机一句话</a>
-            <a class="hero-link-pill" href="#home-categories">分类入口</a>
+          <div class="stat-block">
+            <span class="stat-label">文稿</span>
+            <span class="stat-value">{counts.pages}</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">句子卡</span>
+            <span class="stat-value">{counts.quotes}</span>
           </div>
         </div>
-      </article>
+      </div>
 
-      <aside class="hero-panel">
-        <div class="hero-tools">
-          <article class="hero-tool-card" data-book-dice>
+      <div class="hero-tools hero-tools--stage">
+        <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
             <header class="hero-tool-head">
               <div>
                 <p class="eyebrow">随机书目</p>
@@ -97,7 +80,7 @@ const sectionPreviewMap = Object.fromEntries(
             )}
           </article>
 
-          <article class="hero-tool-card" data-random-quote>
+        <article class="hero-tool-card" data-random-quote>
             <header class="hero-tool-head">
               <div>
                 <p class="eyebrow">随机句子</p>
@@ -121,8 +104,7 @@ const sectionPreviewMap = Object.fromEntries(
               <p class="tool-empty">暂时还没有句子卡可抽。</p>
             )}
           </article>
-        </div>
-      </aside>
+      </div>
     </section>
 
     <section id="home-categories">

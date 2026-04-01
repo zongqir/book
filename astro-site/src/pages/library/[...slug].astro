@@ -193,7 +193,30 @@ if (!node) {
             </details>
           )}
 
-          <section class="doc-content" set:html={node.html} />
+          <section class="doc-content" data-reader-root data-page-id={node.page.id} data-page-title={node.page.title} set:html={node.html} />
+          <div class="reader-toolbar" data-reader-toolbar hidden>
+            <button class="tool-switch" type="button" data-reader-add-highlight>划线</button>
+            <button class="tool-switch" type="button" data-reader-add-note>记笔记</button>
+          </div>
+
+          <div class="reader-editor" data-reader-editor hidden>
+            <div class="reader-editor-card">
+              <div class="reader-editor-head">
+                <h3>本地笔记</h3>
+                <p data-reader-editor-quote></p>
+              </div>
+              <label class="reader-editor-field">
+                <span>写一句自己的提醒</span>
+                <textarea data-reader-editor-input rows="4" placeholder="比如：这段和我现在在处理的问题有什么关系？"></textarea>
+              </label>
+              <div class="reader-editor-actions">
+                <button class="btn btn-ghost" type="button" data-reader-cancel>取消</button>
+                <button class="btn" type="button" data-reader-save>保存到本地</button>
+              </div>
+            </div>
+          </div>
+
+          <p class="reader-status" data-reader-status hidden></p>
 
           {(node.previousPage || node.nextPage) && (
             <nav class="page-nav" aria-label="继续阅读">
@@ -246,6 +269,15 @@ if (!node) {
               </div>
             </div>
           )}
+
+          <div class="meta-card reader-notes-card">
+            <div class="reader-notes-head">
+              <h3>本页划线与笔记</h3>
+              <span class="meta-chip" data-reader-count>0</span>
+            </div>
+            <p class="reader-notes-empty" data-reader-empty>选中文章里的句子后，就能把划线和笔记留在这个浏览器里。</p>
+            <div class="reader-note-list" data-reader-list></div>
+          </div>
 
           <div class="meta-card">
             <h3>所在位置</h3>
@@ -325,4 +357,11 @@ if (!node) {
       )}
     </div>
   )}
+{node.kind === "page" && (
+  <script>
+    import { setupReaderAnnotations } from "../../lib/reader-annotations";
+
+    setupReaderAnnotations();
+  </script>
+)}
 </BaseLayout>

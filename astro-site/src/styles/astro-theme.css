@@ -522,6 +522,161 @@ img { display: block; max-width: 100%; }
   color: #f8f3ea;
 }
 .doc-content pre code { padding: 0; background: transparent; color: inherit; }
+.reader-highlight {
+  padding: 0.08em 0.02em;
+  border-radius: 0.38em;
+  background: rgba(224, 191, 106, 0.46);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.reader-highlight.is-active {
+  background: rgba(164, 91, 42, 0.28);
+  box-shadow: 0 0 0 1px rgba(124, 65, 29, 0.22);
+}
+.reader-highlight:focus-visible {
+  outline: 2px solid rgba(29, 109, 116, 0.48);
+  outline-offset: 2px;
+}
+.reader-toolbar {
+  position: fixed;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(23, 48, 67, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 251, 245, 0.94);
+  box-shadow: 0 18px 34px rgba(23, 48, 67, 0.18);
+  backdrop-filter: blur(14px);
+}
+.reader-toolbar[hidden],
+.reader-editor[hidden],
+.reader-status[hidden] {
+  display: none;
+}
+.reader-toolbar .tool-switch,
+.reader-note-actions .tool-switch {
+  width: auto;
+}
+.reader-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  display: grid;
+  place-items: end center;
+  padding: 24px;
+  background: rgba(23, 48, 67, 0.16);
+  backdrop-filter: blur(6px);
+}
+.reader-editor-card {
+  width: min(560px, calc(100vw - 32px));
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 251, 245, 0.96);
+  box-shadow: 0 22px 44px rgba(23, 48, 67, 0.22);
+}
+.reader-editor-head {
+  display: grid;
+  gap: 8px;
+}
+.reader-editor-head h3,
+.reader-notes-head h3 {
+  margin: 0;
+}
+.reader-editor-head p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+.reader-editor-field {
+  display: grid;
+  gap: 8px;
+}
+.reader-editor-field > span,
+.reader-note-meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.reader-editor textarea {
+  width: 100%;
+  min-height: 132px;
+  padding: 14px 16px;
+  border: 1px solid rgba(23, 48, 67, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.7;
+  resize: vertical;
+}
+.reader-editor textarea:focus {
+  outline: none;
+  border-color: rgba(29, 109, 116, 0.4);
+  box-shadow: 0 0 0 4px rgba(29, 109, 116, 0.08);
+}
+.reader-editor-actions,
+.reader-notes-head,
+.reader-note-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.reader-editor-actions {
+  justify-content: flex-end;
+}
+.reader-status {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.92rem;
+}
+.reader-notes-card {
+  gap: 14px;
+}
+.reader-notes-empty,
+.reader-note-copy {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+.reader-note-list {
+  display: grid;
+  gap: 12px;
+}
+.reader-note-item {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.5);
+}
+.reader-note-item.is-active {
+  border-color: rgba(124, 65, 29, 0.18);
+  background: rgba(255, 247, 236, 0.82);
+}
+.reader-note-focus {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.reader-note-quote {
+  font-family: "Noto Serif SC", serif;
+  line-height: 1.65;
+}
 .doc-content table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 18px; }
 .doc-content th,
 .doc-content td { padding: 14px 16px; border: 1px solid rgba(23, 48, 67, 0.08); text-align: left; vertical-align: top; }
@@ -1051,6 +1206,36 @@ img { display: block; max-width: 100%; }
   }
   .doc-grid { gap: 14px; }
   .doc-side { order: 1; gap: 12px; }
+  .reader-toolbar {
+    max-width: calc(100vw - 24px);
+    padding: 6px;
+  }
+  .reader-toolbar .tool-switch {
+    min-height: 38px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .reader-editor {
+    padding: 12px;
+    place-items: end stretch;
+  }
+  .reader-editor-card {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+  }
+  .reader-editor-actions,
+  .reader-note-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .reader-editor-actions .btn,
+  .reader-note-actions .tool-switch {
+    width: 100%;
+  }
+  .reader-notes-head {
+    align-items: flex-start;
+  }
   .toc-card--mobile {
     display: block;
     margin-bottom: 2px;

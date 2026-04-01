@@ -325,4 +325,18 @@ if (!node) {
       )}
     </div>
   )}
+{node.kind === "page" && (
+  <>
+    <script is:inline>
+      window.hypothesisConfig = function () {
+        return {
+          openSidebar: false,
+          showHighlights: true,
+          theme: "clean",
+        };
+      };
+    </script>
+    <script async src="https://hypothes.is/embed.js"></script>
+  </>
+)}
 </BaseLayout>

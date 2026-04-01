@@ -364,9 +364,8 @@ img { display: block; max-width: 100%; }
   margin-top: 18px;
   gap: 8px;
 }
-.home-sections { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; }
+.home-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 .section-card {
-  grid-column: span 6;
   min-height: 320px;
   padding: 0;
 }
@@ -380,10 +379,6 @@ img { display: block; max-width: 100%; }
   margin-top: auto;
   padding-top: 12px;
 }
-.section-card:nth-child(4n + 1),
-.section-card:nth-child(4n) { grid-column: span 7; }
-.section-card:nth-child(4n + 2),
-.section-card:nth-child(4n + 3) { grid-column: span 5; }
 .section-card:nth-child(7n + 1) { background: linear-gradient(160deg, rgba(255, 244, 233, 0.92), rgba(255, 255, 255, 0.55)); }
 .section-card:nth-child(7n + 2) { background: linear-gradient(160deg, rgba(232, 245, 242, 0.92), rgba(255, 255, 255, 0.55)); }
 .section-card:nth-child(7n + 3) { background: linear-gradient(160deg, rgba(236, 240, 251, 0.92), rgba(255, 255, 255, 0.55)); }
@@ -439,9 +434,8 @@ img { display: block; max-width: 100%; }
 .library-hero,
 .page-intro,
 .doc-hero { padding: 34px 36px; }
-.library-sections { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; }
+.library-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
 .library-index-card {
-  grid-column: span 6;
   min-height: 300px;
   padding: 0;
 }
@@ -853,10 +847,6 @@ img { display: block; max-width: 100%; }
   .doc-side { order: -1; }
   .toc-card,
   .meta-card { position: static; }
-  .home-sections,
-  .library-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .section-card,
-  .library-index-card { grid-column: span 1; }
   .field-control--wide { grid-column: span 1; }
 }
 @media (max-width: 760px) {

@@ -441,7 +441,8 @@ img { display: block; max-width: 100%; }
 }
 .book-card,
 .doc-card { min-height: 260px; }
-.library-index-card a { padding: 24px; align-content: space-between; }
+.library-index-card a { padding: 24px; align-content: space-between; gap: 14px; }
+.library-hero-actions { margin-top: 2px; }
 .library-index-preview,
 .doc-side,
 .mini-grid { display: grid; }
@@ -931,7 +932,18 @@ img { display: block; max-width: 100%; }
   .section-card,
   .library-index-card { min-height: auto; }
   .section-card a { gap: 10px; }
+  .library-index-card a { gap: 12px; }
   .section-card .section-enter { margin-top: 6px; padding-top: 0; }
+  .library-hero-actions {
+    width: 100%;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .library-hero-actions .btn {
+    min-height: 44px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
   .library-hero,
   .discover-panel {
     gap: 18px;

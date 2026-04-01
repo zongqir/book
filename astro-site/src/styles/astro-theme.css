@@ -738,9 +738,8 @@ img { display: block; max-width: 100%; }
 .doc-content th,
 .doc-content td { padding: 14px 16px; border: 1px solid rgba(23, 48, 67, 0.08); text-align: left; vertical-align: top; }
 .doc-content th { background: rgba(23, 48, 67, 0.05); }
-.toc-card,
-.meta-card { position: sticky; top: 112px; }
-.meta-card { top: 300px; }
+.toc-card--desktop { position: sticky; top: 112px; }
+.meta-card { position: static; }
 .toc-title,
 .meta-card h3 { margin: 0 0 14px; font-family: "Noto Serif SC", serif; font-size: 1.15rem; }
 .toc-card--mobile { display: none; }

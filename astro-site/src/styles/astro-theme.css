@@ -334,6 +334,8 @@ img { display: block; max-width: 100%; }
   background: rgba(23, 48, 67, 0.04);
   color: var(--text-soft);
   font-size: 0.78rem;
+  line-height: 1;
+  white-space: nowrap;
 }
 .book-dice-count { margin: 0; color: var(--text); font-weight: 600; }
 .quote-display { font-size: clamp(1.8rem, 2.8vw, 2.7rem); line-height: 1.45; }

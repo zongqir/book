@@ -12,7 +12,7 @@ const featuredTags = discover.tags.slice(0, 12);
       <div class="library-hero">
         <h1>搜索与筛选</h1>
         <p>按书名、标题、标签、槽位和分类找。</p>
-        <div class="stats-strip">
+        <div class="stats-strip discover-stats-strip">
           <div class="stat-block">
             <span class="stat-label">分类</span>
             <span class="stat-value">{discover.counts.sections}</span>
@@ -34,42 +34,49 @@ const featuredTags = discover.tags.slice(0, 12);
     </section>
 
     <section class="content-card discover-panel">
-      <div class="discover-controls">
-        <label class="field-control field-control--wide">
-          <span>搜索词</span>
-          <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
-        </label>
-        <label class="field-control">
-          <span>范围</span>
-          <select id="discover-kind">
-            <option value="all">全部</option>
-            <option value="book">书</option>
-            <option value="page">文稿</option>
-          </select>
-        </label>
-        <label class="field-control">
-          <span>分类</span>
-          <select id="discover-section">
-            <option value="">全部分类</option>
-            {discover.sections.map((section) => <option value={section.key}>{section.title}</option>)}
-          </select>
-        </label>
-        <label class="field-control">
-          <span>槽位</span>
-          <select id="discover-slot">
-            <option value="">全部槽位</option>
-            {discover.slots.map((slot) => <option value={slot}>{slot}</option>)}
-          </select>
-        </label>
-        <label class="field-control">
-          <span>标签</span>
-          <input id="discover-tag" list="discover-tag-list" placeholder="比如 投资 / 心理学 / 学习科学" />
-        </label>
-        <div class="field-control field-control--action">
-          <span>操作</span>
-          <button class="btn btn-ghost" id="discover-reset" type="button">清空筛选</button>
+      <label class="field-control discover-query-field">
+        <span>搜索词</span>
+        <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
+      </label>
+
+      <details class="discover-filters">
+        <summary class="discover-filters-summary">
+          <span>更多筛选</span>
+          <span class="discover-filters-state" id="discover-filters-state">未启用</span>
+        </summary>
+        <div class="discover-controls">
+          <label class="field-control">
+            <span>范围</span>
+            <select id="discover-kind">
+              <option value="all">全部</option>
+              <option value="book">书</option>
+              <option value="page">文稿</option>
+            </select>
+          </label>
+          <label class="field-control">
+            <span>分类</span>
+            <select id="discover-section">
+              <option value="">全部分类</option>
+              {discover.sections.map((section) => <option value={section.key}>{section.title}</option>)}
+            </select>
+          </label>
+          <label class="field-control" id="discover-slot-field">
+            <span>槽位</span>
+            <select id="discover-slot">
+              <option value="">全部槽位</option>
+              {discover.slots.map((slot) => <option value={slot}>{slot}</option>)}
+            </select>
+          </label>
+          <label class="field-control">
+            <span>标签</span>
+            <input id="discover-tag" list="discover-tag-list" placeholder="比如 投资 / 心理学 / 学习科学" />
+          </label>
+          <div class="field-control field-control--action">
+            <span>操作</span>
+            <button class="btn btn-ghost" id="discover-reset" type="button">清空筛选</button>
+          </div>
         </div>
-      </div>
+      </details>
 
       <datalist id="discover-tag-list">
         {discover.tags.map((item) => <option value={item.tag} />)}
@@ -95,6 +102,9 @@ const featuredTags = discover.tags.slice(0, 12);
       var kindSelect = document.getElementById("discover-kind");
       var sectionSelect = document.getElementById("discover-section");
       var slotSelect = document.getElementById("discover-slot");
+      var slotField = document.getElementById("discover-slot-field");
+      var filtersPanel = document.querySelector(".discover-filters");
+      var filtersState = document.getElementById("discover-filters-state");
       var tagInput = document.getElementById("discover-tag");
       var resetButton = document.getElementById("discover-reset");
       var summary = document.getElementById("discover-summary");
@@ -122,6 +132,43 @@ const featuredTags = discover.tags.slice(0, 12);
         };
       }
 
+      function syncSlotAvailability() {
+        if (!(slotSelect instanceof HTMLSelectElement)) return;
+        var isBookMode = kindSelect instanceof HTMLSelectElement && kindSelect.value === "book";
+        slotSelect.disabled = isBookMode;
+        if (slotField instanceof HTMLElement) {
+          slotField.hidden = isBookMode;
+        }
+        if (isBookMode) {
+          slotSelect.value = "";
+        }
+      }
+
+
+      function syncFilterPanel() {
+        if (!(filtersPanel instanceof HTMLDetailsElement)) return;
+        filtersPanel.open = !window.matchMedia("(max-width: 760px)").matches;
+      }
+
+      function updateFilterSummary(filters) {
+        if (!(filtersState instanceof HTMLElement)) return;
+        var labels = [];
+        if (filters.kind && filters.kind !== "all") {
+          labels.push(filters.kind === "book" ? "书" : "文稿");
+        }
+        if (filters.section && sectionSelect instanceof HTMLSelectElement) {
+          var sectionLabel = sectionSelect.selectedOptions.length ? sectionSelect.selectedOptions[0].textContent : "";
+          if (sectionLabel) labels.push(sectionLabel.trim());
+        }
+        if (filters.slot && filters.kind !== "book") {
+          labels.push("槽位 " + filters.slot);
+        }
+        if (filters.tag) {
+          labels.push(filters.tag);
+        }
+        filtersState.textContent = labels.length ? labels.join(" · ") : "未启用";
+      }
+
       function syncInputsFromUrl() {
         var params = getParams();
         if (queryInput) queryInput.value = params.q;
@@ -129,6 +176,8 @@ const featuredTags = discover.tags.slice(0, 12);
         if (sectionSelect) sectionSelect.value = params.section;
         if (slotSelect) slotSelect.value = params.slot;
         if (tagInput) tagInput.value = params.tag;
+        syncSlotAvailability();
+        syncFilterPanel();
       }
 
       function updateUrl(next) {
@@ -167,7 +216,7 @@ const featuredTags = discover.tags.slice(0, 12);
       function passesFilters(item, filters) {
         if (filters.kind !== "all" && item.kind !== filters.kind) return false;
         if (filters.section && item.section_key !== filters.section) return false;
-        if (filters.slot && item.slot !== filters.slot) return false;
+        if (filters.slot && item.kind === "page" && item.slot !== filters.slot) return false;
         if (filters.tag && !item.tags.includes(filters.tag)) return false;
         if (filters.q && scoreItem(item, filters.q) === 0) return false;
         return true;
@@ -186,6 +235,7 @@ const featuredTags = discover.tags.slice(0, 12);
 
       function render() {
         var filters = getFilters();
+        updateFilterSummary(filters);
         updateUrl(filters);
         var list = state.items
           .filter(function (item) { return passesFilters(item, filters); })
@@ -212,7 +262,10 @@ const featuredTags = discover.tags.slice(0, 12);
         [queryInput, kindSelect, sectionSelect, slotSelect, tagInput].forEach(function (node) {
           if (!node) return;
           node.addEventListener("input", render);
-          node.addEventListener("change", render);
+          node.addEventListener("change", function () {
+            syncSlotAvailability();
+            render();
+          });
         });
 
         if (resetButton) {
@@ -222,6 +275,7 @@ const featuredTags = discover.tags.slice(0, 12);
             if (sectionSelect) sectionSelect.value = "";
             if (slotSelect) slotSelect.value = "";
             if (tagInput) tagInput.value = "";
+            syncSlotAvailability();
             render();
           });
         }
@@ -242,6 +296,7 @@ const featuredTags = discover.tags.slice(0, 12);
 
       syncInputsFromUrl();
       bind();
+      window.addEventListener("resize", syncFilterPanel);
 
       fetch("/data/site-content.json")
         .then(function (response) {

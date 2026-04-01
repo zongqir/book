@@ -206,21 +206,17 @@ if (!node) {
 
           {(node.previousPage || node.nextPage) && (
             <nav class="page-nav" aria-label="继续阅读">
-              {node.previousPage ? (
+              {node.previousPage && (
                 <a class="page-nav-card" href={node.previousPage.url}>
                   <span class="page-nav-label">上一页</span>
                   <strong>{node.previousPage.title}</strong>
                 </a>
-              ) : (
-                <div class="page-nav-card page-nav-card--empty" aria-hidden="true"></div>
               )}
-              {node.nextPage ? (
+              {node.nextPage && (
                 <a class="page-nav-card" href={node.nextPage.url}>
                   <span class="page-nav-label">下一页</span>
                   <strong>{node.nextPage.title}</strong>
                 </a>
-              ) : (
-                <div class="page-nav-card page-nav-card--empty" aria-hidden="true"></div>
               )}
             </nav>
           )}

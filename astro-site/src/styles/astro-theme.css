@@ -2518,7 +2518,8 @@ img { display: block; max-width: 100%; }
 }
 
 .home-mobile-focus,
-.home-mobile-drawer {
+.home-mobile-drawer,
+.home-mobile-quote-panel {
   border-radius: 26px;
   border: 1px solid rgba(255, 255, 255, 0.58);
   background: linear-gradient(180deg, rgba(255, 252, 248, 0.9), rgba(255, 247, 238, 0.74));
@@ -2529,6 +2530,35 @@ img { display: block; max-width: 100%; }
   display: grid;
   gap: 16px;
   padding: 24px;
+}
+
+.home-mobile-quote-panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.home-mobile-quote-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-mobile-quote-panel-head h2 {
+  margin: 4px 0 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.24rem;
+  line-height: 1.18;
+}
+
+.home-mobile-quote-panel-head .hero-kicker {
+  margin: 0;
+}
+
+.home-mobile-quote-panel-head .tool-switch {
+  width: auto;
+  flex: 0 0 auto;
 }
 
 .home-mobile-focus-topline,
@@ -2721,6 +2751,10 @@ img { display: block; max-width: 100%; }
     padding-top: 14px;
   }
 
+  .is-home .site-footer {
+    display: none;
+  }
+
   .home-mobile-shell {
     display: grid;
     gap: 12px;
@@ -2780,6 +2814,25 @@ img { display: block; max-width: 100%; }
     min-height: 46px;
     padding: 0 12px;
     width: auto;
+  }
+
+  .home-mobile-quote-panel {
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .home-mobile-quote-panel-head {
+    align-items: flex-start;
+  }
+
+  .home-mobile-quote-panel-head h2 {
+    font-size: 1.08rem;
+  }
+
+  .home-mobile-quote-panel-head .tool-switch {
+    min-height: 40px;
+    padding: 0 12px;
   }
 
   .home-mobile-drawer {

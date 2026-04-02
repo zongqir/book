@@ -60,26 +60,26 @@ const sectionPreviewMap = Object.fromEntries(
         </div>
       </article>
 
-      <details class="home-mobile-drawer home-mobile-drawer--quote">
-        <summary>
-          <span>今日一句</span>
-          <em>随手抽一句</em>
-        </summary>
-        <div class="home-mobile-drawer-body">
-          {firstQuote ? (
-            <div class="home-mobile-quote-card">
-              <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
-              <div class="home-mobile-quote-meta">
-                <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
-                <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-              </div>
-              <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
-            </div>
-          ) : (
-            <p class="tool-empty">暂时还没有句子卡可抽。</p>
-          )}
+      <article class="home-mobile-quote-panel" aria-label="每日一句">
+        <div class="home-mobile-quote-panel-head">
+          <div>
+            <p class="hero-kicker">每日一句</p>
+            <h2>随手抽一句</h2>
+          </div>
+          <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
         </div>
-      </details>
+        {firstQuote ? (
+          <div class="home-mobile-quote-card">
+            <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
+            <div class="home-mobile-quote-meta">
+              <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
+              <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+            </div>
+          </div>
+        ) : (
+          <p class="tool-empty">暂时还没有句子卡可抽。</p>
+        )}
+      </article>
 
       <details class="home-mobile-drawer home-mobile-drawer--sections">
         <summary>

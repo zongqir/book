@@ -1691,12 +1691,72 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 16px;
 }
 
+.reading-strip-group {
+  gap: 14px;
+}
+
+.reading-strip-head {
+  align-items: flex-start;
+}
+
+.reading-strip-head .eyebrow {
+  margin-bottom: 8px;
+}
+
+.reading-strip-copy {
+  margin: 8px 0 0;
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
 .section-head--reading-strip h2 {
   font-size: clamp(1.45rem, 2vw, 1.9rem);
 }
 
 .book-shelf--reading-strip {
   gap: 14px;
+}
+
+.reading-strip-card {
+  min-height: 0;
+}
+
+.reading-strip-card--page {
+  background:
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(248, 252, 252, 0.92), rgba(240, 248, 248, 0.76));
+}
+
+.reading-strip-card--book {
+  background:
+    radial-gradient(circle at top right, rgba(164, 91, 42, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 245, 0.92), rgba(255, 245, 236, 0.76));
+}
+
+.reading-strip-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reading-strip-kicker,
+.reading-strip-parent {
+  margin: 0;
+}
+
+.reading-strip-kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.reading-strip-parent {
+  color: var(--text-faint);
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
 
 .book-card--reading-strip,
@@ -2600,9 +2660,20 @@ body.reader-notes-editor-open .reader-notes-shell {
   .section-head--reading-strip {
     align-items: center;
   }
+  .reading-strip-head {
+    align-items: flex-start;
+  }
   .section-head--reading-strip h2 {
     font-size: 1.12rem;
     line-height: 1.18;
+  }
+  .reading-strip-head .eyebrow {
+    margin-bottom: 6px;
+  }
+  .reading-strip-copy {
+    margin-top: 6px;
+    font-size: 0.9rem;
+    line-height: 1.58;
   }
   .book-shelf--reading-strip {
     display: flex;
@@ -2646,6 +2717,9 @@ body.reader-notes-editor-open .reader-notes-shell {
   .book-card--reading-strip .card-topline,
   .doc-card--reading-strip .card-topline {
     gap: 8px;
+  }
+  .reading-strip-parent {
+    font-size: 0.8rem;
   }
   .book-card--reading-strip .book-card-footer,
   .doc-card--reading-strip .doc-card-footer {

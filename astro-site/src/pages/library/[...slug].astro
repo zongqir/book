@@ -331,22 +331,23 @@ const ogType = node.kind === "page" ? "article" : "website";
       </div>
 
       {node.relatedPages.length > 0 && (
-        <section class="page-stack compact-stack compact-stack--reading">
-          <div class="section-head section-head--reading-strip">
+        <section class="page-stack compact-stack compact-stack--reading reading-strip-group reading-strip-group--pages">
+          <div class="section-head section-head--reading-strip reading-strip-head">
             <div>
+              <p class="eyebrow">接着这个问题读</p>
               <h2>同槽位与同主题延伸</h2>
+              <p class="reading-strip-copy">不跳分类，先沿着现在这条线继续往下看。</p>
             </div>
           </div>
           <div class="book-shelf book-shelf--reading-strip">
             {node.relatedPages.map((item) => (
-              <article class="doc-card doc-card--reading-strip">
+              <article class="doc-card doc-card--reading-strip reading-strip-card reading-strip-card--page">
                 <a href={item.page.url}>
-                  <div class="card-topline">
+                  <div class="reading-strip-topline">
+                    <p class="reading-strip-kicker">文稿</p>
                     <span class="slot-badge">{item.page.slot}</span>
-                    <div class="meta-row">
-                      {item.book && <span class="meta-chip">{item.book.title}</span>}
-                    </div>
                   </div>
+                  {item.book && <p class="reading-strip-parent">{item.book.title}</p>}
                   <h3>{item.page.title}</h3>
                   {(item.page.summary || item.page.intent) && <p>{item.page.summary || item.page.intent}</p>}
                   <div class="doc-card-footer">
@@ -366,17 +367,20 @@ const ogType = node.kind === "page" ? "article" : "website";
       )}
 
       {node.relatedBooks.length > 0 && (
-        <section class="page-stack compact-stack compact-stack--reading">
-          <div class="section-head section-head--reading-strip">
+        <section class="page-stack compact-stack compact-stack--reading reading-strip-group reading-strip-group--books">
+          <div class="section-head section-head--reading-strip reading-strip-head">
             <div>
+              <p class="eyebrow">换一本到同类书</p>
               <h2>同分类继续看</h2>
+              <p class="reading-strip-copy">想暂时跳出这本，就从同一类里换一本角度不同的继续。</p>
             </div>
           </div>
           <div class="book-shelf book-shelf--reading-strip">
             {node.relatedBooks.map((item) => (
-              <article class="book-card book-card--reading-strip">
+              <article class="book-card book-card--reading-strip reading-strip-card reading-strip-card--book">
                 <a href={item.book.url}>
-                  <div class="card-topline">
+                  <div class="reading-strip-topline">
+                    <p class="reading-strip-kicker">书</p>
                     <span class="section-index">{item.book.section_title}</span>
                   </div>
                   <h3>{item.book.title}</h3>

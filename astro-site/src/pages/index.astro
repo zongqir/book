@@ -96,17 +96,46 @@ const sectionPreviewMap = Object.fromEntries(
     </section>
 
     <div class="home-desktop-flow">
-      <section class="hero-panel home-stage" id="home-tools">
-        <div class="hero-tools hero-tools--stage">
-          <article class="hero-tool-card hero-tool-card--quote" data-random-quote>
-            <header class="hero-tool-head">
-              <div>
-                <h2>摘句</h2>
+      <section class="home-editorial-stage" id="home-tools">
+        <article class="home-feature-card" data-book-dice>
+          <div class="home-feature-head">
+            <div class="home-feature-headline">
+              <p class="home-feature-kicker">随机一本到</p>
+              <p class="home-feature-hint">先读进去，再决定今天往哪走。</p>
+            </div>
+            <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
+          </div>
+          {firstBook ? (
+            <>
+              <div class="home-feature-body" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
+                <p class="book-dice-meta">
+                  <span id="book-dice-category">{firstBook.section_title}</span>
+                </p>
+                <h1 class="home-feature-title" id="book-dice-title">{firstBook.title}</h1>
+                <p class="book-dice-summary home-feature-summary" id="book-dice-summary">{firstBook.summary}</p>
+                <div class="book-dice-tags home-feature-tags" id="book-dice-tags">
+                  {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
+                </div>
               </div>
+              <div class="home-feature-actions">
+                <a class="btn" id="book-dice-open" href={firstBookEntry?.url ?? firstBook.url}>
+                  <span id="book-dice-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
+                </a>
+              </div>
+            </>
+          ) : (
+            <p class="tool-empty">现在还没有可随机的书。</p>
+          )}
+        </article>
+
+        <aside class="home-side-column">
+          <article class="home-quote-panel" data-random-quote>
+            <header class="home-side-head">
+              <h2>摘句</h2>
               <button class="tool-switch" type="button" id="random-quote-shuffle">换一句</button>
             </header>
             {firstQuote ? (
-              <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
+              <div class="home-quote-body random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
                 <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
                 <p class="random-quote-source">
                   <span id="random-quote-book">{firstQuote.book_title}</span>
@@ -118,11 +147,9 @@ const sectionPreviewMap = Object.fromEntries(
             )}
           </article>
 
-          <article class="hero-tool-card hero-tool-card--resume" id="home-resume-card" hidden>
-            <header class="hero-tool-head">
-              <div>
-                <h2>接上次</h2>
-              </div>
+          <article class="home-resume-panel" id="home-resume-card" hidden>
+            <header class="home-side-head">
+              <h2>接上次</h2>
               <span class="meta-chip">自动记住</span>
             </header>
             <a class="home-resume-link" id="home-resume-link" href="/library/">
@@ -137,66 +164,36 @@ const sectionPreviewMap = Object.fromEntries(
               </div>
             </a>
           </article>
-
-          <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
-            <header class="hero-tool-head">
-              <div>
-                <h2>随机一本到</h2>
-              </div>
-              <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
-            </header>
-            {firstBook ? (
-              <>
-                <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
-                  <p class="book-dice-meta">
-                    <span id="book-dice-category">{firstBook.section_title}</span>
-                  </p>
-                  <h3 id="book-dice-title">{firstBook.title}</h3>
-                  <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
-                  <div class="book-dice-tags" id="book-dice-tags">
-                    {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
-                  </div>
-                </div>
-                <div class="actions">
-                  <a class="btn" id="book-dice-open" href={firstBookEntry?.url ?? firstBook.url}><span id="book-dice-open-label">{firstBookEntry?.label ?? "进入书页"}</span></a>
-                </div>
-              </>
-            ) : (
-              <p class="tool-empty">现在还没有可随机的书。</p>
-            )}
-          </article>
-        </div>
+        </aside>
       </section>
 
-      <section id="home-categories">
+      <section class="home-shelves-panel" id="home-categories">
         <div class="section-head section-head--home-categories">
           <div>
             <h2>书架方向</h2>
           </div>
         </div>
 
-        <div class="home-sections">
+        <div class="home-shelf-list">
           {sections.map((section) => (
-            <article class="section-card">
-              <a href={section.url}>
+            <a class="home-shelf-row" href={section.url}>
+              <div class="home-shelf-heading">
                 <p class="section-volume-inline">
                   <strong>{section.book_count}</strong>
                   <span>本书</span>
                 </p>
-                <div class="section-card-copy">
-                  <h3>{section.title}</h3>
-                  <div class="section-preview-list">
-                    {(sectionPreviewMap[section.key] ?? []).map((book) => (
-                      <span class="section-preview-line">{book.title}</span>
-                    ))}
-                  </div>
-                </div>
-                <div class="section-enter">
-                  <span>进入分类</span>
-                  <span>→</span>
-                </div>
-              </a>
-            </article>
+                <h3>{section.title}</h3>
+              </div>
+              <div class="home-shelf-preview">
+                {(sectionPreviewMap[section.key] ?? []).map((book) => (
+                  <span class="home-shelf-book">{book.title}</span>
+                ))}
+              </div>
+              <div class="home-shelf-enter">
+                <span>进入分类</span>
+                <span>→</span>
+              </div>
+            </a>
           ))}
         </div>
       </section>

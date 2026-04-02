@@ -2421,6 +2421,24 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 1180px) {
+  .home-editorial-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .home-side-column {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-shelf-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 18px;
+  }
+
+  .home-shelf-preview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .home-sections {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: auto;
@@ -2429,6 +2447,25 @@ img { display: block; max-width: 100%; }
   .section-card:nth-child(n) {
     grid-column: span 1;
     grid-row: span 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .home-feature-card {
+    min-height: 0;
+  }
+
+  .home-feature-title {
+    max-width: 100%;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+  }
+
+  .home-side-column {
+    grid-template-columns: 1fr;
+  }
+
+  .home-shelf-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2589,7 +2626,267 @@ img { display: block; max-width: 100%; }
 
 .home-desktop-flow {
   display: grid;
+  gap: 34px;
+}
+
+.home-editorial-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.78fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.home-feature-card,
+.home-quote-panel,
+.home-resume-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  box-shadow: 0 24px 54px rgba(23, 48, 67, 0.1);
+}
+
+.home-feature-card {
+  display: grid;
   gap: 28px;
+  min-height: 530px;
+  padding: 34px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.15), transparent 28%),
+    radial-gradient(circle at 18% 120%, rgba(164, 91, 42, 0.16), transparent 30%),
+    linear-gradient(165deg, rgba(255, 249, 241, 0.96), rgba(255, 255, 255, 0.76));
+}
+
+.home-feature-card::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  left: 22px;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(23, 48, 67, 0.42), rgba(23, 48, 67, 0.08));
+}
+
+.home-feature-card::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  bottom: -90px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(29, 109, 116, 0.08);
+  filter: blur(10px);
+}
+
+.home-feature-head,
+.home-side-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.home-feature-headline {
+  display: grid;
+  gap: 8px;
+}
+
+.home-feature-kicker,
+.home-feature-hint {
+  margin: 0;
+}
+
+.home-feature-kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.home-feature-hint {
+  color: var(--text-faint);
+  font-size: 0.94rem;
+}
+
+.home-feature-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding-left: 18px;
+}
+
+.home-feature-title {
+  margin: 0;
+  max-width: 11ch;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(3.2rem, 5.6vw, 5.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.home-feature-summary {
+  max-width: 38rem;
+  font-size: 1.02rem;
+  line-height: 1.88;
+}
+
+.home-feature-tags {
+  max-width: 38rem;
+}
+
+.home-feature-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 18px;
+}
+
+.home-side-column {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.home-quote-panel,
+.home-resume-panel {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.home-quote-panel {
+  background:
+    radial-gradient(circle at top left, rgba(29, 109, 116, 0.14), transparent 30%),
+    linear-gradient(165deg, rgba(242, 249, 249, 0.96), rgba(255, 255, 255, 0.78));
+}
+
+.home-resume-panel {
+  background:
+    radial-gradient(circle at top right, rgba(164, 91, 42, 0.12), transparent 26%),
+    linear-gradient(160deg, rgba(252, 245, 236, 0.94), rgba(255, 255, 255, 0.78));
+}
+
+.home-side-head h2 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.45rem;
+}
+
+.home-quote-body {
+  gap: 18px;
+  padding: 0;
+}
+
+.home-quote-panel .quote-display {
+  font-size: clamp(2.15rem, 3vw, 3.3rem);
+  line-height: 1.26;
+}
+
+.home-resume-panel .home-resume-link {
+  gap: 14px;
+}
+
+.home-shelves-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.home-shelf-list {
+  display: grid;
+  gap: 14px;
+}
+
+.home-shelf-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.62fr) minmax(0, 1.3fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 24px;
+  border-radius: 26px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 18px 42px rgba(23, 48, 67, 0.08);
+}
+
+.home-shelf-row:nth-child(6n + 1) {
+  background: linear-gradient(155deg, rgba(255, 248, 240, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:nth-child(6n + 2) {
+  background: linear-gradient(155deg, rgba(241, 248, 248, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:nth-child(6n + 3) {
+  background: linear-gradient(155deg, rgba(244, 245, 252, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:nth-child(6n + 4) {
+  background: linear-gradient(155deg, rgba(252, 245, 239, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:nth-child(6n + 5) {
+  background: linear-gradient(155deg, rgba(244, 250, 245, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:nth-child(6n) {
+  background: linear-gradient(155deg, rgba(246, 243, 251, 0.95), rgba(255, 255, 255, 0.78));
+}
+
+.home-shelf-row:hover,
+.home-shelf-row:focus-visible {
+  transform: translateY(-3px);
+}
+
+.home-shelf-heading {
+  display: grid;
+  gap: 12px;
+}
+
+.home-shelf-heading h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+  line-height: 1.02;
+}
+
+.home-shelf-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
+.home-shelf-book {
+  display: block;
+  min-width: 0;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.home-shelf-book::before {
+  content: "·";
+  display: inline-block;
+  margin-right: 8px;
+  color: rgba(23, 48, 67, 0.32);
+}
+
+.home-shelf-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--navy);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .home-mobile-focus,

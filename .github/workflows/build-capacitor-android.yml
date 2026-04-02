@@ -109,3 +109,46 @@ jobs:
           gh release upload "${GITHUB_REF_NAME}" \
             "${{ steps.asset.outputs.asset_path }}#${{ steps.asset.outputs.asset_name }}" \
             --clobber
+
+      - name: Upload APK to Cloudflare R2
+        if: ${{ vars.CLOUDFLARE_R2_ANDROID_BUCKET != '' && vars.ANDROID_APP_DOWNLOAD_BASE_URL != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.CLOUDFLARE_R2_ANDROID_BUCKET }}
+          R2_PUBLIC_BASE_URL: ${{ vars.ANDROID_APP_DOWNLOAD_BASE_URL }}
+          TAG_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          ASSET_PATH: ${{ steps.asset.outputs.asset_path }}
+          ASSET_NAME: ${{ steps.asset.outputs.asset_name }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Missing Cloudflare credentials"
+            exit 1
+          fi
+
+          BASE_URL="${R2_PUBLIC_BASE_URL%/}"
+          VERSIONED_KEY="android/${TAG_NAME}/${ASSET_NAME}"
+          LATEST_KEY="android/latest/book-android-latest-debug.apk"
+          LATEST_JSON_KEY="android/latest/latest.json"
+          METADATA_PATH="/tmp/android-latest.json"
+
+          VERSIONED_URL="${BASE_URL}/${VERSIONED_KEY}"
+          LATEST_URL="${BASE_URL}/${LATEST_KEY}"
+          RELEASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG_NAME}"
+
+          cat > "$METADATA_PATH" <<EOF
+          {
+            "tag": "${TAG_NAME}",
+            "commit": "${COMMIT_SHA}",
+            "asset_name": "${ASSET_NAME}",
+            "release_url": "${RELEASE_URL}",
+            "versioned_url": "${VERSIONED_URL}",
+            "latest_url": "${LATEST_URL}",
+            "published_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          }
+          EOF
+
+          npx wrangler r2 object put "${R2_BUCKET}/${VERSIONED_KEY}" --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
+          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_KEY}" --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
+          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_JSON_KEY}" --file="${METADATA_PATH}" --content-type="application/json"

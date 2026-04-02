@@ -81,6 +81,9 @@ jobs:
 
       - name: Build Astro site
         working-directory: ./astro-site
+        env:
+          PUBLIC_ANDROID_APP_DOWNLOAD_BASE_URL: ${{ vars.ANDROID_APP_DOWNLOAD_BASE_URL }}
+          PUBLIC_ANDROID_APP_RELEASE_PAGE_URL: ${{ vars.ANDROID_APP_RELEASE_PAGE_URL }}
         run: npm run build:site
 
       - name: Ensure Cloudflare Pages project exists

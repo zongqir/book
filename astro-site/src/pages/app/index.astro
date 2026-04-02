@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAndroidAppDownloadConfig } from "../../lib/app-distribution";
+
+const appDownload = getAndroidAppDownloadConfig();
+const primaryUrl = appDownload.latestApkUrl || appDownload.releasePageUrl;
+const secondaryUrl = appDownload.manifestUrl || appDownload.releasePageUrl;
+---
+
+<BaseLayout
+  title="App 下载"
+  description="下载最新版安卓调试包。"
+  canonicalPath="/app/"
+  ogDescription="下载最新版安卓调试包。"
+>
+  <div class="page-stack app-download-stage">
+    <section class="content-card app-download-card">
+      <p class="eyebrow">Android App</p>
+      <h1>装一个随手可开的读书库</h1>
+      <p class="app-download-lead">
+        这是当前对外放出的安卓包。装好后可以直接进首页、目录和正文，本地笔记也继续留在手机上。
+      </p>
+
+      {appDownload.available ? (
+        <>
+          <div class="app-download-actions">
+            {primaryUrl && (
+              <a class="btn" href={primaryUrl}>
+                下载最新版 APK
+              </a>
+            )}
+            {secondaryUrl && secondaryUrl !== primaryUrl && (
+              <a class="btn btn-ghost" href={secondaryUrl}>
+                查看发布信息
+              </a>
+            )}
+          </div>
+          <p class="app-download-note">每次推送 `app-v*` 标签后，这里的最新版地址都会被刷新。</p>
+        </>
+      ) : (
+        <div class="app-download-empty">
+          <p class="app-download-note">下载入口还没公开。把 R2 公网地址接上后，这里会自动出现最新版按钮。</p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>

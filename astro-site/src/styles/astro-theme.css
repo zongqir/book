@@ -1184,8 +1184,88 @@ img { display: block; max-width: 100%; }
   background: rgba(255, 251, 245, 0.72);
   backdrop-filter: blur(16px);
 }
+.site-footer-inner--with-links { justify-content: space-between; }
 .site-footer p { margin: 0; }
 .site-footer-meta { font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--text-faint); }
+.site-footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.site-footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+.site-footer-link:hover,
+.site-footer-link:focus-visible {
+  color: var(--text);
+  border-color: rgba(23, 48, 67, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  transform: translateY(-1px);
+}
+.site-footer-link.is-active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--navy), #234d69);
+}
+
+.app-download-stage {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.app-download-card {
+  display: grid;
+  gap: 18px;
+  padding: clamp(24px, 4vw, 34px);
+}
+
+.app-download-card h1 {
+  margin: 0;
+  max-width: 10ch;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.app-download-lead {
+  margin: 0;
+  max-width: 38rem;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1.82;
+}
+
+.app-download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.app-download-empty {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px dashed rgba(23, 48, 67, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.app-download-note {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
 
 .mobile-app-dock {
   position: fixed;
@@ -2154,6 +2234,7 @@ body.reader-notes-editor-open .reader-notes-shell {
     box-shadow: 0 12px 32px rgba(23, 48, 67, 0.08);
   }
   .site-footer-inner { flex-direction: column; align-items: flex-start; border-radius: 28px; }
+  .site-footer-links { display: none; }
   .identity {
     flex-direction: row;
     align-items: center;

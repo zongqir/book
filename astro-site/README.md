@@ -41,7 +41,7 @@ npm run build:android:debug
 GitHub Actions：
 
 - `deploy-cloudflare-pages.yml` 继续负责网站部署
-- `build-capacitor-android.yml` 只在推送 `app-v*` tag 时触发，构建 Android `debug APK`，并发布到 GitHub Release
+- `build-capacitor-android.yml` 只在推送 `app-v*` tag 时触发，构建 Android `debug APK`，发布到 GitHub Release，并在配置了 R2 后同步一份稳定的 `latest` 下载地址
 
 当前目标：
 
@@ -58,3 +58,16 @@ git push origin app-v0.1.0
 ```
 
 产物会出现在对应的 GitHub Release 页面，同时保留一份 Actions artifact。
+
+如果要把 APK 同步到 Cloudflare R2，并让站点出现桌面端下载入口，需要额外配置：
+
+- GitHub Secret `CLOUDFLARE_API_TOKEN`
+- GitHub Secret `CLOUDFLARE_ACCOUNT_ID`
+- GitHub Variable `CLOUDFLARE_R2_ANDROID_BUCKET`
+- GitHub Variable `ANDROID_APP_DOWNLOAD_BASE_URL`
+
+推荐把 `ANDROID_APP_DOWNLOAD_BASE_URL` 指到你的 R2 自定义域名根地址，例如 `https://downloads.example.com`。Workflow 会自动写入：
+
+- `android/<tag>/book-<tag>-android-debug.apk`
+- `android/latest/book-android-latest-debug.apk`
+- `android/latest/latest.json`

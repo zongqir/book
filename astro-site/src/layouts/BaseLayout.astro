@@ -1,5 +1,6 @@
 ---
 import "../styles/astro-theme.css";
+import { getAndroidAppDownloadConfig } from "../lib/app-distribution";
 
 type Props = {
   title?: string;
@@ -31,7 +32,10 @@ const socialTitle = ogTitle || pageTitle;
 const socialDescription = ogDescription || description;
 const socialImage = new URL(ogImage, Astro.site);
 const isNotes = pathname.startsWith("/notes");
+const isAppDownload = pathname.startsWith("/app");
 const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "笔记" : title;
+const appDownload = getAndroidAppDownloadConfig();
+const showAppDownloadEntry = appDownload.available;
 ---
 
 <!doctype html>
@@ -96,10 +100,17 @@ const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? 
     <main class="site-main shell">
       <slot />
     </main>
-    {!isHome && (
+    {(!isHome || showAppDownloadEntry) && (
       <footer class="site-footer shell">
-        <div class="site-footer-inner">
+        <div class:list={["site-footer-inner", showAppDownloadEntry && "site-footer-inner--with-links"]}>
           <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
+          {showAppDownloadEntry && (
+            <div class="site-footer-links">
+              <a class:list={["site-footer-link", isAppDownload && "is-active"]} href="/app/">
+                Android App
+              </a>
+            </div>
+          )}
         </div>
       </footer>
     )}

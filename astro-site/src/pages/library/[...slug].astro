@@ -183,14 +183,6 @@ const ogType = node.kind === "page" ? "article" : "website";
           </nav>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
-          <div class="detail-line detail-line--page">
-            {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
-            {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
-            {node.page.status && <span class="meta-chip">{node.page.status}</span>}
-            <a class="meta-chip meta-chip--link" href="/library/">
-              回目录继续看
-            </a>
-          </div>
         </div>
       </section>
 

@@ -238,7 +238,6 @@ img { display: block; max-width: 100%; }
 .card-topline,
 .book-dice-meta,
 .random-quote-source,
-.breadcrumb,
 .hero-tool-head,
 .section-head,
 .page-nav {
@@ -251,10 +250,16 @@ img { display: block; max-width: 100%; }
 .section-top,
 .card-topline,
 .book-dice-meta,
-.random-quote-source,
-.breadcrumb {
+.random-quote-source {
   align-items: center;
   justify-content: space-between;
+}
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
 }
 .hero-tool-head { align-items: flex-start; margin-bottom: 0; }
 .hero-tool-head h2,
@@ -2215,22 +2220,6 @@ body.reader-notes-editor-open .reader-notes-shell {
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
-  }
-  .detail-line--page {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-  .detail-line--page::-webkit-scrollbar {
-    display: none;
-  }
-  .detail-line--page .meta-chip {
-    flex: 0 0 auto;
-  }
-  .detail-line--page .meta-chip:nth-child(2),
-  .detail-line--page .meta-chip:nth-child(3) {
-    display: none;
   }
   .page-intro--section,
   .page-intro--book {

@@ -74,12 +74,9 @@ jobs:
         working-directory: ./astro-site
         run: npm ci
 
-      - name: Export site content
-        run: python3 scripts/export_site_content.py
-
       - name: Build Astro site
         working-directory: ./astro-site
-        run: npm run build
+        run: npm run build:site
 
       - name: Ensure Cloudflare Pages project exists
         env:

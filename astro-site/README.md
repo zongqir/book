@@ -7,6 +7,7 @@
 - 内容源继续放在 `site/content/library/`
 - 站点索引继续复用 `site/static/data/site-content.json`
 - 静态资源继续复用 `site/static/`
+- Web 继续走 Astro，App 壳改为 `Capacitor + Android`
 
 本地开发：
 
@@ -16,15 +17,35 @@ npm install
 npm run dev
 ```
 
-构建：
+站点构建：
 
 ```bash
 cd astro-site
-npm run build
+npm run build:site
 ```
+
+同步 Android 壳：
+
+```bash
+cd astro-site
+npm run sync:android
+```
+
+本地生成调试包：
+
+```bash
+cd astro-site
+npm run build:android:debug
+```
+
+GitHub Actions：
+
+- `deploy-cloudflare-pages.yml` 继续负责网站部署
+- `build-capacitor-android.yml` 负责构建 Android `debug APK` 并上传 artifact
 
 当前目标：
 
 - 先把内容渲染和路由迁到 Astro
 - 保持内容结构不变
 - 给后续更复杂的交互留空间
+- 给 PWA 之外补一条最小可用的 App 分发路径

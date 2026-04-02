@@ -5,10 +5,17 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:site": "npm run export:content && npm run build",
     "preview": "astro preview",
-    "build:page-content": "python3 ../scripts/export_site_page_content.py"
+    "export:content": "python3 ../scripts/export_site_content.py",
+    "build:page-content": "python3 ../scripts/export_site_page_content.py",
+    "sync:android": "npx cap sync android",
+    "build:android:debug": "npm run build:site && npm run sync:android && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
     "astro": "^5.13.5",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0"

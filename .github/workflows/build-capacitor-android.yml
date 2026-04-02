@@ -1,0 +1,76 @@
+name: Build Android App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.12.0"
+          cache: "npm"
+          cache-dependency-path: astro-site/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Install Astro dependencies
+        working-directory: ./astro-site
+        run: npm ci
+
+      - name: Build Astro site bundle
+        working-directory: ./astro-site
+        run: npm run build:site
+
+      - name: Sync Capacitor Android
+        working-directory: ./astro-site
+        run: npm run sync:android
+
+      - name: Build debug APK
+        working-directory: ./astro-site/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: book-android-debug-apk
+          path: astro-site/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload web bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: book-astro-dist
+          path: astro-site/dist
+          if-no-files-found: error
+          retention-days: 14

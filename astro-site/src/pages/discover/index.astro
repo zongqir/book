@@ -1,360 +1,69 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getDiscoverData } from "../../lib/content";
+import { getDiscoverThemes, loadSiteIndex, type BookSummary } from "../../lib/content";
 
-const discover = getDiscoverData();
-const discoverTags = discover.tags;
+const themes = getDiscoverThemes();
+const siteIndex = loadSiteIndex();
+
+function getBookEntry(book: BookSummary) {
+  const whyReadPage = siteIndex.pages.find((page) => page.book_id === book.id && String(page.slot ?? "").startsWith("00"));
+  return {
+    url: whyReadPage?.url ?? book.url,
+    label: whyReadPage ? "打开导图" : "进入书页",
+  };
+}
 ---
 
-<BaseLayout title="发现" description="按主题和标签接下一条阅读线。" canonicalPath="/discover/" ogDescription="按主题和标签接下一条阅读线。" isDiscover={true}>
+<BaseLayout
+  title="主题阅读"
+  description="从一个问题开始，接上一条书和页面组成的阅读线。"
+  canonicalPath="/discover/"
+  ogDescription="从一个问题开始，接上一条书和页面组成的阅读线。"
+  isDiscover={true}
+>
   <div class="page-stack">
     <section class="library-panel library-panel--discover">
       <div class="library-hero library-hero--discover">
-        <p class="hero-kicker">主题入口</p>
-        <h1>发现</h1>
-        <p>别先搜。先点一个主题，再顺着标签往里走。</p>
+        <p class="hero-kicker">主题阅读</p>
+        <h1>先挑一条线</h1>
+        <p>不是先搜，也不是先看全部标签。先从你眼下最需要的那个问题开始。</p>
       </div>
     </section>
 
-    <section class="content-card discover-panel">
-      <div class="discover-query-shell discover-query-shell--topics">
-        <div class="discover-guide-head">
-          <div>
-            <p class="hero-kicker">从主题开始</p>
-            <h2>先点一个分类，再挑标签</h2>
-            <p class="discover-guide-copy">不做搜索列表，只把常走的阅读线摊开给你点。</p>
-          </div>
-          <button class="tool-switch discover-reset-inline" id="discover-reset-inline" type="button">清空</button>
-        </div>
-        <div class="discover-section-pills" aria-label="分类">
-          {discover.sections.map((section) => (
-            <button
-              class="discover-section-pill"
-              type="button"
-              data-section-chip={section.key}
-              data-section-label={section.title}
-            >
-              {section.title}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div class="discover-chip-head">
-        <div>
-          <p class="hero-kicker">标签地图</p>
-          <h2>全部标签</h2>
-        </div>
-        <span class="discover-chip-hint">点标签，再看对应书和页面</span>
-      </div>
-      <div class="discover-chip-row discover-chip-row--all" id="discover-chip-row">
-        {discoverTags.map((item) => (
-          <button
-            class:list={[
-              "tag-pill",
-              "tag-pill--button",
-              "discover-tag-chip",
-              item.count >= 18 && "discover-tag-chip--strong",
-              item.count >= 10 && item.count < 18 && "discover-tag-chip--medium",
-              item.count >= 18 && "discover-tag-chip--large",
-            ]}
-            type="button"
-            data-tag-chip={item.tag}
-            title={`${item.count} 条相关内容`}
-          >
-            {item.tag}
-          </button>
-        ))}
-      </div>
-
-      <div class="discover-active-rail" id="discover-active-rail" aria-live="polite"></div>
-      <div class="discover-summary" id="discover-summary">正在加载索引…</div>
-      <div class="discover-results" id="discover-results" aria-live="polite"></div>
+    <section class="theme-reading-grid" aria-label="主题入口">
+      {themes.map((theme, index) => {
+        const leadEntry = theme.leadBook ? getBookEntry(theme.leadBook) : null;
+        return (
+          <article class:list={["theme-reading-card", index === 0 && "theme-reading-card--featured"]}>
+            <a href={`/discover/${theme.slug}/`}>
+              <div class="theme-reading-card-top">
+                <span class="meta-chip">主题 {String(index + 1).padStart(2, "0")}</span>
+                <span class="theme-reading-card-count">{theme.counts.books} 本书</span>
+              </div>
+              <div class="theme-reading-card-copy">
+                <h2>{theme.title}</h2>
+                <p>{theme.summary}</p>
+              </div>
+              <div class="theme-reading-card-tags">
+                {theme.tags.map((tag) => (
+                  <span class="tag-pill">{tag}</span>
+                ))}
+              </div>
+              {theme.leadBook && leadEntry && (
+                <div class="theme-reading-card-start">
+                  <span class="theme-reading-card-label">先从这本开始</span>
+                  <strong>{theme.leadBook.title}</strong>
+                  <span>{leadEntry.label}</span>
+                </div>
+              )}
+              <div class="theme-reading-card-foot">
+                <span>{theme.prompt}</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        );
+      })}
     </section>
   </div>
-
-  <script is:inline define:vars={{ hiddenSectionKey: "02_专业技术" }}>
-    (function () {
-      var resetInlineButton = document.getElementById("discover-reset-inline");
-      var activeRail = document.getElementById("discover-active-rail");
-      var summary = document.getElementById("discover-summary");
-      var results = document.getElementById("discover-results");
-      var chipRow = document.getElementById("discover-chip-row");
-      var sectionChips = Array.prototype.slice.call(document.querySelectorAll("[data-section-chip]"));
-      var tagChips = Array.prototype.slice.call(document.querySelectorAll("[data-tag-chip]"));
-      var state = { items: [], activeSection: "", activeTag: "", sectionTags: {} };
-
-      function escapeHtml(value) {
-        return String(value || "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
-      }
-
-      function getParams() {
-        var params = new URLSearchParams(window.location.search);
-        return {
-          section: params.get("section") || "",
-          tag: params.get("tag") || "",
-        };
-      }
-
-      function syncSectionChips(value) {
-        sectionChips.forEach(function (button) {
-          if (!(button instanceof HTMLElement)) return;
-          button.classList.toggle("is-active", button.getAttribute("data-section-chip") === value);
-        });
-      }
-
-      function syncTagChips(value) {
-        tagChips.forEach(function (button) {
-          if (!(button instanceof HTMLElement)) return;
-          var tag = button.getAttribute("data-tag-chip") || "";
-          var available = !state.activeSection || isTagAvailableInSection(state.activeSection, tag);
-          button.classList.toggle("is-active", tag === value);
-          button.classList.toggle("is-muted", !available);
-        });
-      }
-
-      function updateUrl(next) {
-        var params = new URLSearchParams();
-        if (next.section) params.set("section", next.section);
-        if (next.tag) params.set("tag", next.tag);
-        var query = params.toString();
-        var target = query ? window.location.pathname + "?" + query : window.location.pathname;
-        window.history.replaceState({}, "", target);
-      }
-
-      function getFilters() {
-        return {
-          section: state.activeSection,
-          tag: state.activeTag,
-        };
-      }
-
-      function getSectionLabel(sectionKey) {
-        var chip = sectionChips.find(function (button) {
-          return button.getAttribute("data-section-chip") === sectionKey;
-        });
-        return chip ? chip.getAttribute("data-section-label") || "" : "";
-      }
-
-      function isTagAvailableInSection(sectionKey, tag) {
-        if (!sectionKey || !tag) return true;
-        var sectionTags = state.sectionTags[sectionKey];
-        return Boolean(sectionTags && sectionTags.has(tag));
-      }
-
-      function buildSectionTags(items) {
-        var next = {};
-        items.forEach(function (item) {
-          if (!item.section_key || !Array.isArray(item.tags)) return;
-          if (!next[item.section_key]) next[item.section_key] = new Set();
-          item.tags.forEach(function (tag) {
-            next[item.section_key].add(tag);
-          });
-        });
-        return next;
-      }
-
-      function passesFilters(item, filters) {
-        if (filters.section && item.section_key !== filters.section) return false;
-        if (filters.tag && !item.tags.includes(filters.tag)) return false;
-        return true;
-      }
-
-      function renderActiveRail(filters, listLength) {
-        if (!activeRail) return;
-        if (!filters.section && !filters.tag) {
-          activeRail.innerHTML =
-            '<div class="discover-active-pill discover-active-pill--muted">还没选方向</div>' +
-            '<p>先点一个分类，或者直接从标签里挑一条线。</p>';
-          return;
-        }
-
-        var parts = [];
-        if (filters.section) parts.push('<span class="discover-active-pill">' + escapeHtml(getSectionLabel(filters.section)) + '</span>');
-        if (filters.tag) parts.push('<span class="discover-active-pill discover-active-pill--tag">' + escapeHtml(filters.tag) + '</span>');
-
-        activeRail.innerHTML =
-          '<div class="discover-active-pills">' + parts.join("") + '</div>' +
-          '<p>这条线上现在接出 <strong>' + listLength + '</strong> 条内容。</p>';
-      }
-
-      function renderCard(item, index) {
-        var tags = item.tags.slice(0, 4).map(function (tag) {
-          return '<span class="tag-pill">' + escapeHtml(tag) + '</span>';
-        }).join("");
-        var leadClass = index === 0 ? ' discover-result-card--lead' : '';
-        if (item.kind === "book") {
-          return '' +
-            '<article class="discover-result-card discover-result-card--book' + leadClass + '">' +
-              '<a href="' + escapeHtml(item.url) + '">' +
-                '<div class="discover-result-topline">' +
-                  '<p class="discover-result-kicker">书</p>' +
-                  '<span class="discover-result-section">' + escapeHtml(item.section_title) + '</span>' +
-                '</div>' +
-                '<h3>' + escapeHtml(item.title) + '</h3>' +
-                '<p class="discover-result-summary">' + escapeHtml(item.summary || "先打开书页，再决定从哪一篇开始。") + '</p>' +
-                '<div class="discover-result-tags">' + tags + '</div>' +
-                '<div class="discover-result-action"><span>进入这本书</span><span>→</span></div>' +
-              '</a>' +
-            '</article>';
-        }
-        return '' +
-          '<article class="discover-result-card discover-result-card--page' + leadClass + '">' +
-            '<a href="' + escapeHtml(item.url) + '">' +
-              '<div class="discover-result-topline">' +
-                  '<p class="discover-result-kicker">页面</p>' +
-                  '<span class="discover-result-slot">' + escapeHtml(item.slot || "--") + '</span>' +
-                '</div>' +
-              '<p class="discover-result-book">' + escapeHtml(item.book_title) + '</p>' +
-              '<h3>' + escapeHtml(item.title) + '</h3>' +
-              '<p class="discover-result-summary">' + escapeHtml(item.summary || item.intent || "打开这一页，直接进入正文。") + '</p>' +
-              '<div class="discover-result-tags">' + tags + '</div>' +
-              '<div class="discover-result-action"><span>打开这一页</span><span>→</span></div>' +
-            '</a>' +
-          '</article>';
-      }
-
-      function renderEmpty() {
-        return '<article class="discover-empty"><h3>先点一个主题</h3><p>分类和标签都在上面，点中就会出现这一条线上的书和页面。</p></article>';
-      }
-
-      function renderNoMatch() {
-        return '<article class="discover-empty"><h3>这里暂时还是空的</h3><p>换一个标签，或者先把分类拿掉。</p></article>';
-      }
-
-      function render() {
-        var filters = getFilters();
-        var trail = [getSectionLabel(filters.section), filters.tag].filter(Boolean).join(" · ");
-        updateUrl(filters);
-        syncSectionChips(filters.section);
-        syncTagChips(filters.tag);
-        var hasActiveFilters = Boolean(filters.section || filters.tag);
-        var list = state.items.filter(function (item) { return passesFilters(item, filters); });
-        var visible = list.slice(0, 36);
-        renderActiveRail(filters, list.length);
-        if (summary) {
-          if (!state.items.length) summary.textContent = "正在加载索引…";
-          else if (!hasActiveFilters) summary.textContent = "标签都摊开了，直接点就行。";
-          else if (!visible.length) summary.textContent = trail ? trail + " · 还没接出内容。" : "这条线暂时还没接出内容。";
-          else if (list.length > visible.length) summary.textContent = trail + ' · 先展开前 ' + visible.length + ' 条。';
-          else summary.textContent = trail + ' · 从上往下翻就行。';
-        }
-        if (results) {
-          if (!hasActiveFilters) {
-            results.innerHTML = renderEmpty();
-          } else {
-            results.innerHTML = visible.length ? visible.map(function (item, index) {
-              return renderCard(item, index);
-            }).join("") : renderNoMatch();
-          }
-        }
-      }
-
-      function bind() {
-        sectionChips.forEach(function (button) {
-          if (!(button instanceof HTMLElement)) return;
-          button.addEventListener("click", function () {
-            var next = button.getAttribute("data-section-chip") || "";
-            state.activeSection = state.activeSection === next ? "" : next;
-            if (state.activeSection && state.activeTag && !isTagAvailableInSection(state.activeSection, state.activeTag)) {
-              state.activeTag = "";
-            }
-            render();
-          });
-        });
-
-        if (resetInlineButton instanceof HTMLElement) {
-          resetInlineButton.addEventListener("click", function () {
-            state.activeSection = "";
-            state.activeTag = "";
-            render();
-          });
-        }
-
-        if (chipRow) {
-          chipRow.addEventListener("click", function (event) {
-            var target = event.target;
-            if (!(target instanceof HTMLElement)) return;
-            var button = target.closest("[data-tag-chip]");
-            if (!(button instanceof HTMLElement)) return;
-            var tag = button.getAttribute("data-tag-chip");
-            if (!tag) return;
-            if (state.activeSection && !isTagAvailableInSection(state.activeSection, tag)) {
-              state.activeSection = "";
-            }
-            state.activeTag = state.activeTag === tag ? "" : tag;
-            render();
-          });
-        }
-      }
-
-      var params = getParams();
-      state.activeSection = params.section || "";
-      state.activeTag = params.tag || "";
-      bind();
-
-      fetch("/data/site-content.json")
-        .then(function (response) {
-          if (!response.ok) throw new Error("Failed to load site content");
-          return response.json();
-        })
-        .then(function (payload) {
-          var books = Array.isArray(payload.books) ? payload.books : [];
-          var pages = Array.isArray(payload.pages) ? payload.pages : [];
-          state.items = books
-            .filter(function (item) { return item.section_key !== hiddenSectionKey; })
-            .map(function (item) {
-              return {
-                kind: "book",
-                id: item.id,
-                title: item.title || "未命名",
-                summary: item.summary || "",
-                intent: "",
-                section_key: item.section_key || "",
-                section_title: item.section_title || "未分类",
-                slot: "",
-                tags: Array.isArray(item.tags) ? item.tags : [],
-                url: item.url || "#",
-                page_count: item.page_count || 0,
-                updated_at: item.updated_at || "",
-                book_title: item.title || "未命名",
-              };
-            })
-            .concat(
-              pages
-                .filter(function (item) { return item.section_key !== hiddenSectionKey; })
-                .map(function (item) {
-                  return {
-                    kind: "page",
-                    id: item.id,
-                    title: item.title || "未命名",
-                    summary: item.summary || "",
-                    intent: item.intent || "",
-                    section_key: item.section_key || "",
-                    section_title: item.section_title || "未分类",
-                    slot: item.slot || "",
-                    tags: Array.isArray(item.tags) ? item.tags : [],
-                    url: item.url || "#",
-                    updated_at: item.updated_at || "",
-                    book_title: item.book_title || "",
-                  };
-                })
-            );
-          state.sectionTags = buildSectionTags(state.items);
-          if (state.activeSection && state.activeTag && !isTagAvailableInSection(state.activeSection, state.activeTag)) {
-            state.activeSection = "";
-          }
-          render();
-        })
-        .catch(function () {
-          if (summary) summary.textContent = "索引加载失败，请稍后再试。";
-          if (results) results.innerHTML = renderEmpty();
-        });
-    })();
-  </script>
 </BaseLayout>

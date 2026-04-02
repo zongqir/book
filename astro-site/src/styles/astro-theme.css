@@ -1366,6 +1366,220 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 12px;
 }
 
+.theme-reading-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.theme-reading-card {
+  border-radius: 28px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(255, 247, 239, 0.78));
+  box-shadow: 0 18px 40px rgba(23, 48, 67, 0.08);
+  overflow: hidden;
+}
+
+.theme-reading-card--featured {
+  grid-column: span 2;
+}
+
+.theme-reading-card a {
+  display: grid;
+  gap: 18px;
+  min-height: 100%;
+  padding: 24px;
+}
+
+.theme-reading-card-top,
+.theme-reading-card-foot,
+.discover-theme-top,
+.discover-stage-topline,
+.discover-branch-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.theme-reading-card-count,
+.discover-stage-bookmark,
+.discover-branch-top span:last-child {
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.theme-reading-card-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.theme-reading-card-copy h2,
+.discover-theme-prompt h2,
+.discover-stage-card h3,
+.discover-branch-card h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+}
+
+.theme-reading-card-copy h2 {
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  line-height: 1.16;
+}
+
+.theme-reading-card-copy p,
+.discover-theme-prompt p,
+.discover-stage-card p,
+.discover-branch-card p,
+.discover-theme-neighbor p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.72;
+}
+
+.theme-reading-card-tags,
+.discover-stage-tags,
+.discover-branch-tags,
+.discover-theme-tags,
+.discover-theme-side-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-reading-card-start {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.theme-reading-card-label {
+  color: var(--text-faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-reading-card-start strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.24rem;
+}
+
+.theme-reading-card-foot {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.discover-theme-shell {
+  display: grid;
+  gap: 26px;
+}
+
+.discover-theme-top {
+  flex-wrap: wrap;
+}
+
+.discover-theme-prompt {
+  display: grid;
+  gap: 10px;
+}
+
+.discover-theme-prompt h2 {
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.14;
+}
+
+.discover-theme-stage,
+.discover-theme-section,
+.discover-theme-sidecard {
+  display: grid;
+  gap: 16px;
+}
+
+.discover-theme-stage-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.discover-theme-stage-head h2 {
+  margin: 4px 0 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.3rem;
+  line-height: 1.18;
+}
+
+.discover-stage-card,
+.discover-branch-card,
+.discover-theme-sidecard {
+  border-radius: 24px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 248, 240, 0.52));
+}
+
+.discover-stage-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px 22px 24px;
+}
+
+.discover-theme-sidecard {
+  padding: 18px;
+}
+
+.discover-stage-card h3 {
+  font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+  line-height: 1.14;
+}
+
+.discover-theme-book-grid,
+.discover-theme-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.discover-branch-card a,
+.discover-theme-neighbor {
+  display: grid;
+  gap: 12px;
+  min-height: 100%;
+  padding: 18px;
+}
+
+.discover-branch-card h3 {
+  font-size: 1.22rem;
+  line-height: 1.26;
+}
+
+.discover-theme-neighbors {
+  display: grid;
+  gap: 12px;
+}
+
+.discover-theme-neighbor {
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.discover-theme-neighbor strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.06rem;
+}
+
+.discover-theme-neighbor span {
+  color: var(--text-faint);
+  font-size: 0.86rem;
+}
+
 .discover-query-shell {
   display: grid;
   gap: 18px;
@@ -2641,6 +2855,52 @@ body.reader-notes-editor-open .reader-notes-shell {
     background: transparent;
     box-shadow: none;
     overflow: visible;
+  }
+  .theme-reading-grid,
+  .discover-theme-book-grid,
+  .discover-theme-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .theme-reading-card--featured {
+    grid-column: span 1;
+  }
+  .theme-reading-card a {
+    gap: 14px;
+    padding: 18px 16px;
+  }
+  .theme-reading-card-copy h2,
+  .discover-stage-card h3 {
+    font-size: 1.36rem;
+    line-height: 1.22;
+  }
+  .theme-reading-card-start {
+    padding: 14px;
+    border-radius: 18px;
+  }
+  .discover-theme-shell {
+    gap: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .discover-theme-stage-head {
+    align-items: start;
+  }
+  .discover-theme-stage-head .btn,
+  .discover-theme-stage-head .tool-switch {
+    width: auto;
+  }
+  .discover-stage-card {
+    gap: 12px;
+    padding: 18px 16px 20px;
+    border-radius: 22px;
+  }
+  .discover-branch-card a,
+  .discover-theme-neighbor {
+    padding: 16px;
   }
   .discover-panel::before {
     display: none;

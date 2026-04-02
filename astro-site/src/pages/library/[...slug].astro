@@ -183,9 +183,9 @@ const ogType = node.kind === "page" ? "article" : "website";
             {node.page.status && <span class="meta-chip">{node.page.status}</span>}
             <a
               class="meta-chip meta-chip--link"
-              href={`/discover/?section=${encodeURIComponent(node.page.section_key)}&slot=${encodeURIComponent(node.page.slot)}`}
+              href="/discover/"
             >
-              同槽位继续看
+              去主题阅读
             </a>
           </div>
         </div>

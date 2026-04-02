@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getDiscoverThemeDetail, getDiscoverThemeSlugs, loadSiteIndex, type BookSummary } from "../../lib/content";
+
+export function getStaticPaths() {
+  return getDiscoverThemeSlugs().map((theme) => ({ params: { theme } }));
+}
+
+const themeSlug = Astro.params.theme ?? "";
+const detail = getDiscoverThemeDetail(themeSlug);
+
+if (!detail) {
+  throw new Error(`Unknown discover theme: ${themeSlug}`);
+}
+
+const siteIndex = loadSiteIndex();
+
+function getBookEntry(book: BookSummary) {
+  const whyReadPage = siteIndex.pages.find((page) => page.book_id === book.id && String(page.slot ?? "").startsWith("00"));
+  return {
+    url: whyReadPage?.url ?? book.url,
+    label: whyReadPage ? "打开导图" : "进入书页",
+  };
+}
+
+const leadEntry = detail.leadBook ? getBookEntry(detail.leadBook) : null;
+---
+
+<BaseLayout
+  title={detail.title}
+  description={detail.summary}
+  canonicalPath={`/discover/${detail.slug}/`}
+  ogDescription={detail.summary}
+  isDiscover={true}
+>
+  <div class="page-stack">
+    <section class="library-panel library-panel--discover">
+      <div class="library-hero library-hero--discover">
+        <p class="hero-kicker">主题阅读</p>
+        <h1>{detail.title}</h1>
+        <p>{detail.summary}</p>
+      </div>
+    </section>
+
+    <section class="content-card discover-theme-shell">
+      <div class="discover-theme-top">
+        <a class="tool-switch" href="/discover/">返回主题入口</a>
+        <div class="discover-theme-tags">
+          {detail.tags.map((tag) => (
+            <span class="tag-pill">{tag}</span>
+          ))}
+        </div>
+      </div>
+
+      <div class="discover-theme-prompt">
+        <p class="hero-kicker">这条线怎么走</p>
+        <h2>{detail.prompt}</h2>
+        <p>这条线上现在能接出 {detail.counts.books} 本书和 {detail.counts.pages} 个页面。先从起步书开始，再往下分叉。</p>
+      </div>
+
+      {detail.leadBook && leadEntry && (
+        <section class="discover-theme-stage">
+          <div class="discover-theme-stage-head">
+            <div>
+              <p class="hero-kicker">起步书</p>
+              <h2>先从这本开始</h2>
+            </div>
+            <a class="btn" href={leadEntry.url}>{leadEntry.label}</a>
+          </div>
+          <article class="discover-stage-card">
+            <div class="discover-stage-topline">
+              <span class="meta-chip">{detail.leadBook.section_title}</span>
+              <span class="discover-stage-bookmark">起步点</span>
+            </div>
+            <h3>{detail.leadBook.title}</h3>
+            <p>{detail.leadBook.summary || "先读进去，再顺着这一条线扩开。"}</p>
+            <div class="discover-stage-tags">
+              {detail.leadBook.tags.slice(0, 5).map((tag) => (
+                <span class="tag-pill">{tag}</span>
+              ))}
+            </div>
+          </article>
+        </section>
+      )}
+
+      <section class="discover-theme-section">
+        <div class="discover-theme-stage-head">
+          <div>
+            <p class="hero-kicker">延伸书单</p>
+            <h2>顺着这条线继续读</h2>
+          </div>
+        </div>
+        <div class="discover-theme-book-grid">
+          {detail.books.map((book) => {
+            const entry = getBookEntry(book);
+            return (
+              <article class="discover-branch-card">
+                <a href={entry.url}>
+                  <div class="discover-branch-top">
+                    <span class="meta-chip">{book.section_title}</span>
+                    <span>{entry.label}</span>
+                  </div>
+                  <h3>{book.title}</h3>
+                  <p>{book.summary || "先打开这本，再决定是否沿着这一支走下去。"}</p>
+                  <div class="discover-branch-tags">
+                    {book.tags.slice(0, 4).map((tag) => (
+                      <span class="tag-pill">{tag}</span>
+                    ))}
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section class="discover-theme-section">
+        <div class="discover-theme-stage-head">
+          <div>
+            <p class="hero-kicker">直接切页</p>
+            <h2>先看这些页面也行</h2>
+          </div>
+        </div>
+        <div class="discover-results">
+          {detail.pages.map((page, index) => (
+            <article class:list={["discover-result-card", "discover-result-card--page", index === 0 && "discover-result-card--lead"]}>
+              <a href={page.url}>
+                <div class="discover-result-topline">
+                  <p class="discover-result-kicker">页面</p>
+                  <span class="discover-result-slot">{page.slot || "--"}</span>
+                </div>
+                <p class="discover-result-book">{page.book_title}</p>
+                <h3>{page.title}</h3>
+                <p class="discover-result-summary">{page.summary || page.intent || "打开这一页，直接进入正文。"}</p>
+                <div class="discover-result-tags">
+                  {page.tags.slice(0, 4).map((tag) => (
+                    <span class="tag-pill">{tag}</span>
+                  ))}
+                </div>
+                <div class="discover-result-action">
+                  <span>打开这一页</span>
+                  <span>→</span>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <div class="discover-theme-meta-grid">
+        <section class="discover-theme-sidecard">
+          <div class="discover-theme-stage-head">
+            <div>
+              <p class="hero-kicker">关联标签</p>
+              <h2>还能往哪分</h2>
+            </div>
+          </div>
+          <div class="discover-theme-side-tags">
+            {detail.relatedTags.map((tag) => (
+              <span class="tag-pill">{tag.tag} · {tag.count}</span>
+            ))}
+          </div>
+        </section>
+
+        <section class="discover-theme-sidecard">
+          <div class="discover-theme-stage-head">
+            <div>
+              <p class="hero-kicker">相邻主题</p>
+              <h2>也可以切到这里</h2>
+            </div>
+          </div>
+          <div class="discover-theme-neighbors">
+            {detail.neighborThemes.map((theme) => (
+              <a class="discover-theme-neighbor" href={`/discover/${theme.slug}/`}>
+                <strong>{theme.title}</strong>
+                <p>{theme.summary}</p>
+                <span>{theme.sharedTags.join(" · ")}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

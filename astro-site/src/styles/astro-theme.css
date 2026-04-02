@@ -2199,6 +2199,11 @@ body.reader-notes-editor-open .reader-notes-shell {
   .mobile-page-badge {
     display: inline-flex;
   }
+  .is-library .mobile-page-badge,
+  .is-discover .mobile-page-badge,
+  .is-notes .mobile-page-badge {
+    display: none;
+  }
   .tagline { white-space: normal; }
   .top-nav {
     display: none;
@@ -2416,14 +2421,32 @@ body.reader-notes-editor-open .reader-notes-shell {
   .discover-panel {
     gap: 18px;
   }
+  .library-panel--discover {
+    display: none;
+  }
   .library-panel--discover .library-hero {
     gap: 14px;
     padding-top: 20px;
     padding-bottom: 18px;
   }
-  .library-panel--discover .library-hero h1 {
-    font-size: clamp(2.65rem, 12vw, 3.5rem);
-    letter-spacing: -0.05em;
+  .library-panel--discover .library-hero h1,
+  .library-panel--index .library-hero h1,
+  .notes-hero h1 {
+    display: none;
+  }
+  .library-panel--discover .library-hero p,
+  .library-panel--index .library-hero p,
+  .notes-hero .hero-kicker,
+  .discover-stats-strip,
+  .notes-stage-strip {
+    display: none;
+  }
+  .library-panel--discover .library-hero,
+  .library-panel--index .library-hero,
+  .notes-hero {
+    gap: 10px;
+    padding-top: 14px;
+    padding-bottom: 12px;
   }
   .discover-panel {
     gap: 16px;
@@ -2431,16 +2454,8 @@ body.reader-notes-editor-open .reader-notes-shell {
     padding-bottom: 18px;
     border-radius: 24px;
   }
-  .library-hero p {
-    display: none;
-  }
   .discover-stats-strip {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-right: 20px;
-    padding-bottom: 2px;
-    scrollbar-width: none;
+    display: none;
   }
   .discover-stats-strip::-webkit-scrollbar { display: none; }
   .discover-stats-strip .stat-block:last-child {
@@ -2804,6 +2819,9 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-hero-head {
     gap: 14px;
   }
+  .notes-hero-head > div:first-child {
+    display: none;
+  }
   .notes-stage-actions {
     width: 100%;
     flex-wrap: nowrap;
@@ -2849,8 +2867,8 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-summary--hero,
   .notes-status--hero {
     max-width: none;
-    font-size: 0.92rem;
-    line-height: 1.64;
+    font-size: 0.86rem;
+    line-height: 1.56;
   }
   .notes-results-card {
     gap: 14px;

@@ -76,7 +76,7 @@ const mobileSectionLabel = isHome ? "首页" : isDiscover ? "发现" : isLibrary
       rel="stylesheet"
     />
   </head>
-  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home", isDiscover && "is-discover"]}>
+  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home", isDiscover && "is-discover", isNotes && "is-notes"]}>
     <div class="page-frame">
       <header class="site-header-wrap">
         <div class="site-header shell">

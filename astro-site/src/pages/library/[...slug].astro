@@ -38,21 +38,26 @@ const ogType = node.kind === "page" ? "article" : "website";
             <span>/</span>
             <span>{node.title}</span>
           </nav>
-          <h1>{node.title}</h1>
-          <div class="detail-line">
-            <span class="meta-chip">{node.books.length} 本书</span>
-            {node.books[0] && <span class="meta-chip">{node.books[0].title}</span>}
+          <div class="section-heading">
+            <h1>{node.title}</h1>
+            <p>直接在这个分类里搜书名。</p>
           </div>
+          <label class="field-control library-index-search library-index-search--section">
+            <span>筛选</span>
+            <input
+              id="section-library-search"
+              type="search"
+              placeholder={`搜${node.title}里的书名`}
+              aria-label={`搜索 ${node.title} 分类里的书名`}
+            />
+          </label>
         </div>
       </section>
 
       <section class="section-shelf section-shelf--section-node">
         {node.books.map((book) => (
-          <article class="book-card">
+          <article class="book-card" data-section-book-item data-search-text={book.title}>
             <a href={book.url}>
-              <div class="card-topline">
-                <span class="section-index">{book.section_title}</span>
-              </div>
               <h3>{book.title}</h3>
               {book.summary && <p>{book.summary}</p>}
               <div class="book-card-footer">
@@ -66,6 +71,7 @@ const ogType = node.kind === "page" ? "article" : "website";
           </article>
         ))}
       </section>
+      <p class="preview-item preview-item--muted library-index-empty" id="section-library-empty" hidden>没搜到这类书，换个书名试试。</p>
     </div>
   )}
 
@@ -399,6 +405,45 @@ const ogType = node.kind === "page" ? "article" : "website";
       )}
     </div>
   )}
+{node.kind === "section" && (
+  <script>
+    const sectionSearchInput = document.getElementById("section-library-search");
+    const sectionBookItems = Array.from(document.querySelectorAll("[data-section-book-item]"));
+    const sectionEmpty = document.getElementById("section-library-empty");
+
+    function normalizeSectionSearchText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFKC")
+        .replace(/[\s\p{P}\p{S}]+/gu, "");
+    }
+
+    function updateSectionFilter() {
+      const query =
+        sectionSearchInput instanceof HTMLInputElement
+          ? normalizeSectionSearchText(sectionSearchInput.value)
+          : "";
+
+      let visibleCount = 0;
+
+      sectionBookItems.forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        const searchText = normalizeSectionSearchText(item.dataset.searchText || "");
+        const matched = !query || searchText.includes(query);
+        item.hidden = !matched;
+        if (matched) visibleCount += 1;
+      });
+
+      if (sectionEmpty instanceof HTMLElement) {
+        sectionEmpty.hidden = visibleCount > 0;
+      }
+    }
+
+    if (sectionSearchInput instanceof HTMLInputElement) {
+      sectionSearchInput.addEventListener("input", updateSectionFilter);
+    }
+  </script>
+)}
 {node.kind === "page" && (
   <script>
     import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";

@@ -27,7 +27,7 @@ const sectionPreviewMap = Object.fromEntries(
 );
 ---
 
-<BaseLayout isHome={true} isLibrary={false}>
+<BaseLayout isHome={true} isLibrary={false} description="随机翻一本到，再沿着分类、摘句和文稿一路往里读。" canonicalPath="/" ogTitle="读书库" ogDescription="随机翻一本到，再沿着分类、摘句和文稿一路往里读。">
   <div class="page-stack">
     <section class="hero-panel home-stage" id="home-tools">
       <div class="home-stage-head">
@@ -161,11 +161,12 @@ const sectionPreviewMap = Object.fromEntries(
       }
 
       function randomBook(excludeCurrent) {
-        if (books.length <= 1) return currentBook;
+        if (!books.length) return 0;
+        if (books.length === 1) return 0;
+        if (!excludeCurrent) return Math.floor(Math.random() * books.length);
         var next = currentBook;
         while (next === currentBook) {
           next = Math.floor(Math.random() * books.length);
-          if (!excludeCurrent) break;
         }
         return next;
       }
@@ -203,8 +204,10 @@ const sectionPreviewMap = Object.fromEntries(
         }
       }
 
-      function randomQuote() {
-        if (quotes.length <= 1) return currentQuote;
+      function randomQuote(excludeCurrent) {
+        if (!quotes.length) return 0;
+        if (quotes.length === 1) return 0;
+        if (!excludeCurrent) return Math.floor(Math.random() * quotes.length);
         var next = currentQuote;
         while (next === currentQuote) {
           next = Math.floor(Math.random() * quotes.length);
@@ -227,7 +230,7 @@ const sectionPreviewMap = Object.fromEntries(
       });
       if (quoteShuffle) {
         quoteShuffle.addEventListener("click", function () {
-          renderQuote(randomQuote());
+          renderQuote(randomQuote(true));
         });
       }
 
@@ -278,11 +281,11 @@ const sectionPreviewMap = Object.fromEntries(
               })
             : [];
           if (books.length) {
-            renderBook(0);
+            renderBook(randomBook(false));
             startAutoplay();
           }
           if (quotes.length) {
-            renderQuote(0);
+            renderQuote(randomQuote(false));
           }
         })
         .catch(function () {});

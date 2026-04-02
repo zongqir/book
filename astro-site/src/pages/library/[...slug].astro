@@ -16,9 +16,19 @@ const node = getNodeBySlug(parts);
 if (!node) {
   throw new Error(`Missing library node for ${parts.join("/")}`);
 }
+
+
+const metaDescription =
+  node.kind === "section"
+    ? `${node.title}分类下共 ${node.books.length} 本书，可以直接从书页往里读。`
+    : node.kind === "book"
+      ? (node.book.summary || `${node.book.section_title}分类下的《${node.book.title}》书页与文稿入口。`)
+      : (node.page.summary || node.page.intent || `${node.book?.title || "这本书"}中的一篇文稿。`);
+const canonicalPath = node.url;
+const ogType = node.kind === "page" ? "article" : "website";
 ---
 
-<BaseLayout title={node.title} isLibrary={true}>
+<BaseLayout title={node.title} description={metaDescription} canonicalPath={canonicalPath} ogDescription={metaDescription} ogType={ogType} isLibrary={true}>
   {node.kind === "section" && (
     <div class="page-stack">
       <section class="library-panel">

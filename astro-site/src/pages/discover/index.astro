@@ -6,7 +6,7 @@ const discover = getDiscoverData();
 const featuredTags = discover.tags.slice(0, 12);
 ---
 
-<BaseLayout title="搜索与筛选" isDiscover={true}>
+<BaseLayout title="搜索与筛选" description="按书名、标题、标签和分类找内容。" canonicalPath="/discover/" ogDescription="按书名、标题、标签和分类找内容。" isDiscover={true}>
   <div class="page-stack">
     <section class="library-panel">
       <div class="library-hero">

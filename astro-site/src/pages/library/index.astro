@@ -5,7 +5,7 @@ import { getLibraryIndex } from "../../lib/content";
 const sections = getLibraryIndex().filter((section) => section.key !== "02_专业技术");
 ---
 
-<BaseLayout title="目录" isLibrary={true}>
+<BaseLayout title="目录" description="从分类进入书页和文稿，按主题一路往里读。" canonicalPath="/library/" ogDescription="从分类进入书页和文稿，按主题一路往里读。" isLibrary={true}>
   <div class="page-stack">
     <section class="library-panel">
       <div class="library-hero">

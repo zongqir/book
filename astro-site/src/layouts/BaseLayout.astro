@@ -4,6 +4,11 @@ import "../styles/astro-theme.css";
 type Props = {
   title?: string;
   description?: string;
+  canonicalPath?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article";
+  ogImage?: string;
   isHome?: boolean;
   isLibrary?: boolean;
   isDiscover?: boolean;
@@ -12,12 +17,21 @@ type Props = {
 const {
   title = "读书库",
   description = "读书库",
+  canonicalPath,
+  ogTitle,
+  ogDescription,
+  ogType = "website",
+  ogImage = "/icons/icon-512.png",
   isHome = false,
   isLibrary = false,
   isDiscover = false,
 } = Astro.props;
 const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
 const pathname = Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath || pathname, Astro.site);
+const socialTitle = ogTitle || pageTitle;
+const socialDescription = ogDescription || description;
+const socialImage = new URL(ogImage, Astro.site);
 const isNotes = pathname.startsWith("/notes");
 ---
 
@@ -28,6 +42,19 @@ const isNotes = pathname.startsWith("/notes");
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" title="读书库 RSS" href="/rss.xml" />
+    <meta property="og:site_name" content="读书库" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
+    <meta name="twitter:image" content={socialImage} />
     <meta name="application-name" content="读书库" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

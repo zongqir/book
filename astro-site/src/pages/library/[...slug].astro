@@ -331,15 +331,15 @@ const ogType = node.kind === "page" ? "article" : "website";
       </div>
 
       {node.relatedPages.length > 0 && (
-        <section class="page-stack compact-stack">
-          <div class="section-head">
+        <section class="page-stack compact-stack compact-stack--reading">
+          <div class="section-head section-head--reading-strip">
             <div>
               <h2>同槽位与同主题延伸</h2>
             </div>
           </div>
-          <div class="book-shelf">
+          <div class="book-shelf book-shelf--reading-strip">
             {node.relatedPages.map((item) => (
-              <article class="doc-card">
+              <article class="doc-card doc-card--reading-strip">
                 <a href={item.page.url}>
                   <div class="card-topline">
                     <span class="slot-badge">{item.page.slot}</span>
@@ -366,15 +366,15 @@ const ogType = node.kind === "page" ? "article" : "website";
       )}
 
       {node.relatedBooks.length > 0 && (
-        <section class="page-stack compact-stack">
-          <div class="section-head">
+        <section class="page-stack compact-stack compact-stack--reading">
+          <div class="section-head section-head--reading-strip">
             <div>
               <h2>同分类继续看</h2>
             </div>
           </div>
-          <div class="book-shelf">
+          <div class="book-shelf book-shelf--reading-strip">
             {node.relatedBooks.map((item) => (
-              <article class="book-card">
+              <article class="book-card book-card--reading-strip">
                 <a href={item.book.url}>
                   <div class="card-topline">
                     <span class="section-index">{item.book.section_title}</span>

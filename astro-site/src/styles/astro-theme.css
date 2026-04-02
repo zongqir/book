@@ -1571,6 +1571,28 @@ img { display: block; max-width: 100%; }
   gap: 20px;
 }
 
+.compact-stack--reading {
+  gap: 16px;
+}
+
+.section-head--reading-strip h2 {
+  font-size: clamp(1.45rem, 2vw, 1.9rem);
+}
+
+.book-shelf--reading-strip {
+  gap: 14px;
+}
+
+.book-card--reading-strip,
+.doc-card--reading-strip {
+  min-height: 220px;
+}
+
+.book-card--reading-strip a,
+.doc-card--reading-strip a {
+  gap: 14px;
+}
+
 .meta-chip--link {
   cursor: pointer;
 }
@@ -2326,6 +2348,67 @@ img { display: block; max-width: 100%; }
     margin-top: 8px;
     font-size: 1rem;
     line-height: 1.38;
+  }
+  .compact-stack--reading {
+    gap: 12px;
+  }
+  .section-head--reading-strip {
+    align-items: center;
+  }
+  .section-head--reading-strip h2 {
+    font-size: 1.12rem;
+    line-height: 1.18;
+  }
+  .book-shelf--reading-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .book-shelf--reading-strip::-webkit-scrollbar {
+    display: none;
+  }
+  .book-card--reading-strip,
+  .doc-card--reading-strip {
+    flex: 0 0 clamp(236px, 74vw, 282px);
+    min-height: 0;
+    border-radius: 22px;
+    scroll-snap-align: start;
+    background: linear-gradient(165deg, rgba(255, 251, 246, 0.94), rgba(255, 255, 255, 0.72));
+  }
+  .book-card--reading-strip a,
+  .doc-card--reading-strip a {
+    gap: 12px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .book-card--reading-strip h3,
+  .doc-card--reading-strip h3 {
+    font-size: 1.22rem;
+    line-height: 1.24;
+  }
+  .book-card--reading-strip p,
+  .doc-card--reading-strip p {
+    font-size: 0.92rem;
+    line-height: 1.62;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+  .book-card--reading-strip .card-topline,
+  .doc-card--reading-strip .card-topline {
+    gap: 8px;
+  }
+  .book-card--reading-strip .book-card-footer,
+  .doc-card--reading-strip .doc-card-footer {
+    gap: 6px;
+  }
+  .book-card--reading-strip .section-enter,
+  .doc-card--reading-strip .section-enter {
+    font-size: 0.94rem;
   }
   .notes-toolbar-row,
   .notes-book-list {

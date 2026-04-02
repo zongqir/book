@@ -40,10 +40,8 @@ const ogType = node.kind === "page" ? "article" : "website";
           </nav>
           <div class="section-heading">
             <h1>{node.title}</h1>
-            <p>直接在这个分类里搜书名。</p>
           </div>
           <label class="field-control library-index-search library-index-search--section">
-            <span>筛选</span>
             <input
               id="section-library-search"
               type="search"
@@ -110,9 +108,6 @@ const ogType = node.kind === "page" ? "article" : "website";
             <a href={page.url}>
               <div class="card-topline">
                 <span class="slot-badge">{page.slot}</span>
-                <div class="meta-row">
-                  {page.evidence_status && <span class="meta-chip">{page.evidence_status}</span>}
-                </div>
               </div>
               <h3>{page.title}</h3>
               {page.summary && <p>{page.summary}</p>}

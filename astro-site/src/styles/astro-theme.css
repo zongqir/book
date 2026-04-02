@@ -3475,10 +3475,10 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .home-feature-kicker {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--accent-strong);
 }
 

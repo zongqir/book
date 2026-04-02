@@ -39,7 +39,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <details class="notes-filters" open>
         <summary class="notes-filters-summary">
           <span>搜索与筛选</span>
-          <span class="notes-filters-state" id="notes-filters-state">正在整理…</span>
+          <span class="notes-filters-state" data-notes-filters-state>正在整理…</span>
         </summary>
 
         <div class="notes-filters-body">
@@ -77,7 +77,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
           <div class="notes-toolbar-meta">
             <p class="notes-toolbar-kicker">筛选范围</p>
-            <span class="notes-toolbar-state" id="notes-filters-state">正在整理…</span>
+            <span class="notes-toolbar-state" data-notes-filters-state>正在整理…</span>
           </div>
         </div>
       </details>
@@ -109,7 +109,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const clearButton = document.getElementById("notes-clear");
     const statusNode = document.getElementById("notes-status");
     const summaryNode = document.getElementById("notes-summary");
-    const filterStateNode = document.getElementById("notes-filters-state");
+    const filterStateNodes = Array.from(document.querySelectorAll("[data-notes-filters-state]"));
     const resultsNode = document.getElementById("notes-results");
     const emptyNode = document.getElementById("notes-empty");
     const emptyTitleNode = document.getElementById("notes-empty-title");
@@ -238,9 +238,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         if (summaryNode instanceof HTMLElement) {
           summaryNode.textContent = "这里会按书收拢你留下的段落。";
         }
-        if (filterStateNode instanceof HTMLElement) {
-          filterStateNode.textContent = "还没有笔记";
-        }
+        filterStateNodes.forEach((node) => {
+          if (node instanceof HTMLElement) node.textContent = "还没有笔记";
+        });
         return;
       }
 
@@ -253,9 +253,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           (visibleCount === state.notes.length ? "共 " + visibleCount + " 条，按书回看。" : "筛到 " + visibleCount + " 条，原始共 " + state.notes.length + " 条。") +
           (labels.length ? " " + labels.join(" · ") : "");
       }
-      if (filterStateNode instanceof HTMLElement) {
-        filterStateNode.textContent = labels.length ? labels.join(" · ") : "全部笔记";
-      }
+      filterStateNodes.forEach((node) => {
+        if (node instanceof HTMLElement) node.textContent = labels.length ? labels.join(" · ") : "全部笔记";
+      });
     }
 
     function renderEmpty(title, message) {

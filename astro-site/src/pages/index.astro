@@ -30,21 +30,16 @@ const sectionPreviewMap = Object.fromEntries(
 <BaseLayout
   isHome={true}
   isLibrary={false}
-  description="先翻一本到，再往下读。"
+  description="随机一本到，直接开读。"
   canonicalPath="/"
   ogTitle="读书库"
-  ogDescription="先翻一本到，再往下读。"
+  ogDescription="随机一本到，直接开读。"
 >
   <div class="page-stack">
     <section class="home-mobile-shell" aria-label="手机首页">
-      <div class="home-mobile-head">
-        <p class="hero-kicker">今天先读一点</p>
-        <h1>先翻一本到</h1>
-      </div>
-
       <article class="home-mobile-focus" id="home-mobile-focus-card">
         <p class="home-mobile-focus-topline">
-          <span class="meta-chip" id="home-mobile-focus-mode-chip">先看一本</span>
+          <span class="meta-chip" id="home-mobile-focus-mode-chip">随机一本</span>
           <span id="home-mobile-focus-category">{firstBook?.section_title ?? "书库"}</span>
         </p>
         <h2 id="home-mobile-focus-title">{firstBook?.title ?? "先翻一本到"}</h2>
@@ -56,7 +51,7 @@ const sectionPreviewMap = Object.fromEntries(
           <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? "/library/"}>
             <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
           </a>
-          <button class="tool-switch" type="button" id="home-mobile-focus-secondary" data-action="random-book">换一本到</button>
+          <button class="tool-switch" type="button" id="home-mobile-focus-secondary" data-action="random-book">换一本</button>
         </div>
       </article>
 
@@ -298,7 +293,7 @@ const sectionPreviewMap = Object.fromEntries(
       function renderMobileFocusResume(item) {
         if (!hasLastVisit(item)) return;
         mobileFocusState = "resume";
-        if (mobileFocusModeChip) mobileFocusModeChip.textContent = item.label || "继续上次";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = item.label || "上次看到";
         if (mobileFocusCategory) mobileFocusCategory.textContent = item.context || "上次停留";
         if (mobileFocusTitle) mobileFocusTitle.textContent = item.title;
         if (mobileFocusCopy) mobileFocusCopy.textContent = item.summary || item.context || "回到刚才停下的位置。";
@@ -308,14 +303,14 @@ const sectionPreviewMap = Object.fromEntries(
         if (mobileFocusSecondary instanceof HTMLButtonElement) {
           mobileFocusSecondary.hidden = books.length <= 0;
           mobileFocusSecondary.dataset.action = "book";
-          mobileFocusSecondary.textContent = "换一本到";
+          mobileFocusSecondary.textContent = "换一本";
         }
       }
 
       function renderMobileFocusBook(current) {
         if (!current) return;
         mobileFocusState = "book";
-        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "先看一本";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "随机一本";
         if (mobileFocusCategory) mobileFocusCategory.textContent = current.category || "未分类";
         if (mobileFocusTitle) mobileFocusTitle.textContent = current.title || "未命名";
         if (mobileFocusCopy) mobileFocusCopy.textContent = current.summary || "";
@@ -328,11 +323,11 @@ const sectionPreviewMap = Object.fromEntries(
           if (hasLastVisit(lastVisit)) {
             mobileFocusSecondary.hidden = false;
             mobileFocusSecondary.dataset.action = "resume";
-            mobileFocusSecondary.textContent = "接上次";
+            mobileFocusSecondary.textContent = "回上次";
           } else if (books.length > 1) {
             mobileFocusSecondary.hidden = false;
             mobileFocusSecondary.dataset.action = "random-book";
-            mobileFocusSecondary.textContent = "换一本到";
+            mobileFocusSecondary.textContent = "换一本";
           } else {
             mobileFocusSecondary.hidden = true;
           }

@@ -2497,26 +2497,6 @@ img { display: block; max-width: 100%; }
   gap: 28px;
 }
 
-.home-mobile-head {
-  display: grid;
-  gap: 10px;
-}
-
-.home-mobile-head h1 {
-  margin: 0;
-  font-family: "Noto Serif SC", serif;
-  font-size: clamp(2.4rem, 4vw, 3.2rem);
-  line-height: 1.04;
-  letter-spacing: -0.04em;
-}
-
-.home-mobile-copy {
-  margin: 0;
-  max-width: 24rem;
-  color: var(--text-soft);
-  line-height: 1.72;
-}
-
 .home-mobile-focus,
 .home-mobile-drawer,
 .home-mobile-quote-panel {
@@ -2757,31 +2737,18 @@ img { display: block; max-width: 100%; }
 
   .home-mobile-shell {
     display: grid;
-    gap: 12px;
+    gap: 14px;
   }
 
   .home-desktop-flow {
     display: none;
   }
 
-  .home-mobile-head {
-    gap: 8px;
-    padding: 2px 2px 0;
-  }
-
-  .home-mobile-head h1 {
-    font-size: clamp(2rem, 10vw, 2.6rem);
-  }
-
-  .home-mobile-copy {
-    max-width: none;
-    font-size: 0.95rem;
-  }
-
-  .home-mobile-focus {
+    .home-mobile-focus {
     gap: 14px;
     padding: 18px;
     border-radius: 22px;
+    margin-top: 2px;
   }
 
   .home-mobile-focus h2 {

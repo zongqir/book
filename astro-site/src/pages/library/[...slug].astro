@@ -159,7 +159,7 @@ const ogType = node.kind === "page" ? "article" : "website";
   {node.kind === "page" && (
     <div class="page-stack">
       <section class="library-panel">
-        <div class="doc-hero">
+        <div class="doc-hero doc-hero--page">
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a href="/library/">目录</a>
             {node.section && (
@@ -177,7 +177,7 @@ const ogType = node.kind === "page" ? "article" : "website";
           </nav>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
-          <div class="detail-line">
+          <div class="detail-line detail-line--page">
             {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
             {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
             {node.page.status && <span class="meta-chip">{node.page.status}</span>}
@@ -191,10 +191,10 @@ const ogType = node.kind === "page" ? "article" : "website";
         </div>
       </section>
 
-      <div class="doc-grid">
-        <article class="content-card">
+      <div class="doc-grid doc-grid--reading">
+        <article class="content-card content-card--reading">
           {node.headings.length > 0 && (
-            <details class="toc-card toc-card--mobile">
+            <details class="toc-card toc-card--mobile toc-card--mobile-reading">
               <summary class="toc-summary">本页目录</summary>
               <ul class="toc-list">
                 {node.headings
@@ -211,7 +211,7 @@ const ogType = node.kind === "page" ? "article" : "website";
           <section class="doc-content" data-reader-notes-root data-page-id={node.page.id} set:html={node.html} />
 
           {(node.previousPage || node.nextPage) && (
-            <nav class="page-nav" aria-label="继续阅读">
+            <nav class="page-nav page-nav--reading" aria-label="继续阅读">
               {node.previousPage && (
                 <a class="page-nav-card" href={node.previousPage.url}>
                   <span class="page-nav-label">上一页</span>
@@ -228,7 +228,7 @@ const ogType = node.kind === "page" ? "article" : "website";
           )}
         </article>
 
-        <aside class="doc-side">
+        <aside class="doc-side doc-side--reading">
           {node.headings.length > 0 && (
             <div class="toc-card toc-card--desktop">
               <h3 class="toc-title">本页目录</h3>

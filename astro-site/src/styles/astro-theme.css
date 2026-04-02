@@ -1359,14 +1359,47 @@ body.reader-notes-editor-open .reader-notes-shell {
 .toc-card,
 .meta-card { animation: rise-in 520ms ease both; }
 .discover-panel {
-  gap: 24px;
+  gap: clamp(20px, 2.6vw, 30px);
+}
+
+.library-hero--discover {
+  gap: 12px;
 }
 
 .discover-query-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: end;
+  gap: 18px;
+}
+
+.discover-query-shell--topics {
+  padding: clamp(20px, 2.4vw, 28px);
+  border-radius: 28px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(255, 247, 239, 0.82));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
+
+.discover-guide-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.discover-guide-head h2 {
+  margin: 4px 0 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.18;
+}
+
+.discover-guide-copy {
+  margin: 10px 0 0;
+  max-width: 34rem;
+  color: var(--text-soft);
+  line-height: 1.72;
 }
 
 .discover-query-field {
@@ -1402,7 +1435,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .discover-reset-inline {
-  min-height: 50px;
+  min-height: 46px;
   padding: 0 16px;
 }
 
@@ -1467,6 +1500,34 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-content: end;
 }
 
+.discover-section-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.discover-section-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+  color: var(--text-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.discover-section-pill.is-active {
+  border-color: rgba(23, 48, 67, 0.14);
+  background: linear-gradient(145deg, rgba(23, 48, 67, 0.94), rgba(42, 94, 127, 0.9));
+  color: #f8f3ea;
+  box-shadow: 0 16px 28px rgba(23, 48, 67, 0.16);
+}
+
 .discover-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -1496,6 +1557,27 @@ body.reader-notes-editor-open .reader-notes-shell {
   font-size: 0.84rem;
 }
 
+.discover-tag-chip {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border-color: rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
+}
+
+.discover-tag-chip--strong {
+  border-color: rgba(164, 91, 42, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 243, 0.98), rgba(255, 243, 232, 0.9));
+}
+
+.discover-tag-chip--medium {
+  border-color: rgba(29, 109, 116, 0.14);
+  background:
+    linear-gradient(180deg, rgba(248, 252, 252, 0.98), rgba(240, 248, 248, 0.86));
+}
+
 .tag-pill--button {
   cursor: pointer;
   gap: 8px;
@@ -1518,8 +1600,16 @@ body.reader-notes-editor-open .reader-notes-shell {
   color: rgba(248, 243, 234, 0.72);
 }
 
+.discover-tag-chip.is-muted {
+  opacity: 0.44;
+  filter: saturate(0.72);
+}
+
 .discover-summary {
+  padding: 2px 2px 0;
   color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 .discover-results {
@@ -1635,7 +1725,8 @@ body.reader-notes-editor-open .reader-notes-shell {
   padding: 28px;
   border-radius: 24px;
   border: 1px dashed rgba(23, 48, 67, 0.18);
-  background: rgba(255, 255, 255, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 248, 240, 0.52));
 }
 
 .discover-empty h3,
@@ -2471,22 +2562,7 @@ body.reader-notes-editor-open .reader-notes-shell {
   .discover-panel::before {
     display: none;
   }
-  .discover-stats-strip {
-    display: none;
-  }
-  .discover-stats-strip::-webkit-scrollbar { display: none; }
-  .discover-stats-strip .stat-block:last-child {
-    margin-right: 2px;
-  }
-  .discover-stats-strip .stat-block {
-    flex: 0 0 104px;
-    scroll-snap-align: start;
-    padding: 11px 12px 13px;
-    border-radius: 16px;
-  }
-  .discover-stats-strip .stat-block:last-child {
-    display: none;
-  }
+  .discover-stats-strip { display: none; }
   .discover-filters {
     gap: 0;
     padding: 0;
@@ -2550,80 +2626,79 @@ body.reader-notes-editor-open .reader-notes-shell {
     gap: 12px;
   }
   .discover-query-shell {
-    position: sticky;
-    top: 76px;
-    z-index: 16;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    padding: 12px;
+    position: static;
+    top: auto;
+    z-index: auto;
+    gap: 14px;
+    padding: 16px;
     border-radius: 20px;
     border: 1px solid rgba(23, 48, 67, 0.08);
     background:
-      radial-gradient(circle at top right, rgba(29, 109, 116, 0.1), transparent 34%),
-      linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(255, 248, 241, 0.84));
-    box-shadow: 0 16px 32px rgba(23, 48, 67, 0.12);
-    backdrop-filter: blur(16px);
+      radial-gradient(circle at top right, rgba(29, 109, 116, 0.08), transparent 34%),
+      linear-gradient(180deg, rgba(255, 252, 248, 0.94), rgba(255, 248, 241, 0.88));
+    box-shadow: 0 14px 28px rgba(23, 48, 67, 0.08);
+    backdrop-filter: none;
   }
-  .discover-query-field {
-    gap: 8px;
-    min-width: 0;
+  .discover-guide-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: start;
   }
-  .discover-query-field input {
-    min-height: 52px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.82);
+  .discover-guide-head h2 {
+    font-size: 1.22rem;
+    line-height: 1.24;
+  }
+  .discover-guide-copy {
+    margin-top: 8px;
+    font-size: 0.92rem;
+    line-height: 1.64;
   }
   .discover-reset-inline {
     width: auto;
     min-width: 0;
-    min-height: 52px;
-    border-radius: 14px;
-    padding: 0 14px;
+    min-height: 40px;
+    border-radius: 12px;
+    padding: 0 12px;
+    font-size: 0.84rem;
   }
-  .discover-kind-pills {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    padding-bottom: 0;
+  .discover-section-pills {
+    gap: 8px;
   }
-  .discover-kind-pills::-webkit-scrollbar {
-    display: none;
-  }
-  .discover-kind-pill {
-    min-width: 0;
+  .discover-section-pill {
     min-height: 36px;
-    padding: 0 8px;
+    padding: 0 12px;
     border-radius: 12px;
     font-size: 0.88rem;
   }
   .discover-chip-head {
-    display: none;
+    display: grid;
+    gap: 6px;
+  }
+  .discover-chip-head h2 {
+    font-size: 1.12rem;
+  }
+  .discover-chip-hint {
+    font-size: 0.8rem;
   }
   .discover-chip-row {
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    overflow: visible;
     margin-top: -2px;
-    padding: 2px 0 4px;
-    scrollbar-width: none;
-  }
-  .discover-chip-row::-webkit-scrollbar {
-    display: none;
+    padding: 2px 0 0;
+    gap: 8px;
   }
   .discover-chip-row .tag-pill--button {
-    flex: 0 0 auto;
-    min-height: 36px;
-    padding: 0 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(23, 48, 67, 0.08);
-    background: rgba(255, 255, 255, 0.66);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74);
+    min-height: 34px;
+    padding: 0 11px;
+    border-radius: 12px;
   }
   .discover-summary {
     display: block;
     min-height: 0;
-    padding: 0 2px;
-    border-radius: 0;
-    background: transparent;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.56);
     font-size: 0.86rem;
     line-height: 1.55;
   }
@@ -2957,15 +3032,14 @@ body.reader-notes-editor-open .reader-notes-shell {
     width: 100%;
   }
   .discover-chip-row {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 2px;
+    flex-wrap: wrap;
+    overflow: visible;
+    padding-bottom: 0;
     gap: 8px;
-    scrollbar-width: none;
   }
-  .discover-chip-row::-webkit-scrollbar { display: none; }
   .tag-pill--button {
     flex: 0 0 auto;
+    max-width: 100%;
   }
   .discover-summary {
     font-size: 0.94rem;

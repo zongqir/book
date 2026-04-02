@@ -124,7 +124,7 @@ export function setupReaderParagraphNotes() {
   const broadcastChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel(READER_NOTES_CHANNEL) : null;
   const sessionId = createSessionId();
   let notes: ReaderParagraphNote[] = [];
-  let panelOpen = !mediaQuery.matches;
+  let panelOpen = false;
   let pickMode = false;
   let activeId: string | null = null;
   let editingId: string | null = null;
@@ -227,7 +227,7 @@ export function setupReaderParagraphNotes() {
     if (modeChanged) {
       lastMode = nextMode;
       setPickMode(false);
-      panelOpen = nextMode === "desktop";
+      panelOpen = false;
     }
 
     const targetPosition = (await getSavedPosition()) ?? (modeChanged || forceDefault ? getDefaultPosition() : shellPosition);
@@ -521,7 +521,7 @@ export function setupReaderParagraphNotes() {
 
   editorCancel.addEventListener("click", () => {
     closeEditor();
-    panelOpen = currentMode() === "desktop";
+    panelOpen = false;
     syncPanel();
   });
 
@@ -621,7 +621,7 @@ export function setupReaderParagraphNotes() {
     if (event.key !== "Escape") return;
     if (!editor.hidden) {
       closeEditor();
-      panelOpen = currentMode() === "desktop";
+      panelOpen = false;
       syncPanel();
       return;
     }

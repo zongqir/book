@@ -42,19 +42,41 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </label>
 
             <div class="notes-toolbar-tools">
-              <div class="notes-sort-group" role="group" aria-label="排序">
-                <button class="notes-icon-button is-active" id="notes-sort-desc" type="button" data-notes-sort="updated-desc" aria-label="最近更新" title="最近更新">
-                  ↓
-                </button>
-                <button class="notes-icon-button" id="notes-sort-asc" type="button" data-notes-sort="updated-asc" aria-label="最早更新" title="最早更新">
-                  ↑
-                </button>
-              </div>
+              <button class="notes-icon-button notes-icon-button--sort" id="notes-sort-toggle" type="button" aria-label="当前按最近更新排序" title="当前按最近更新排序">
+                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M7 4v12"></path>
+                  <path d="M4.5 13.5 7 16l2.5-2.5"></path>
+                  <path d="M12 6h4"></path>
+                  <path d="M12 10h3"></path>
+                  <path d="M12 14h2"></path>
+                </svg>
+                <span class="notes-sort-label" data-notes-sort-label>最近</span>
+              </button>
 
               <div class="notes-stage-actions" aria-label="笔记工具">
-                <button class="notes-icon-button" id="notes-import-trigger" type="button" aria-label="导入 JSON" title="导入 JSON">↑</button>
-                <button class="notes-icon-button" id="notes-export" type="button" aria-label="导出 JSON" title="导出 JSON">↓</button>
-                <button class="notes-icon-button notes-icon-button--danger" id="notes-clear" type="button" aria-label="清空本地" title="清空本地">×</button>
+                <button class="notes-icon-button" id="notes-import-trigger" type="button" aria-label="导入 JSON" title="导入 JSON">
+                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M10 2.75v8.5"></path>
+                    <path d="m6.75 8.25 3.25 3.25 3.25-3.25"></path>
+                    <path d="M4.5 12.75v2a1.75 1.75 0 0 0 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-2"></path>
+                  </svg>
+                </button>
+                <button class="notes-icon-button" id="notes-export" type="button" aria-label="导出 JSON" title="导出 JSON">
+                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M10 17.25v-8.5"></path>
+                    <path d="m6.75 11.75 3.25-3.25 3.25 3.25"></path>
+                    <path d="M4.5 7.25v-2A1.75 1.75 0 0 1 6.25 3.5h7.5a1.75 1.75 0 0 1 1.75 1.75v2"></path>
+                  </svg>
+                </button>
+                <button class="notes-icon-button notes-icon-button--danger" id="notes-clear" type="button" aria-label="清空本地" title="清空本地">
+                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M7 4.75h6"></path>
+                    <path d="M4.5 5.75h11"></path>
+                    <path d="M6.25 5.75v8.25A1.5 1.5 0 0 0 7.75 15.5h4.5a1.5 1.5 0 0 0 1.5-1.5V5.75"></path>
+                    <path d="M8.5 8.5v4"></path>
+                    <path d="M11.5 8.5v4"></path>
+                  </svg>
+                </button>
                 <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
               </div>
             </div>
@@ -62,7 +84,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
           <div class="notes-filter-row">
             <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
-              <button class="notes-filter-reset is-active" type="button" data-notes-color="all" aria-label="全部颜色" title="全部颜色">◎</button>
+              <button class="notes-filter-reset is-active" type="button" data-notes-color="all" aria-label="全部颜色" title="全部颜色">
+                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                  <circle cx="10" cy="10" r="6.25"></circle>
+                  <path d="M10 6.5v7"></path>
+                  <path d="M6.5 10h7"></path>
+                </svg>
+              </button>
               <button class="notes-filter-dot notes-filter-dot--amber" type="button" data-notes-color="amber" aria-label="筛选黄色高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--teal" type="button" data-notes-color="teal" aria-label="筛选青绿高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--rose" type="button" data-notes-color="rose" aria-label="筛选红色高亮"></button>
@@ -92,7 +120,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     } from "../../lib/reader-storage";
 
     const searchInput = document.getElementById("notes-search");
-    const sortButtons = Array.from(document.querySelectorAll("[data-notes-sort]"));
+    const sortToggleButton = document.getElementById("notes-sort-toggle");
+    const sortLabelNode = document.querySelector("[data-notes-sort-label]");
     const exportButton = document.getElementById("notes-export");
     const importButton = document.getElementById("notes-import-trigger");
     const importInput = document.getElementById("notes-import-input");
@@ -139,7 +168,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function setBusy(isBusy) {
-      [searchInput, exportButton, importButton, clearButton, ...sortButtons].forEach((node) => {
+      [searchInput, exportButton, importButton, clearButton, sortToggleButton].forEach((node) => {
         if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement || node instanceof HTMLSelectElement) {
           node.disabled = isBusy;
         }
@@ -214,12 +243,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function renderFilterState(visibleCount) {
-      sortButtons.forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) return;
-        const isActive = button.dataset.notesSort === state.sort;
-        button.classList.toggle("is-active", isActive);
-        button.setAttribute("aria-pressed", isActive ? "true" : "false");
-      });
+      if (sortToggleButton instanceof HTMLButtonElement) {
+        const isAscending = state.sort === "updated-asc";
+        sortToggleButton.classList.toggle("is-ascending", isAscending);
+        const currentLabel = isAscending ? "最早" : "最近";
+        sortToggleButton.setAttribute("aria-label", "当前按" + currentLabel + "更新排序");
+        sortToggleButton.setAttribute("title", "当前按" + currentLabel + "更新排序");
+        if (sortLabelNode instanceof HTMLElement) sortLabelNode.textContent = currentLabel;
+      }
 
       colorButtons.forEach((button) => {
         if (!(button instanceof HTMLButtonElement)) return;
@@ -242,9 +273,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (state.color !== "all") labels.push(colorLabels[state.color] || "已筛颜色");
       if (state.query) labels.push("搜索中");
       if (summaryNode instanceof HTMLElement) {
-        summaryNode.textContent =
-          (visibleCount === state.notes.length ? "共 " + visibleCount + " 条，按书回看。" : "筛到 " + visibleCount + " 条，原始共 " + state.notes.length + " 条。") +
-          (labels.length ? " " + labels.join(" · ") : "");
+        const countText =
+          visibleCount === state.notes.length
+            ? "按书回看最近留下的段落。"
+            : "当前显示 " + visibleCount + " / " + state.notes.length + " 条。";
+        summaryNode.textContent = countText + (labels.length ? " " + labels.join(" · ") : "");
       }
       filterStateNodes.forEach((node) => {
         if (node instanceof HTMLElement) node.textContent = labels.join(" · ");
@@ -409,13 +442,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     }
 
-    sortButtons.forEach((button) => {
-      if (!(button instanceof HTMLButtonElement)) return;
-      button.addEventListener("click", function () {
-        state.sort = button.dataset.notesSort || "updated-desc";
+    if (sortToggleButton instanceof HTMLButtonElement) {
+      sortToggleButton.addEventListener("click", function () {
+        state.sort = state.sort === "updated-desc" ? "updated-asc" : "updated-desc";
         render();
       });
-    });
+    }
 
     colorButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;

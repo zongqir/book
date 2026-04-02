@@ -2091,3 +2091,241 @@ img { display: block; max-width: 100%; }
   .btn-ghost,
   .tool-switch { width: 100%; }
 }
+
+.home-stage-head--mobile {
+  display: grid;
+  gap: 12px;
+  max-width: 760px;
+}
+
+.home-stage-copy,
+.section-head-copy {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+
+.home-mobile-strip {
+  display: none;
+}
+
+.hero-tools--stage {
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  grid-template-areas:
+    "book quote"
+    "book resume";
+}
+
+.hero-tool-card--primary {
+  grid-area: book;
+}
+
+.hero-tool-card--quote {
+  grid-area: quote;
+  background: linear-gradient(165deg, rgba(240, 247, 249, 0.92), rgba(255, 255, 255, 0.66));
+}
+
+.hero-tool-card--resume {
+  grid-area: resume;
+  background: linear-gradient(160deg, rgba(248, 240, 230, 0.88), rgba(255, 255, 255, 0.62));
+}
+
+.hero-tool-card--resume[hidden] {
+  display: none;
+}
+
+.home-resume-link {
+  display: grid;
+  gap: 12px;
+  min-height: 100%;
+  color: inherit;
+  align-content: start;
+}
+
+.home-resume-copy {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+
+.section-head--home-categories {
+  align-items: flex-end;
+}
+
+.section-head--home-categories > div {
+  display: grid;
+  gap: 10px;
+}
+
+.section-card {
+  min-height: 250px;
+}
+
+.section-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-card-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.section-volume-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(23, 48, 67, 0.08);
+}
+
+.section-volume-inline strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.section-volume-inline span {
+  color: var(--text-faint);
+  font-size: 0.76rem;
+}
+
+@media (max-width: 760px) {
+  .home-stage {
+    gap: 16px;
+  }
+
+  .home-stage-head--mobile {
+    gap: 10px;
+  }
+
+  .home-stage-copy,
+  .section-head-copy {
+    max-width: none;
+    font-size: 0.95rem;
+    line-height: 1.68;
+  }
+
+  .home-mobile-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .home-mobile-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-mobile-chip {
+    flex: 0 0 auto;
+    display: grid;
+    gap: 4px;
+    min-width: 120px;
+    padding: 11px 13px;
+    border-radius: 18px;
+    border: 1px solid rgba(23, 48, 67, 0.08);
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: 0 12px 26px rgba(23, 48, 67, 0.06);
+  }
+
+  .home-mobile-chip span {
+    font-weight: 700;
+  }
+
+  .home-mobile-chip em {
+    font-style: normal;
+    color: var(--text-faint);
+    font-size: 0.74rem;
+  }
+
+  .hero-tools--stage {
+    grid-template-columns: 1fr;
+    grid-template-areas: none;
+  }
+
+  .hero-tool-card--quote,
+  .hero-tool-card--resume,
+  .hero-tool-card--primary {
+    grid-area: auto;
+  }
+
+  .hero-tool-card--quote {
+    order: 1;
+  }
+
+  .hero-tool-card--resume {
+    order: 2;
+  }
+
+  .hero-tool-card--primary {
+    order: 3;
+  }
+
+  .hero-tool-card--quote .random-quote-card,
+  .hero-tool-card--resume .home-resume-link,
+  .hero-tool-card--primary .book-dice-card {
+    padding: 18px;
+    gap: 12px;
+    border-radius: 18px;
+  }
+
+  .hero-tool-card--resume .meta-chip {
+    min-height: 20px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+  }
+
+  .hero-tool-card--resume .section-enter,
+  .hero-tool-card--quote .random-quote-source {
+    align-items: flex-start;
+  }
+
+  .section-head--home-categories {
+    gap: 8px;
+  }
+
+  .home-sections {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .home-sections::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-sections .section-card {
+    flex: 0 0 min(82vw, 320px);
+    min-height: auto;
+    scroll-snap-align: start;
+  }
+
+  .section-card a {
+    min-height: 210px;
+    gap: 12px;
+  }
+
+  .section-card-copy {
+    gap: 10px;
+  }
+
+  .section-volume-inline {
+    min-height: 24px;
+    padding: 0 8px;
+  }
+
+  .section-volume-inline strong {
+    font-size: 0.95rem;
+  }
+}

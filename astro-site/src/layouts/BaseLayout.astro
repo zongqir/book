@@ -126,6 +126,7 @@ const isNotes = pathname.startsWith("/notes");
     <script is:inline>
       (function () {
         var PWA_DISMISS_KEY = "book:pwa-install-dismissed-until:v1";
+        var LAST_VISIT_KEY = "book:last-visit:v1";
         var PWA_DISMISS_MS = 1000 * 60 * 60 * 24 * 5;
         var promptNode = document.getElementById("pwa-prompt");
         var promptTitle = document.getElementById("pwa-prompt-title");
@@ -253,6 +254,45 @@ const isNotes = pathname.startsWith("/notes");
         window.addEventListener("offline", syncNetworkToast);
         window.addEventListener("online", syncNetworkToast);
         syncNetworkToast();
+
+        function rememberLibraryVisit() {
+          if (!window.location.pathname.startsWith("/library/") || window.location.pathname === "/library/") return;
+          var titleNode = document.querySelector("h1");
+          if (!(titleNode instanceof HTMLElement)) return;
+
+          var breadcrumbParts = Array.prototype.slice
+            .call(document.querySelectorAll(".breadcrumb a, .breadcrumb span"))
+            .map(function (node) {
+              return node && node.textContent ? node.textContent.trim() : "";
+            })
+            .filter(function (text) {
+              return text && text !== "/";
+            });
+          var summaryNode = document.querySelector(".doc-summary, .page-intro p");
+          var summary = summaryNode && summaryNode.textContent
+            ? summaryNode.textContent.replace(/\s+/g, " ").trim().slice(0, 96)
+            : "";
+          var payload = {
+            url: window.location.pathname + window.location.search + window.location.hash,
+            title: titleNode.textContent.trim(),
+            label: document.querySelector(".doc-content[data-page-id]")
+              ? "继续这页"
+              : document.querySelector(".slot-rail")
+                ? "回到这本书"
+                : "回到这一类",
+            context: breadcrumbParts.slice(1).join(" / "),
+            summary: summary,
+            updatedAt: new Date().toISOString(),
+          };
+
+          try {
+            window.localStorage.setItem(LAST_VISIT_KEY, JSON.stringify(payload));
+          } catch (error) {
+            console.warn("Failed to persist last visit", error);
+          }
+        }
+
+        rememberLibraryVisit();
 
         window.addEventListener("beforeinstallprompt", function (event) {
           event.preventDefault();

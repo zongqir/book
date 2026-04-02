@@ -23,6 +23,8 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_ä¸“ä¸
         <article
           class="library-index-card"
           data-library-index-item
+          data-section-title={section.title}
+          data-book-titles={JSON.stringify(section.books.map((book) => book.title))}
           data-search-text={`${section.title} ${section.books.map((book) => book.title).join(" ")}`}
         >
           <a href={section.url}>
@@ -31,7 +33,7 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_ä¸“ä¸
               <strong>{section.book_count}</strong>
               <span>æœ¬ä¹¦</span>
             </p>
-            <div class="library-index-preview">
+            <div class="library-index-preview" data-library-index-preview>
               {section.books.slice(0, 3).map((book) => (
                 <span class="preview-item">{book.title}</span>
               ))}
@@ -90,6 +92,40 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_ä¸“ä¸
       });
     }
 
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderPreview(item, query) {
+      const preview = item.querySelector("[data-library-index-preview]");
+      if (!(preview instanceof HTMLElement)) return;
+
+      let titles = [];
+      try {
+        const parsed = JSON.parse(item.dataset.bookTitles || "[]");
+        titles = Array.isArray(parsed) ? parsed.filter((title) => typeof title === "string") : [];
+      } catch {
+        titles = [];
+      }
+
+      const visibleTitles =
+        query
+          ? titles.filter((title) => matchesSearch(title.toLowerCase().normalize("NFKC"), query)).slice(0, 4)
+          : titles.slice(0, 3);
+
+      const fallbackTitles = titles.slice(0, query ? 4 : 3);
+      const finalTitles = visibleTitles.length > 0 ? visibleTitles : fallbackTitles;
+
+      preview.innerHTML = finalTitles
+        .map((title) => `<span class="preview-item">${escapeHtml(title)}</span>`)
+        .join("");
+    }
+
     function updateLibraryIndexFilter() {
       const query =
         searchInput instanceof HTMLInputElement
@@ -103,6 +139,7 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_ä¸“ä¸
         const matched = matchesSearch(searchText, query);
         item.hidden = !matched;
         if (matched) visibleCount += 1;
+        renderPreview(item, query);
       });
 
       if (empty instanceof HTMLElement) {

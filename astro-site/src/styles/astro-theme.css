@@ -1617,6 +1617,11 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 24px;
 }
 
+.notes-overview {
+  display: grid;
+  gap: 10px;
+}
+
 .notes-stage {
   padding: 0;
 }
@@ -1636,6 +1641,10 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .notes-stage-strip {
   grid-template-columns: repeat(2, minmax(140px, 200px));
+}
+
+.notes-stage-strip--plain {
+  gap: 10px;
 }
 
 .notes-toolbar-card,
@@ -2342,6 +2351,9 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-hero .hero-kicker,
   .notes-stage-strip {
     display: none;
+  }
+  .notes-stage-strip--plain {
+    display: grid;
   }
   .library-panel--index .library-hero,
   .notes-hero {

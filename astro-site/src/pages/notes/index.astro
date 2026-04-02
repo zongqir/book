@@ -4,21 +4,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
 <BaseLayout title="本地笔记" description="回看你留在这个浏览器里的高亮与笔记。">
   <div class="page-stack notes-dashboard">
-    <section class="library-panel notes-stage">
-      <div class="library-hero notes-hero">
-        <div>
-          <p class="hero-kicker">回看与整理</p>
-          <h1>本地笔记</h1>
+    <section class="notes-overview" aria-label="本地笔记统计">
+      <div class="stats-strip notes-stage-strip notes-stage-strip--plain">
+        <div class="stat-block">
+          <span class="stat-label">笔记</span>
+          <span class="stat-value" id="notes-total-count">0</span>
         </div>
-        <div class="stats-strip notes-stage-strip">
-          <div class="stat-block">
-            <span class="stat-label">笔记</span>
-            <span class="stat-value" id="notes-total-count">0</span>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">书目</span>
-            <span class="stat-value" id="notes-book-count">0</span>
-          </div>
+        <div class="stat-block">
+          <span class="stat-label">书目</span>
+          <span class="stat-value" id="notes-book-count">0</span>
         </div>
       </div>
     </section>

@@ -30,16 +30,16 @@ const sectionPreviewMap = Object.fromEntries(
 <BaseLayout
   isHome={true}
   isLibrary={false}
-  description="手机上先接上次，或者直接翻一本到。"
+  description="先翻一本到，再往下读。"
   canonicalPath="/"
   ogTitle="读书库"
-  ogDescription="手机上先接上次，或者直接翻一本到。"
+  ogDescription="先翻一本到，再往下读。"
 >
   <div class="page-stack">
     <section class="home-mobile-shell" aria-label="手机首页">
       <div class="home-mobile-head">
-        <p class="hero-kicker">今天先做一件事</p>
-        <h1>先接上次，或者直接翻一本到</h1>
+        <p class="hero-kicker">今天先读一点</p>
+        <h1>先翻一本到</h1>
       </div>
 
       <article class="home-mobile-focus" id="home-mobile-focus-card">
@@ -64,7 +64,7 @@ const sectionPreviewMap = Object.fromEntries(
         <div class="home-mobile-quote-panel-head">
           <div>
             <p class="hero-kicker">每日一句</p>
-            <h2>随手抽一句</h2>
+            <h2>再读一句</h2>
           </div>
           <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
         </div>
@@ -83,7 +83,7 @@ const sectionPreviewMap = Object.fromEntries(
 
       <details class="home-mobile-drawer home-mobile-drawer--sections">
         <summary>
-          <span>按分类进</span>
+          <span>全部分类</span>
           <em>{sections.length} 个方向</em>
         </summary>
         <div class="home-mobile-drawer-body">
@@ -103,8 +103,8 @@ const sectionPreviewMap = Object.fromEntries(
     <div class="home-desktop-flow">
       <section class="hero-panel home-stage" id="home-tools">
         <div class="home-stage-head home-stage-head--mobile">
-          <p class="hero-kicker">首页</p>
-          <h1>先看一本，再看一句</h1>
+          <p class="hero-kicker">首页入口</p>
+          <h1>先翻一本到，再读一句</h1>
         </div>
 
         <div class="hero-tools hero-tools--stage">

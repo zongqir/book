@@ -3421,6 +3421,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .home-feature-card {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 28px;
   min-height: 530px;
   padding: 34px;
@@ -3519,26 +3520,27 @@ body.reader-notes-editor-open .reader-notes-shell {
   position: relative;
   z-index: 1;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding-left: 18px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  align-self: end;
+  padding: 0 6px 6px 18px;
 }
 
 .home-feature-open-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   width: fit-content;
-  height: 28px;
-  padding: 0 10px 0 12px;
+  height: 34px;
+  padding: 0 14px 0 16px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--navy), #2a5e7f);
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
-  box-shadow: 0 6px 12px rgba(23, 48, 67, 0.16);
+  box-shadow: 0 10px 18px rgba(23, 48, 67, 0.16);
   border: 1px solid transparent;
 }
 
@@ -3553,7 +3555,7 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-items: center;
   justify-content: center;
   color: rgba(255, 255, 255, 0.94);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
 }

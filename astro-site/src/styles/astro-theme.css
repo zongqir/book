@@ -1690,12 +1690,10 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-items: center;
 }
 
-.notes-toolbar-search,
-.notes-toolbar-tools {
+.notes-toolbar-search {
   min-width: 0;
 }
 
-.notes-toolbar-tools,
 .notes-filter-row {
   display: flex;
   align-items: center;
@@ -1710,11 +1708,6 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.notes-toolbar-tools {
-  justify-content: flex-end;
-  gap: 10px;
 }
 
 .notes-summary,
@@ -1749,6 +1742,10 @@ body.reader-notes-editor-open .reader-notes-shell {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.notes-filter-row {
+  align-items: center;
 }
 
 .notes-stage-actions {
@@ -2523,6 +2520,10 @@ body.reader-notes-editor-open .reader-notes-shell {
     display: grid;
     gap: 8px;
   }
+  .notes-toolbar-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
   .notes-filter-group,
   .notes-actions {
     display: flex;
@@ -2559,30 +2560,47 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-stage-actions .btn,
   .notes-stage-actions .tool-switch,
   .notes-stage-actions .notes-icon-button,
-  .notes-toolbar-tools .notes-icon-button {
+  .notes-icon-button--sort {
     flex: 0 0 auto;
     white-space: nowrap;
   }
-  .notes-toolbar-tools {
-    justify-content: flex-start;
-    gap: 10px;
+  .notes-toolbar-search > span {
+    display: none;
+  }
+  .notes-toolbar-search input {
+    min-height: 42px;
+    padding-inline: 13px;
   }
   .notes-icon-button,
   .notes-filter-reset {
     flex: 0 0 auto;
-    min-height: 36px;
-    min-width: 36px;
+    min-height: 34px;
+    min-width: 34px;
   }
   .notes-icon-button--sort {
-    padding-right: 11px;
+    align-self: stretch;
+    min-height: 42px;
+    padding: 0 11px 0 10px;
   }
   .notes-sort-label {
     font-size: 0.68rem;
   }
+  .notes-filter-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
   .notes-filter-dot {
     flex: 0 0 auto;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
+  }
+  .notes-stage-actions {
+    gap: 4px;
+    padding: 3px;
+  }
+  .notes-stage-actions .notes-icon-button {
+    min-width: 32px;
+    min-height: 32px;
   }
   .notes-actions .btn,
   .notes-actions .tool-switch {

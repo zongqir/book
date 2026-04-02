@@ -41,45 +41,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
             </label>
 
-            <div class="notes-toolbar-tools">
-              <button class="notes-icon-button notes-icon-button--sort" id="notes-sort-toggle" type="button" aria-label="当前按最近更新排序" title="当前按最近更新排序">
-                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
-                  <path d="M7 4v12"></path>
-                  <path d="M4.5 13.5 7 16l2.5-2.5"></path>
-                  <path d="M12 6h4"></path>
-                  <path d="M12 10h3"></path>
-                  <path d="M12 14h2"></path>
-                </svg>
-                <span class="notes-sort-label" data-notes-sort-label>最近</span>
-              </button>
-
-              <div class="notes-stage-actions" aria-label="笔记工具">
-                <button class="notes-icon-button" id="notes-import-trigger" type="button" aria-label="导入 JSON" title="导入 JSON">
-                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
-                    <path d="M10 2.75v8.5"></path>
-                    <path d="m6.75 8.25 3.25 3.25 3.25-3.25"></path>
-                    <path d="M4.5 12.75v2a1.75 1.75 0 0 0 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-2"></path>
-                  </svg>
-                </button>
-                <button class="notes-icon-button" id="notes-export" type="button" aria-label="导出 JSON" title="导出 JSON">
-                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
-                    <path d="M10 17.25v-8.5"></path>
-                    <path d="m6.75 11.75 3.25-3.25 3.25 3.25"></path>
-                    <path d="M4.5 7.25v-2A1.75 1.75 0 0 1 6.25 3.5h7.5a1.75 1.75 0 0 1 1.75 1.75v2"></path>
-                  </svg>
-                </button>
-                <button class="notes-icon-button notes-icon-button--danger" id="notes-clear" type="button" aria-label="清空本地" title="清空本地">
-                  <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
-                    <path d="M7 4.75h6"></path>
-                    <path d="M4.5 5.75h11"></path>
-                    <path d="M6.25 5.75v8.25A1.5 1.5 0 0 0 7.75 15.5h4.5a1.5 1.5 0 0 0 1.5-1.5V5.75"></path>
-                    <path d="M8.5 8.5v4"></path>
-                    <path d="M11.5 8.5v4"></path>
-                  </svg>
-                </button>
-                <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
-              </div>
-            </div>
+            <button class="notes-icon-button notes-icon-button--sort" id="notes-sort-toggle" type="button" aria-label="当前按最近更新排序" title="当前按最近更新排序">
+              <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M7 4v12"></path>
+                <path d="M4.5 13.5 7 16l2.5-2.5"></path>
+                <path d="M12 6h4"></path>
+                <path d="M12 10h3"></path>
+                <path d="M12 14h2"></path>
+              </svg>
+              <span class="notes-sort-label" data-notes-sort-label>最近</span>
+            </button>
           </div>
 
           <div class="notes-filter-row">
@@ -95,6 +66,33 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <button class="notes-filter-dot notes-filter-dot--teal" type="button" data-notes-color="teal" aria-label="筛选青绿高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--rose" type="button" data-notes-color="rose" aria-label="筛选红色高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--violet" type="button" data-notes-color="violet" aria-label="筛选紫色高亮"></button>
+            </div>
+
+            <div class="notes-stage-actions" aria-label="笔记工具">
+              <button class="notes-icon-button" id="notes-import-trigger" type="button" aria-label="导入 JSON" title="导入 JSON">
+                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 2.75v8.5"></path>
+                  <path d="m6.75 8.25 3.25 3.25 3.25-3.25"></path>
+                  <path d="M4.5 12.75v2a1.75 1.75 0 0 0 1.75 1.75h7.5a1.75 1.75 0 0 0 1.75-1.75v-2"></path>
+                </svg>
+              </button>
+              <button class="notes-icon-button" id="notes-export" type="button" aria-label="导出 JSON" title="导出 JSON">
+                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 17.25v-8.5"></path>
+                  <path d="m6.75 11.75 3.25-3.25 3.25 3.25"></path>
+                  <path d="M4.5 7.25v-2A1.75 1.75 0 0 1 6.25 3.5h7.5a1.75 1.75 0 0 1 1.75 1.75v2"></path>
+                </svg>
+              </button>
+              <button class="notes-icon-button notes-icon-button--danger" id="notes-clear" type="button" aria-label="清空本地" title="清空本地">
+                <svg class="notes-icon-svg" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M7 4.75h6"></path>
+                  <path d="M4.5 5.75h11"></path>
+                  <path d="M6.25 5.75v8.25A1.5 1.5 0 0 0 7.75 15.5h4.5a1.5 1.5 0 0 0 1.5-1.5V5.75"></path>
+                  <path d="M8.5 8.5v4"></path>
+                  <path d="M11.5 8.5v4"></path>
+                </svg>
+              </button>
+              <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
             </div>
           </div>
         </div>

@@ -3,6 +3,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getLibraryIndex } from "../../lib/content";
 
 const sections = getLibraryIndex().filter((section) => section.key !== "02_专业技术");
+const books = sections.flatMap((section) =>
+  section.books.map((book) => ({
+    ...book,
+    section_title: section.title,
+  })),
+);
 ---
 
 <BaseLayout title="目录" description="从分类进入书页和文稿，直接往里读。" canonicalPath="/library/" ogDescription="从分类进入书页和文稿，直接往里读。" isLibrary={true}>
@@ -18,14 +24,25 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_专�
       </div>
     </section>
 
+    <section class="library-search-results" id="library-search-results" hidden>
+      {books.map((book) => (
+        <a
+          class="library-search-card"
+          href={book.url}
+          data-library-book-item
+          data-search-text={`${book.title} ${book.section_title}`}
+        >
+          <span class="meta-chip">{book.section_title}</span>
+          <strong>{book.title}</strong>
+        </a>
+      ))}
+    </section>
+
     <section class="library-sections" id="library-index-list">
       {sections.map((section) => (
         <article
           class="library-index-card"
           data-library-index-item
-          data-section-title={section.title}
-          data-book-titles={JSON.stringify(section.books.map((book) => book.title))}
-          data-search-text={`${section.title} ${section.books.map((book) => book.title).join(" ")}`}
         >
           <a href={section.url}>
             <h3>{section.title}</h3>
@@ -33,7 +50,7 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_专�
               <strong>{section.book_count}</strong>
               <span>本书</span>
             </p>
-            <div class="library-index-preview" data-library-index-preview>
+            <div class="library-index-preview">
               {section.books.slice(0, 3).map((book) => (
                 <span class="preview-item">{book.title}</span>
               ))}
@@ -51,7 +68,9 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_专�
 
   <script>
     const searchInput = document.getElementById("library-index-search");
-    const items = Array.from(document.querySelectorAll("[data-library-index-item]"));
+    const sectionList = document.getElementById("library-index-list");
+    const searchResults = document.getElementById("library-search-results");
+    const bookItems = Array.from(document.querySelectorAll("[data-library-book-item]"));
     const empty = document.getElementById("library-index-empty");
 
     function normalizeSearchText(value) {
@@ -92,56 +111,34 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_专�
       });
     }
 
-    function escapeHtml(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
-
-    function renderPreview(item, query) {
-      const preview = item.querySelector("[data-library-index-preview]");
-      if (!(preview instanceof HTMLElement)) return;
-
-      let titles = [];
-      try {
-        const parsed = JSON.parse(item.dataset.bookTitles || "[]");
-        titles = Array.isArray(parsed) ? parsed.filter((title) => typeof title === "string") : [];
-      } catch {
-        titles = [];
-      }
-
-      const visibleTitles =
-        query
-          ? titles.filter((title) => matchesSearch(title.toLowerCase().normalize("NFKC"), query)).slice(0, 4)
-          : titles.slice(0, 3);
-
-      const fallbackTitles = titles.slice(0, query ? 4 : 3);
-      const finalTitles = visibleTitles.length > 0 ? visibleTitles : fallbackTitles;
-
-      preview.innerHTML = finalTitles
-        .map((title) => `<span class="preview-item">${escapeHtml(title)}</span>`)
-        .join("");
-    }
-
     function updateLibraryIndexFilter() {
       const query =
         searchInput instanceof HTMLInputElement
           ? searchInput.value.trim().toLowerCase().normalize("NFKC")
           : "";
+
+      if (!query) {
+        bookItems.forEach((item) => {
+          if (item instanceof HTMLElement) item.hidden = false;
+        });
+        if (sectionList instanceof HTMLElement) sectionList.hidden = false;
+        if (searchResults instanceof HTMLElement) searchResults.hidden = true;
+        if (empty instanceof HTMLElement) empty.hidden = true;
+        return;
+      }
+
       let visibleCount = 0;
 
-      items.forEach((item) => {
+      bookItems.forEach((item) => {
         if (!(item instanceof HTMLElement)) return;
         const searchText = String(item.dataset.searchText || "").toLowerCase().normalize("NFKC");
         const matched = matchesSearch(searchText, query);
         item.hidden = !matched;
         if (matched) visibleCount += 1;
-        renderPreview(item, query);
       });
 
+      if (sectionList instanceof HTMLElement) sectionList.hidden = true;
+      if (searchResults instanceof HTMLElement) searchResults.hidden = visibleCount === 0;
       if (empty instanceof HTMLElement) {
         empty.hidden = visibleCount > 0;
       }

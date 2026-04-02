@@ -1,6 +1,7 @@
 ---
 import "../styles/astro-theme.css";
 import { getAndroidAppDownloadConfig } from "../lib/app-distribution";
+import { toInternalHref } from "../lib/internal-links";
 
 type Props = {
   title?: string;
@@ -36,6 +37,10 @@ const isAppDownload = pathname.startsWith("/app");
 const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "笔记" : title;
 const appDownload = getAndroidAppDownloadConfig();
 const showAppDownloadEntry = appDownload.available;
+const homeHref = toInternalHref("/");
+const libraryHref = toInternalHref("/library/");
+const notesHref = toInternalHref("/notes/");
+const appHref = toInternalHref("/app/");
 ---
 
 <!doctype html>
@@ -83,16 +88,16 @@ const showAppDownloadEntry = appDownload.available;
       <header class="site-header-wrap">
         <div class="site-header shell">
           <div class="identity">
-            <a class="brand" href="/">
+            <a class="brand" href={homeHref}>
               <span class="brand-mark" aria-hidden="true">BQ</span>
               <span>读书库</span>
             </a>
             <span class="mobile-page-badge">{mobileSectionLabel}</span>
           </div>
           <nav class="top-nav" aria-label="主导航">
-            <a class:list={["nav-pill", isHome && "is-active"]} href="/">首页</a>
-            <a class:list={["nav-pill", isLibrary && "is-active"]} href="/library/">目录</a>
-            <a class:list={["nav-pill", isNotes && "is-active"]} href="/notes/">笔记</a>
+            <a class:list={["nav-pill", isHome && "is-active"]} href={homeHref}>首页</a>
+            <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>目录</a>
+            <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>笔记</a>
           </nav>
         </div>
       </header>
@@ -106,7 +111,7 @@ const showAppDownloadEntry = appDownload.available;
           <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
           {showAppDownloadEntry && (
             <div class="site-footer-links">
-              <a class:list={["site-footer-link", isAppDownload && "is-active"]} href="/app/">
+              <a class:list={["site-footer-link", isAppDownload && "is-active"]} href={appHref}>
                 Android App
               </a>
             </div>
@@ -116,15 +121,15 @@ const showAppDownloadEntry = appDownload.available;
     )}
 
     <nav class="mobile-app-dock" aria-label="移动导航">
-      <a class:list={["mobile-dock-item", isHome && "is-active"]} href="/">
+      <a class:list={["mobile-dock-item", isHome && "is-active"]} href={homeHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>首页</span>
       </a>
-      <a class:list={["mobile-dock-item", isLibrary && "is-active"]} href="/library/">
+      <a class:list={["mobile-dock-item", isLibrary && "is-active"]} href={libraryHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>目录</span>
       </a>
-      <a class:list={["mobile-dock-item", isNotes && "is-active"]} href="/notes/">
+      <a class:list={["mobile-dock-item", isNotes && "is-active"]} href={notesHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>笔记</span>
       </a>

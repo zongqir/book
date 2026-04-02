@@ -1,5 +1,6 @@
 import MarkdownIt from "markdown-it";
 import { getContentSource, type SiteIndex } from "./content-source";
+import { rewriteContentHref } from "./internal-links";
 
 const md = new MarkdownIt({
   html: true,
@@ -180,7 +181,7 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     id: `section-${index + 1}`,
   }));
   const markdown = contentSource.loadPageMarkdown(page.book_id, page.slot);
-  const html = addHeadingIds(renderMarkdown(markdown), headings);
+  const html = addHeadingIds(renderMarkdown(markdown, getKnownInternalPaths(index)), headings);
   const siblingPages = index.pages
     .filter((item) => item.book_id === page.book_id)
     .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
@@ -233,9 +234,9 @@ function uniqueTags(tags: string[]): string[] {
   return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))];
 }
 
-function renderMarkdown(markdown: string): string {
+function renderMarkdown(markdown: string, knownInternalPaths: Set<string>): string {
   const transformed = transformShortcodes(markdown);
-  return md.render(transformed);
+  return rewriteRenderedInternalLinks(md.render(transformed), knownInternalPaths);
 }
 
 function addHeadingIds(html: string, headings: HeadingLink[]): string {
@@ -257,6 +258,21 @@ function transformShortcodes(markdown: string): string {
   output = replaceSelfClosingShortcodes(output, "sentence", renderSentence);
   output = replaceSelfClosingShortcodes(output, "memory-card", renderMemoryCard);
   return output;
+}
+
+function getKnownInternalPaths(index: SiteIndex): Set<string> {
+  const paths = new Set<string>(["/", "/library/", "/notes/", "/app/", "/offline/"]);
+  index.sections.forEach((item) => paths.add(item.url));
+  index.books.forEach((item) => paths.add(item.url));
+  index.pages.forEach((item) => paths.add(item.url));
+  index.quotes.forEach((item) => paths.add(item.url));
+  return paths;
+}
+
+function rewriteRenderedInternalLinks(html: string, knownInternalPaths: Set<string>): string {
+  return html.replace(/(<a\b[^>]*\bhref=")([^"]+)(")/gi, (_match, prefix, href, suffix) => {
+    return `${prefix}${rewriteContentHref(href, knownInternalPaths)}${suffix}`;
+  });
 }
 
 function replacePairShortcodes(

@@ -1,5 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toInternalHref } from "../../lib/internal-links";
+
+const homeHref = toInternalHref("/");
+const libraryHref = toInternalHref("/library/");
+const notesHref = toInternalHref("/notes/");
 ---
 
 <BaseLayout title="离线状态" description="当前网络不可用，你仍然可以继续查看已缓存的目录和页面。">
@@ -9,8 +14,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <h1>现在离线了</h1>
         <p>网络暂时不可用。你还可以回到首页、目录，或继续看已经缓存过的页面。</p>
         <div class="actions library-hero-actions">
-          <a class="btn" href="/">回首页</a>
-          <a class="btn btn-ghost" href="/library/">去目录</a>
+          <a class="btn" href={homeHref}>回首页</a>
+          <a class="btn btn-ghost" href={libraryHref}>去目录</a>
         </div>
       </div>
     </section>
@@ -31,7 +36,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       <div class="actions">
         <button class="btn" id="offline-retry" type="button">重新尝试</button>
-        <a class="btn btn-ghost" href="/notes/">去笔记</a>
+        <a class="btn btn-ghost" href={notesHref}>去笔记</a>
       </div>
 
       <p class="offline-status" id="offline-status">正在检查当前网络状态…</p>

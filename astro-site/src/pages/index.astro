@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData, loadSiteIndex } from "../lib/content";
+import { toInternalHref } from "../lib/internal-links";
 
 const { books, quotes, sections } = getHomeData();
 const firstBook = books[0];
@@ -16,6 +17,7 @@ function getBookEntry(bookId: string, fallbackUrl: string) {
 
 const firstQuote = quotes[0];
 const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : null;
+const libraryHref = toInternalHref("/library/");
 const sectionPreviewMap = Object.fromEntries(
   sections.map((section) => [
     section.key,
@@ -48,7 +50,7 @@ const sectionPreviewMap = Object.fromEntries(
           {firstBook?.tags.slice(0, 4).map((tag) => <span class="book-dice-tag">{tag}</span>)}
         </div>
         <div class="home-mobile-focus-actions">
-          <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? "/library/"}>
+          <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
             <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
           </a>
           <button class="tool-switch" type="button" id="home-mobile-focus-secondary" data-action="random-book">换一本</button>
@@ -111,7 +113,7 @@ const sectionPreviewMap = Object.fromEntries(
               </a>
             ))}
           </div>
-          <a class="tool-switch" href="/library/">看全部目录</a>
+          <a class="tool-switch" href={libraryHref}>看全部目录</a>
         </div>
       </details>
     </section>
@@ -172,7 +174,7 @@ const sectionPreviewMap = Object.fromEntries(
             <header class="home-side-head">
               <h2>接上次</h2>
             </header>
-            <a class="home-resume-link" id="home-resume-link" href="/library/">
+            <a class="home-resume-link" id="home-resume-link" href={libraryHref}>
               <p class="book-dice-meta">
                 <span id="home-resume-category">上次停留</span>
               </p>

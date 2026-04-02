@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getAllLibrarySlugs, getNodeBySlug } from "../../lib/content";
+import { toInternalHref } from "../../lib/internal-links";
 
 export async function getStaticPaths() {
   return getAllLibrarySlugs().map((slugParts) => ({
@@ -26,6 +27,7 @@ const metaDescription =
       : (node.page.summary || node.page.intent || `${node.book?.title || "这本书"}中的一篇文稿。`);
 const canonicalPath = node.url;
 const ogType = node.kind === "page" ? "article" : "website";
+const libraryHref = toInternalHref("/library/");
 ---
 
 <BaseLayout title={node.title} description={metaDescription} canonicalPath={canonicalPath} ogDescription={metaDescription} ogType={ogType} isLibrary={true}>
@@ -34,7 +36,7 @@ const ogType = node.kind === "page" ? "article" : "website";
       <section class="library-panel">
         <div class="page-intro page-intro--section">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="/library/">目录</a>
+            <a href={libraryHref}>目录</a>
             <span>/</span>
             <span>{node.title}</span>
           </nav>
@@ -78,9 +80,9 @@ const ogType = node.kind === "page" ? "article" : "website";
       <section class="library-panel">
         <div class="page-intro page-intro--book">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="/library/">目录</a>
+            <a href={libraryHref}>目录</a>
             <span>/</span>
-            <a href={`/library/${node.book.section_key}/`}>{node.book.section_title}</a>
+            <a href={toInternalHref(`/library/${node.book.section_key}/`)}>{node.book.section_title}</a>
             <span>/</span>
             <span>{node.title}</span>
           </nav>
@@ -162,7 +164,7 @@ const ogType = node.kind === "page" ? "article" : "website";
       <section class="library-panel">
         <div class="doc-hero doc-hero--page">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href="/library/">目录</a>
+            <a href={libraryHref}>目录</a>
             {node.section && (
               <>
                 <span>/</span>

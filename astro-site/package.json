@@ -6,6 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "build:site": "npm run export:content && npm run build",
+    "build:site:app": "BOOK_INTERNAL_LINK_MODE=html npm run build:site",
+    "check:site:app": "BOOK_INTERNAL_LINK_MODE=html PUBLIC_INTERNAL_LINK_MODE=html npm run build:site && python3 ../scripts/check_capacitor_internal_links.py",
     "preview": "astro preview",
     "export:content": "python3 ../scripts/export_site_content.py",
     "build:page-content": "python3 ../scripts/export_site_page_content.py",

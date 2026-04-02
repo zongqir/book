@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from datetime import timedelta, timezone
@@ -16,6 +17,7 @@ LIBRARY_ROOT = ROOT / "site" / "content" / "library"
 OUTPUT_DIR = ROOT / "site" / "static" / "data"
 OUTPUT_PATH = OUTPUT_DIR / "site-content.json"
 BUILD_TIMEZONE = timezone(timedelta(hours=8))
+INTERNAL_LINK_MODE = "html" if str(os.environ.get("BOOK_INTERNAL_LINK_MODE", "")).lower() == "html" else "directory"
 
 FRONTMATTER_PATTERN = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n?", re.DOTALL)
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
@@ -100,7 +102,7 @@ def build_bundle() -> dict[str, Any]:
                 "title": title,
                 "book_count": counts["book_count"],
                 "page_count": counts["page_count"],
-                "url": f"/library/{key}/",
+                "url": to_site_url(key),
             }
         )
 
@@ -296,7 +298,10 @@ def normalize_title(value: str) -> str:
 
 
 def to_site_url(relative: str) -> str:
-    return f"/library/{relative.strip('/')}/"
+    normalized = relative.strip("/")
+    if INTERNAL_LINK_MODE == "html":
+        return f"/library/{normalized}.html"
+    return f"/library/{normalized}/"
 
 
 if __name__ == "__main__":

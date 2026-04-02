@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Astro site bundle
         working-directory: ./astro-site
-        run: npm run build:site
+        run: npm run check:site:app
 
       - name: Sync Capacitor Android
         working-directory: ./astro-site

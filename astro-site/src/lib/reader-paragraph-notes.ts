@@ -18,6 +18,10 @@ type DragState = {
   moved: boolean;
 };
 
+type ReaderBroadcastPayload =
+  | { type: "notes"; senderId: string; pageId: string }
+  | { type: "position"; senderId: string };
+
 const PICK_SELECTOR = "p, li, blockquote, pre, td, th, h2, h3";
 const ACTIVE_CLASS = "reader-note-block--active";
 const SAVED_CLASS = "reader-note-block--saved";
@@ -27,6 +31,7 @@ const DRAG_THRESHOLD = 6;
 const FAB_MARGIN = 12;
 const MOBILE_FAB_SIZE = 52;
 const DESKTOP_FAB_SIZE = 54;
+const READER_NOTES_CHANNEL = "book-reader-notes";
 const DEFAULT_COLOR: ReaderNoteColor = "amber";
 const NOTE_COLORS: ReaderNoteColor[] = ["amber", "teal", "rose", "violet"];
 
@@ -38,6 +43,13 @@ function isValidPosition(value: unknown): value is ReaderNotePosition {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<ReaderNotePosition>;
   return Number.isFinite(candidate.x) && Number.isFinite(candidate.y);
+}
+
+function createSessionId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "reader-" + Math.random().toString(36).slice(2, 10);
 }
 
 function hashText(value: string) {
@@ -108,7 +120,9 @@ export function setupReaderParagraphNotes() {
   const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
   const store = createNoteStore();
   const positionStore = createPositionStore();
-  let notes = store.list(pageId);
+  const broadcastChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel(READER_NOTES_CHANNEL) : null;
+  const sessionId = createSessionId();
+  let notes: ReaderParagraphNote[] = [];
   let panelOpen = !mediaQuery.matches;
   let pickMode = false;
   let activeId: string | null = null;
@@ -119,12 +133,24 @@ export function setupReaderParagraphNotes() {
   let dragState: DragState | null = null;
   let suppressToggleClick = false;
   let lastMode: "desktop" | "mobile" = mediaQuery.matches ? "mobile" : "desktop";
+  let refreshToken = 0;
+
+  shell.hidden = true;
 
   const blocks = Array.from(root.querySelectorAll<HTMLElement>(PICK_SELECTOR)).filter((block) => getBlockText(block).length >= 12);
   blocks.forEach((block, index) => {
     block.classList.add("reader-note-block");
     block.dataset.readerBlockId = createBlockId(block, index);
   });
+
+  function reportError(message: string, error: unknown) {
+    console.error(message, error);
+    setStatus(message);
+  }
+
+  function broadcast(payload: ReaderBroadcastPayload) {
+    broadcastChannel?.postMessage(payload);
+  }
 
   function currentMode(): "desktop" | "mobile" {
     return mediaQuery.matches ? "mobile" : "desktop";
@@ -148,21 +174,22 @@ export function setupReaderParagraphNotes() {
     };
   }
 
-  function readSavedPositions(): ReaderNotePositions {
+  async function readSavedPositions(): Promise<ReaderNotePositions> {
     return positionStore.read();
   }
 
-  function getSavedPosition() {
-    const positions = readSavedPositions();
+  async function getSavedPosition() {
+    const positions = await readSavedPositions();
     const saved = positions[currentMode()];
     if (!isValidPosition(saved)) return null;
     return normalizePosition(saved);
   }
 
-  function savePosition(position: ReaderNotePosition) {
-    const positions = readSavedPositions();
+  async function savePosition(position: ReaderNotePosition) {
+    const positions = await readSavedPositions();
     positions[currentMode()] = normalizePosition(position);
-    positionStore.write(positions);
+    await positionStore.write(positions);
+    broadcast({ type: "position", senderId: sessionId });
   }
 
   function getDefaultPosition() {
@@ -191,7 +218,7 @@ export function setupReaderParagraphNotes() {
     shell.dataset.panelSide = currentMode() === "mobile" ? "center" : shellPosition.x < 380 ? "right" : "left";
   }
 
-  function syncLayoutMode(forceDefault = false) {
+  async function syncLayoutMode(forceDefault = false) {
     const nextMode = currentMode();
     const modeChanged = nextMode !== lastMode;
 
@@ -201,7 +228,7 @@ export function setupReaderParagraphNotes() {
       panelOpen = nextMode === "desktop";
     }
 
-    const targetPosition = getSavedPosition() ?? (modeChanged || forceDefault ? getDefaultPosition() : shellPosition);
+    const targetPosition = (await getSavedPosition()) ?? (modeChanged || forceDefault ? getDefaultPosition() : shellPosition);
     applyShellPosition(targetPosition);
     syncPanel();
   }
@@ -304,11 +331,14 @@ export function setupReaderParagraphNotes() {
           '</article>'
         );
       })
-      .join('');
+      .join("");
   }
 
-  function refresh() {
-    notes = store.list(pageId);
+  async function refresh() {
+    const token = ++refreshToken;
+    const loadedNotes = await store.list(pageId);
+    if (token !== refreshToken) return;
+    notes = loadedNotes;
     syncPanel();
     setActive(activeId && notes.some((note) => note.id === activeId) ? activeId : null);
   }
@@ -335,7 +365,7 @@ export function setupReaderParagraphNotes() {
     editorInput.value = "";
   }
 
-  function saveCurrentNote() {
+  async function saveCurrentNote() {
     if (!pickedBlock) return;
     const blockId = pickedBlock.dataset.readerBlockId;
     if (!blockId) return;
@@ -344,18 +374,19 @@ export function setupReaderParagraphNotes() {
     const existing = editingId ? notes.find((note) => note.id === editingId) ?? null : findNoteByBlockId(blockId);
 
     if (existing) {
-      store.update(existing.id, { note: noteText, color: selectedColor });
+      await store.update(existing.id, { note: noteText, color: selectedColor });
       activeId = existing.id;
       setStatus(noteText ? "这段笔记已更新。" : "这段划线已更新。");
     } else {
-      const created = store.create({ pageId, blockId, quote, note: noteText, color: selectedColor });
+      const created = await store.create({ pageId, blockId, quote, note: noteText, color: selectedColor });
       activeId = created.id;
       setStatus(noteText ? "这段笔记已保存到本地。" : "这段划线已保存到本地。");
     }
 
+    broadcast({ type: "notes", senderId: sessionId, pageId });
     closeEditor();
     panelOpen = false;
-    refresh();
+    await refresh();
   }
 
   function focusNote(note: ReaderParagraphNote) {
@@ -376,6 +407,14 @@ export function setupReaderParagraphNotes() {
     return true;
   }
 
+  async function deleteNote(id: string) {
+    await store.remove(id);
+    if (activeId === id) activeId = null;
+    setStatus("这段笔记已删除。");
+    broadcast({ type: "notes", senderId: sessionId, pageId });
+    await refresh();
+  }
+
   function finishDrag(pointerId: number) {
     if (!dragState || dragState.pointerId !== pointerId) return;
     const moved = dragState.moved;
@@ -384,7 +423,9 @@ export function setupReaderParagraphNotes() {
       toggleButton.releasePointerCapture(pointerId);
     }
     if (moved) {
-      savePosition(shellPosition);
+      void savePosition(shellPosition).catch((error) => {
+        reportError("悬浮笔位置暂时没保存成功。", error);
+      });
       suppressToggleClick = true;
     }
   }
@@ -472,7 +513,9 @@ export function setupReaderParagraphNotes() {
   });
 
   editorSave.addEventListener("click", () => {
-    saveCurrentNote();
+    void saveCurrentNote().catch((error) => {
+      reportError("这段笔记暂时没保存成功。", error);
+    });
   });
 
   list.addEventListener("click", (event) => {
@@ -503,10 +546,9 @@ export function setupReaderParagraphNotes() {
     if (deleteButton) {
       const id = deleteButton.dataset.readerNoteDelete;
       if (!id) return;
-      store.remove(id);
-      if (activeId === id) activeId = null;
-      setStatus("这段笔记已删除。");
-      refresh();
+      void deleteNote(id).catch((error) => {
+        reportError("这段笔记暂时没删除成功。", error);
+      });
     }
   });
 
@@ -532,13 +574,33 @@ export function setupReaderParagraphNotes() {
     openExistingNoteByBlock(block);
   });
 
+  broadcastChannel?.addEventListener("message", (event) => {
+    const payload = event.data as ReaderBroadcastPayload | null;
+    if (!payload || payload.senderId === sessionId) return;
+    if (payload.type === "notes" && payload.pageId === pageId) {
+      void refresh().catch((error) => {
+        reportError("本地笔记暂时没同步成功。", error);
+      });
+      return;
+    }
+    if (payload.type === "position" && !dragState) {
+      void syncLayoutMode(false).catch((error) => {
+        reportError("悬浮笔位置暂时没同步成功。", error);
+      });
+    }
+  });
+
   window.addEventListener("storage", (event) => {
     if (event.key === NOTE_STORAGE_KEY) {
-      refresh();
+      void refresh().catch((error) => {
+        reportError("本地笔记暂时没同步成功。", error);
+      });
       return;
     }
     if (event.key === POSITION_STORAGE_KEY && !dragState) {
-      syncLayoutMode(false);
+      void syncLayoutMode(false).catch((error) => {
+        reportError("悬浮笔位置暂时没同步成功。", error);
+      });
     }
   });
 
@@ -561,7 +623,9 @@ export function setupReaderParagraphNotes() {
   });
 
   const handleMediaChange = () => {
-    syncLayoutMode(true);
+    void syncLayoutMode(true).catch((error) => {
+      reportError("笔记面板布局暂时没更新成功。", error);
+    });
   };
 
   if (typeof mediaQuery.addEventListener === "function") {
@@ -571,11 +635,29 @@ export function setupReaderParagraphNotes() {
   }
 
   window.addEventListener("resize", () => {
-    syncLayoutMode(false);
+    void syncLayoutMode(false).catch((error) => {
+      reportError("笔记面板布局暂时没更新成功。", error);
+    });
   });
 
-  refresh();
-  syncLayoutMode(true);
+  window.addEventListener(
+    "pagehide",
+    () => {
+      broadcastChannel?.close();
+    },
+    { once: true },
+  );
+
   syncColorPicker();
   setPickMode(false);
+  void (async () => {
+    try {
+      await refresh();
+      await syncLayoutMode(true);
+    } catch (error) {
+      reportError("本地笔记暂时不可用，请刷新后重试。", error);
+    } finally {
+      shell.hidden = false;
+    }
+  })();
 }

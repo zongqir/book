@@ -2486,3 +2486,344 @@ img { display: block; max-width: 100%; }
     max-width: 100%;
   }
 }
+
+
+.home-mobile-shell {
+  display: none;
+}
+
+.home-desktop-flow {
+  display: grid;
+  gap: 28px;
+}
+
+.home-mobile-head {
+  display: grid;
+  gap: 10px;
+}
+
+.home-mobile-head h1 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.home-mobile-copy {
+  margin: 0;
+  max-width: 24rem;
+  color: var(--text-soft);
+  line-height: 1.72;
+}
+
+.home-mobile-focus,
+.home-mobile-drawer {
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.9), rgba(255, 247, 238, 0.74));
+  box-shadow: 0 24px 54px rgba(23, 48, 67, 0.1);
+}
+
+.home-mobile-focus {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.home-mobile-focus-topline,
+.home-mobile-quote-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+}
+
+.home-mobile-focus h2 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  line-height: 1.08;
+}
+
+.home-mobile-focus-copy,
+.home-mobile-quote-text {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.76;
+}
+
+.home-mobile-focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-mobile-focus-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.home-mobile-focus-actions .btn {
+  flex: 1 1 auto;
+}
+
+.home-mobile-focus-actions .tool-switch {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.home-mobile-drawer {
+  overflow: hidden;
+}
+
+.home-mobile-drawer > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  cursor: pointer;
+  list-style: none;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.08rem;
+}
+
+.home-mobile-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.home-mobile-drawer > summary em {
+  font-style: normal;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.home-mobile-drawer > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--text-faint);
+}
+
+.home-mobile-drawer[open] > summary::after {
+  content: "-";
+}
+
+.home-mobile-drawer-body {
+  display: grid;
+  gap: 14px;
+  padding: 0 20px 20px;
+}
+
+.home-mobile-quote-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.home-mobile-quote-text {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.14rem;
+  line-height: 1.66;
+  color: var(--text);
+}
+
+.home-mobile-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.home-mobile-section-link {
+  display: grid;
+  gap: 5px;
+  min-height: 90px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.home-mobile-section-link strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+  line-height: 1.22;
+}
+
+.home-mobile-section-link span {
+  color: var(--text-faint);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 760px) {
+  .is-home .page-frame {
+    padding-top: 10px;
+  }
+
+  .is-home .site-header {
+    padding: 10px 12px;
+    border-radius: 18px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .is-home .identity {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .is-home .brand {
+    gap: 8px;
+    font-size: 0.96rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .is-home .brand-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 0.68rem;
+  }
+
+  .is-home .top-nav {
+    width: auto;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .is-home .top-nav .nav-pill.is-active,
+  .is-home .top-nav .nav-pill[href="/discover/"],
+  .is-home .top-nav .nav-pill[href="#home-tools"],
+  .is-home .top-nav .nav-pill[href="#home-categories"] {
+    display: none;
+  }
+
+  .is-home .nav-pill {
+    width: auto;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+
+  .is-home .site-main {
+    padding-top: 14px;
+  }
+
+  .home-mobile-shell {
+    display: grid;
+    gap: 12px;
+  }
+
+  .home-desktop-flow {
+    display: none;
+  }
+
+  .home-mobile-head {
+    gap: 8px;
+    padding: 2px 2px 0;
+  }
+
+  .home-mobile-head h1 {
+    font-size: clamp(2rem, 10vw, 2.6rem);
+  }
+
+  .home-mobile-copy {
+    max-width: none;
+    font-size: 0.95rem;
+  }
+
+  .home-mobile-focus {
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .home-mobile-focus h2 {
+    font-size: 1.58rem;
+  }
+
+  .home-mobile-focus-copy {
+    font-size: 0.95rem;
+    line-height: 1.68;
+  }
+
+  .home-mobile-focus-topline {
+    font-size: 0.76rem;
+  }
+
+  .home-mobile-focus-topline .meta-chip {
+    min-height: 20px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+  }
+
+  .home-mobile-focus-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .home-mobile-focus-actions .tool-switch {
+    min-height: 46px;
+    padding: 0 12px;
+    width: auto;
+  }
+
+  .home-mobile-drawer {
+    border-radius: 20px;
+  }
+
+  .home-mobile-drawer > summary {
+    padding: 16px 16px;
+    font-size: 1rem;
+  }
+
+  .home-mobile-drawer-body {
+    padding: 0 16px 16px;
+    gap: 12px;
+  }
+
+  .home-mobile-quote-card {
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .home-mobile-quote-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .home-mobile-quote-meta {
+    display: grid;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .home-mobile-quote-card .tool-switch {
+    width: auto;
+  }
+
+  .home-mobile-section-grid {
+    gap: 8px;
+  }
+
+  .home-mobile-section-link {
+    min-height: 82px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+}

@@ -25,199 +25,194 @@ const sectionPreviewMap = Object.fromEntries(
       .map((book) => ({ title: book.title, url: book.url })),
   ]),
 );
-const sectionSpotlights = sections.map((section) => {
-  const sectionBooks = books.filter((book) => book.section_key === section.key);
-  const leadBook = sectionBooks[0] ?? null;
-  const leadEntry = leadBook ? getBookEntry(leadBook.id, leadBook.url) : null;
-  return {
-    ...section,
-    leadBook,
-    leadEntry,
-    previewBooks: sectionBooks.slice(1, 4).map((book) => ({ title: book.title, url: book.url })),
-  };
-});
 ---
 
 <BaseLayout
   isHome={true}
   isLibrary={false}
-  description="手机上先给你一句、一本和一条线，再决定今天往哪走。"
+  description="手机上先接上次，或者直接翻一本到。"
   canonicalPath="/"
   ogTitle="读书库"
-  ogDescription="手机上先给你一句、一本和一条线，再决定今天往哪走。"
+  ogDescription="手机上先接上次，或者直接翻一本到。"
 >
   <div class="page-stack">
-    <section class="hero-panel home-stage" id="home-tools">
-      <div class="home-stage-head home-stage-head--mobile">
-        <p class="hero-kicker">手机先做一件事</p>
-        <h1>先看到一句，再决定今天往哪走</h1>
-        <p class="home-stage-copy">看一句，接上次，或者直接翻一本到。</p>
+    <section class="home-mobile-shell" aria-label="手机首页">
+      <div class="home-mobile-head">
+        <p class="hero-kicker">今天先做一件事</p>
+        <h1>先接上次，或者直接翻一本到</h1>
       </div>
 
-      <div class="hero-tools hero-tools--stage">
-        <article class="hero-tool-card hero-tool-card--quote" data-random-quote>
-          <header class="hero-tool-head">
-            <div>
-              <h2>今日一句</h2>
-            </div>
-            <button class="tool-switch" type="button" id="random-quote-shuffle">换一句</button>
-          </header>
+      <article class="home-mobile-focus" id="home-mobile-focus-card">
+        <p class="home-mobile-focus-topline">
+          <span class="meta-chip" id="home-mobile-focus-mode-chip">先看一本</span>
+          <span id="home-mobile-focus-category">{firstBook?.section_title ?? "书库"}</span>
+        </p>
+        <h2 id="home-mobile-focus-title">{firstBook?.title ?? "先翻一本到"}</h2>
+        <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "从书库里随机挑一本，先读进去再说。"}</p>
+        <div class="home-mobile-focus-tags" id="home-mobile-focus-tags">
+          {firstBook?.tags.slice(0, 4).map((tag) => <span class="book-dice-tag">{tag}</span>)}
+        </div>
+        <div class="home-mobile-focus-actions">
+          <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? "/library/"}>
+            <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
+          </a>
+          <button class="tool-switch" type="button" id="home-mobile-focus-secondary" data-action="random-book">换一本到</button>
+        </div>
+      </article>
+
+      <details class="home-mobile-drawer home-mobile-drawer--quote">
+        <summary>
+          <span>今日一句</span>
+          <em>随手抽一句</em>
+        </summary>
+        <div class="home-mobile-drawer-body">
           {firstQuote ? (
-            <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
-              <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
-              <p class="random-quote-source">
-                <span id="random-quote-book">{firstQuote.book_title}</span>
-                <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-              </p>
+            <div class="home-mobile-quote-card">
+              <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
+              <div class="home-mobile-quote-meta">
+                <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
+                <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+              </div>
+              <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
             </div>
           ) : (
             <p class="tool-empty">暂时还没有句子卡可抽。</p>
           )}
-        </article>
+        </div>
+      </details>
 
-        <article class="hero-tool-card hero-tool-card--resume" id="home-resume-card" hidden>
-          <header class="hero-tool-head">
-            <div>
-              <h2>继续上次</h2>
-            </div>
-            <span class="meta-chip">自动记住</span>
-          </header>
-          <a class="home-resume-link" id="home-resume-link" href="/library/">
-            <p class="book-dice-meta">
-              <span id="home-resume-category">上次停留</span>
-            </p>
-            <h3 id="home-resume-title">回到刚才看到的地方</h3>
-            <p class="home-resume-copy" id="home-resume-copy">下次打开时，先接回你上次停下的位置。</p>
-            <div class="section-enter">
-              <span>接着读</span>
-              <span>→</span>
-            </div>
-          </a>
-        </article>
-
-        <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
-          <header class="hero-tool-head">
-            <div>
-              <h2>先看一本</h2>
-            </div>
-            <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
-          </header>
-          {firstBook ? (
-            <>
-              <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
-                <p class="book-dice-meta">
-                  <span id="book-dice-category">{firstBook.section_title}</span>
-                </p>
-                <h3 id="book-dice-title">{firstBook.title}</h3>
-                <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
-                <div class="book-dice-tags" id="book-dice-tags">
-                  {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
-                </div>
-              </div>
-              <div class="actions">
-                <a class="btn" id="book-dice-open" href={firstBookEntry?.url ?? firstBook.url}><span id="book-dice-open-label">{firstBookEntry?.label ?? "进入书页"}</span></a>
-              </div>
-            </>
-          ) : (
-            <p class="tool-empty">现在还没有可随机的书。</p>
-          )}
-        </article>
-      </div>
+      <details class="home-mobile-drawer home-mobile-drawer--sections">
+        <summary>
+          <span>按分类进</span>
+          <em>{sections.length} 个方向</em>
+        </summary>
+        <div class="home-mobile-drawer-body">
+          <div class="home-mobile-section-grid">
+            {sections.map((section) => (
+              <a class="home-mobile-section-link" href={section.url}>
+                <strong>{section.title}</strong>
+                <span>{section.book_count} 本书</span>
+              </a>
+            ))}
+          </div>
+          <a class="tool-switch" href="/library/">看全部目录</a>
+        </div>
+      </details>
     </section>
 
-    <section id="home-categories">
-      <div class="section-head section-head--home-categories">
-        <div>
-          <h2>按方向开始</h2>
-          <p class="section-head-copy">先定方向，再进书里。</p>
-        </div>
-        <a class="tool-switch tool-switch--compact section-head-action" href="/library/">看全部</a>
-      </div>
-
-      <div class="home-category-hub" data-home-category-hub>
-        <div class="home-category-tabs" role="tablist" aria-label="首页分类">
-          {sectionSpotlights.map((section, index) => (
-            <button
-              class:list={["home-category-tab", index === 0 && "is-active"]}
-              type="button"
-              role="tab"
-              aria-selected={index === 0 ? "true" : "false"}
-              data-home-section-tab
-              data-key={section.key}
-              data-title={section.title}
-            >
-              <span>{section.title}</span>
-              <em>{section.book_count} 本</em>
-            </button>
-          ))}
+    <div class="home-desktop-flow">
+      <section class="hero-panel home-stage" id="home-tools">
+        <div class="home-stage-head home-stage-head--mobile">
+          <p class="hero-kicker">首页</p>
+          <h1>先看一本，再看一句</h1>
         </div>
 
-        <div class="home-category-panels">
-          {sectionSpotlights.map((section, index) => (
-            <article
-              class:list={["home-category-spotlight", index === 0 && "is-active"]}
-              data-home-section-panel
-              data-key={section.key}
-              hidden={index !== 0}
-            >
-              <div class="home-category-spotlight-head">
-                <div>
-                  <p class="home-category-meta">{section.book_count} 本书 · {section.page_count} 篇内容</p>
-                  <h3>{section.title}</h3>
-                </div>
-                <a class="tool-switch tool-switch--compact" href={section.url}>进入分类</a>
+        <div class="hero-tools hero-tools--stage">
+          <article class="hero-tool-card hero-tool-card--quote" data-random-quote>
+            <header class="hero-tool-head">
+              <div>
+                <h2>今日一句</h2>
               </div>
-
-              {section.leadBook && (
-                <a class="home-category-lead" href={section.leadEntry?.url ?? section.leadBook.url}>
-                  <span class="home-category-lead-label">{section.leadEntry?.label ?? "先看"}</span>
-                  <strong>{section.leadBook.title}</strong>
-                  <p>{section.leadBook.summary}</p>
-                </a>
-              )}
-
-              {section.previewBooks.length > 0 && (
-                <div class="home-category-preview-stack">
-                  <p class="home-category-preview-label">这类书</p>
-                  <div class="home-category-preview-list">
-                    {section.previewBooks.map((book) => (
-                      <a class="home-category-preview-item" href={book.url}>{book.title}</a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <div class="home-sections">
-        {sections.map((section) => (
-          <article class="section-card">
-            <a href={section.url}>
-              <div class="section-card-top">
-                <p class="section-volume-inline">
-                  <strong>{section.book_count}</strong>
-                  <span>本书</span>
+              <button class="tool-switch" type="button" id="random-quote-shuffle">换一句</button>
+            </header>
+            {firstQuote ? (
+              <div class="random-quote-card" id="random-quote-card" aria-live="polite" data-content-source="/data/site-content.json">
+                <p class="quote-display" id="random-quote-text">“{firstQuote.quote}”</p>
+                <p class="random-quote-source">
+                  <span id="random-quote-book">{firstQuote.book_title}</span>
+                  <a class="quote-link" id="random-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
                 </p>
               </div>
-              <div class="section-card-copy">
-                <h3>{section.title}</h3>
-                <div class="section-preview">
-                  {(sectionPreviewMap[section.key] ?? []).map((book) => (
-                    <span class="preview-pill">{book.title}</span>
-                  ))}
-                </div>
+            ) : (
+              <p class="tool-empty">暂时还没有句子卡可抽。</p>
+            )}
+          </article>
+
+          <article class="hero-tool-card hero-tool-card--resume" id="home-resume-card" hidden>
+            <header class="hero-tool-head">
+              <div>
+                <h2>继续上次</h2>
               </div>
+              <span class="meta-chip">自动记住</span>
+            </header>
+            <a class="home-resume-link" id="home-resume-link" href="/library/">
+              <p class="book-dice-meta">
+                <span id="home-resume-category">上次停留</span>
+              </p>
+              <h3 id="home-resume-title">回到刚才看到的地方</h3>
+              <p class="home-resume-copy" id="home-resume-copy">下次打开时，先接回你上次停下的位置。</p>
               <div class="section-enter">
-                <span>进入分类</span>
+                <span>接着读</span>
                 <span>→</span>
               </div>
             </a>
           </article>
-        ))}
-      </div>
-    </section>
+
+          <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
+            <header class="hero-tool-head">
+              <div>
+                <h2>先看一本</h2>
+              </div>
+              <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
+            </header>
+            {firstBook ? (
+              <>
+                <div class="book-dice-card" id="book-dice-card" aria-live="polite" data-content-source="/data/site-content.json">
+                  <p class="book-dice-meta">
+                    <span id="book-dice-category">{firstBook.section_title}</span>
+                  </p>
+                  <h3 id="book-dice-title">{firstBook.title}</h3>
+                  <p class="book-dice-summary" id="book-dice-summary">{firstBook.summary}</p>
+                  <div class="book-dice-tags" id="book-dice-tags">
+                    {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
+                  </div>
+                </div>
+                <div class="actions">
+                  <a class="btn" id="book-dice-open" href={firstBookEntry?.url ?? firstBook.url}><span id="book-dice-open-label">{firstBookEntry?.label ?? "进入书页"}</span></a>
+                </div>
+              </>
+            ) : (
+              <p class="tool-empty">现在还没有可随机的书。</p>
+            )}
+          </article>
+        </div>
+      </section>
+
+      <section id="home-categories">
+        <div class="section-head section-head--home-categories">
+          <div>
+            <h2>按方向开始</h2>
+          </div>
+        </div>
+
+        <div class="home-sections">
+          {sections.map((section) => (
+            <article class="section-card">
+              <a href={section.url}>
+                <div class="section-card-top">
+                  <p class="section-volume-inline">
+                    <strong>{section.book_count}</strong>
+                    <span>本书</span>
+                  </p>
+                </div>
+                <div class="section-card-copy">
+                  <h3>{section.title}</h3>
+                  <div class="section-preview">
+                    {(sectionPreviewMap[section.key] ?? []).map((book) => (
+                      <span class="preview-pill">{book.title}</span>
+                    ))}
+                  </div>
+                </div>
+                <div class="section-enter">
+                  <span>进入分类</span>
+                  <span>→</span>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 
   <script is:inline>
@@ -225,6 +220,11 @@ const sectionSpotlights = sections.map((section) => {
       var LAST_VISIT_KEY = "book:last-visit:v1";
       var contentSource = "/data/site-content.json";
       var books = [];
+      var quotes = [];
+      var currentBook = 0;
+      var currentQuote = 0;
+      var mobileFocusState = "book";
+
       var bookTitle = document.getElementById("book-dice-title");
       var bookSummary = document.getElementById("book-dice-summary");
       var bookCategory = document.getElementById("book-dice-category");
@@ -232,15 +232,30 @@ const sectionSpotlights = sections.map((section) => {
       var bookOpen = document.getElementById("book-dice-open");
       var bookOpenLabel = document.getElementById("book-dice-open-label");
       var bookShuffle = document.getElementById("book-dice-shuffle");
-      var bookCard = document.getElementById("book-dice-card");
-      var currentBook = 0;
-      var autoplayTimer = null;
 
       var resumeCard = document.getElementById("home-resume-card");
       var resumeLink = document.getElementById("home-resume-link");
       var resumeCategory = document.getElementById("home-resume-category");
       var resumeTitle = document.getElementById("home-resume-title");
       var resumeCopy = document.getElementById("home-resume-copy");
+
+      var mobileFocusModeChip = document.getElementById("home-mobile-focus-mode-chip");
+      var mobileFocusCategory = document.getElementById("home-mobile-focus-category");
+      var mobileFocusTitle = document.getElementById("home-mobile-focus-title");
+      var mobileFocusCopy = document.getElementById("home-mobile-focus-copy");
+      var mobileFocusTags = document.getElementById("home-mobile-focus-tags");
+      var mobileFocusOpen = document.getElementById("home-mobile-focus-open");
+      var mobileFocusOpenLabel = document.getElementById("home-mobile-focus-open-label");
+      var mobileFocusSecondary = document.getElementById("home-mobile-focus-secondary");
+
+      var quoteText = document.getElementById("random-quote-text");
+      var quoteBook = document.getElementById("random-quote-book");
+      var quoteLink = document.getElementById("random-quote-link");
+      var quoteShuffle = document.getElementById("random-quote-shuffle");
+      var mobileQuoteText = document.getElementById("home-mobile-quote-text");
+      var mobileQuoteBook = document.getElementById("home-mobile-quote-book");
+      var mobileQuoteLink = document.getElementById("home-mobile-quote-link");
+      var mobileQuoteShuffle = document.getElementById("home-mobile-quote-shuffle");
 
       function readLastVisit() {
         try {
@@ -252,9 +267,24 @@ const sectionSpotlights = sections.map((section) => {
         }
       }
 
+      function hasLastVisit(item) {
+        return Boolean(item && item.url && item.title);
+      }
+
+      function setTags(container, tags) {
+        if (!(container instanceof HTMLElement)) return;
+        container.innerHTML = "";
+        (Array.isArray(tags) ? tags : []).slice(0, 4).forEach(function (tag) {
+          var el = document.createElement("span");
+          el.className = "book-dice-tag";
+          el.textContent = tag;
+          container.appendChild(el);
+        });
+      }
+
       function renderResume(item) {
         if (!(resumeCard instanceof HTMLElement)) return;
-        if (!item || !item.url || !item.title) {
+        if (!hasLastVisit(item)) {
           resumeCard.hidden = true;
           return;
         }
@@ -263,6 +293,65 @@ const sectionSpotlights = sections.map((section) => {
         if (resumeCategory) resumeCategory.textContent = item.label || "上次停留";
         if (resumeTitle) resumeTitle.textContent = item.title;
         if (resumeCopy) resumeCopy.textContent = item.summary || item.context || "回到刚才停下的位置。";
+      }
+
+      function renderMobileFocusResume(item) {
+        if (!hasLastVisit(item)) return;
+        mobileFocusState = "resume";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = item.label || "继续上次";
+        if (mobileFocusCategory) mobileFocusCategory.textContent = item.context || "上次停留";
+        if (mobileFocusTitle) mobileFocusTitle.textContent = item.title;
+        if (mobileFocusCopy) mobileFocusCopy.textContent = item.summary || item.context || "回到刚才停下的位置。";
+        setTags(mobileFocusTags, []);
+        if (mobileFocusOpen) mobileFocusOpen.href = item.url;
+        if (mobileFocusOpenLabel) mobileFocusOpenLabel.textContent = "继续读";
+        if (mobileFocusSecondary instanceof HTMLButtonElement) {
+          mobileFocusSecondary.hidden = books.length <= 0;
+          mobileFocusSecondary.dataset.action = "book";
+          mobileFocusSecondary.textContent = "换一本到";
+        }
+      }
+
+      function renderMobileFocusBook(current) {
+        if (!current) return;
+        mobileFocusState = "book";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "先看一本";
+        if (mobileFocusCategory) mobileFocusCategory.textContent = current.category || "未分类";
+        if (mobileFocusTitle) mobileFocusTitle.textContent = current.title || "未命名";
+        if (mobileFocusCopy) mobileFocusCopy.textContent = current.summary || "";
+        setTags(mobileFocusTags, current.tags);
+        if (mobileFocusOpen) mobileFocusOpen.href = current.entryUrl || current.url || "#";
+        if (mobileFocusOpenLabel) mobileFocusOpenLabel.textContent = current.entryLabel || "进入书页";
+
+        if (mobileFocusSecondary instanceof HTMLButtonElement) {
+          var lastVisit = readLastVisit();
+          if (hasLastVisit(lastVisit)) {
+            mobileFocusSecondary.hidden = false;
+            mobileFocusSecondary.dataset.action = "resume";
+            mobileFocusSecondary.textContent = "接上次";
+          } else if (books.length > 1) {
+            mobileFocusSecondary.hidden = false;
+            mobileFocusSecondary.dataset.action = "random-book";
+            mobileFocusSecondary.textContent = "换一本到";
+          } else {
+            mobileFocusSecondary.hidden = true;
+          }
+        }
+      }
+
+      function syncMobileFocus(preferredMode) {
+        var lastVisit = readLastVisit();
+        if (preferredMode === "resume" && hasLastVisit(lastVisit)) {
+          renderMobileFocusResume(lastVisit);
+          return;
+        }
+        if (preferredMode !== "book" && hasLastVisit(lastVisit)) {
+          renderMobileFocusResume(lastVisit);
+          return;
+        }
+        if (books.length) {
+          renderMobileFocusBook(books[currentBook]);
+        }
       }
 
       function renderBook(index) {
@@ -275,15 +364,9 @@ const sectionSpotlights = sections.map((section) => {
         if (bookCategory) bookCategory.textContent = current.category || "未分类";
         if (bookOpen) bookOpen.href = current.entryUrl || current.url || "#";
         if (bookOpenLabel) bookOpenLabel.textContent = current.entryLabel || "进入书页";
-        if (bookTags) {
-          bookTags.innerHTML = "";
-          var tags = Array.isArray(current.tags) ? current.tags : [];
-          tags.slice(0, 4).forEach(function (tag) {
-            var el = document.createElement("span");
-            el.className = "book-dice-tag";
-            el.textContent = tag;
-            bookTags.appendChild(el);
-          });
+        setTags(bookTags, current.tags);
+        if (mobileFocusState === "book") {
+          renderMobileFocusBook(current);
         }
       }
 
@@ -298,71 +381,6 @@ const sectionSpotlights = sections.map((section) => {
         return next;
       }
 
-      function startAutoplay() {
-        if (!books.length || autoplayTimer) return;
-        autoplayTimer = window.setInterval(function () {
-          renderBook(currentBook + 1);
-        }, 5800);
-      }
-
-      function stopAutoplay() {
-        if (!autoplayTimer) return;
-        window.clearInterval(autoplayTimer);
-        autoplayTimer = null;
-      }
-
-      var quotes = [];
-      var quoteText = document.getElementById("random-quote-text");
-      var quoteBook = document.getElementById("random-quote-book");
-      var quoteLink = document.getElementById("random-quote-link");
-      var quoteShuffle = document.getElementById("random-quote-shuffle");
-      var currentQuote = 0;
-      var HOME_SECTION_KEY = "book:home-section:v1";
-      var sectionTabs = Array.prototype.slice.call(document.querySelectorAll("[data-home-section-tab]"));
-      var sectionPanels = Array.prototype.slice.call(document.querySelectorAll("[data-home-section-panel]"));
-
-      function readSavedSection() {
-        try {
-          return window.localStorage.getItem(HOME_SECTION_KEY) || "";
-        } catch (error) {
-          return "";
-        }
-      }
-
-      function saveSection(key) {
-        try {
-          if (key) window.localStorage.setItem(HOME_SECTION_KEY, key);
-        } catch (error) {}
-      }
-
-      function detectSectionFromVisit() {
-        var lastVisit = readLastVisit();
-        if (!lastVisit || !lastVisit.context) return "";
-        var matchedTab = sectionTabs.find(function (tab) {
-          return tab instanceof HTMLElement
-            && tab.dataset.title
-            && lastVisit.context.indexOf(tab.dataset.title) !== -1;
-        });
-        return matchedTab instanceof HTMLElement ? (matchedTab.dataset.key || "") : "";
-      }
-
-      function setActiveSection(key, persist) {
-        if (!key) return;
-        sectionTabs.forEach(function (tab) {
-          if (!(tab instanceof HTMLElement)) return;
-          var isActive = tab.dataset.key === key;
-          tab.classList.toggle("is-active", isActive);
-          tab.setAttribute("aria-selected", isActive ? "true" : "false");
-        });
-        sectionPanels.forEach(function (panel) {
-          if (!(panel instanceof HTMLElement)) return;
-          var isActive = panel.dataset.key === key;
-          panel.hidden = !isActive;
-          panel.classList.toggle("is-active", isActive);
-        });
-        if (persist) saveSection(key);
-      }
-
       function renderQuote(index) {
         if (!quotes.length) return;
         currentQuote = ((index % quotes.length) + quotes.length) % quotes.length;
@@ -373,6 +391,12 @@ const sectionSpotlights = sections.map((section) => {
         if (quoteLink) {
           quoteLink.href = current.url || "#";
           quoteLink.textContent = current.pageTitle || "查看原文";
+        }
+        if (mobileQuoteText) mobileQuoteText.textContent = "“" + (current.quote || "") + "”";
+        if (mobileQuoteBook) mobileQuoteBook.textContent = current.bookTitle || "来源";
+        if (mobileQuoteLink) {
+          mobileQuoteLink.href = current.url || "#";
+          mobileQuoteLink.textContent = current.pageTitle || "查看原文";
         }
       }
 
@@ -388,35 +412,32 @@ const sectionSpotlights = sections.map((section) => {
       }
 
       renderResume(readLastVisit());
-      if (sectionTabs.length && sectionPanels.length) {
-        var preferredSection = readSavedSection() || detectSectionFromVisit() || (sectionTabs[0] && sectionTabs[0].dataset.key) || "";
-        setActiveSection(preferredSection, false);
-        sectionTabs.forEach(function (tab) {
-          if (!(tab instanceof HTMLElement)) return;
-          tab.addEventListener("click", function () {
-            setActiveSection(tab.dataset.key || "", true);
-          });
-        });
-      }
 
       if (bookShuffle) {
         bookShuffle.addEventListener("click", function () {
           renderBook(randomBook(true));
+          syncMobileFocus("book");
         });
       }
-      if (bookCard) {
-        bookCard.addEventListener("mouseenter", stopAutoplay);
-        bookCard.addEventListener("mouseleave", startAutoplay);
+
+      if (mobileFocusSecondary instanceof HTMLButtonElement) {
+        mobileFocusSecondary.addEventListener("click", function () {
+          var action = mobileFocusSecondary.dataset.action || "random-book";
+          if (action === "resume") {
+            syncMobileFocus("resume");
+            return;
+          }
+          renderBook(randomBook(true));
+          syncMobileFocus("book");
+        });
       }
-      document.addEventListener("visibilitychange", function () {
-        if (document.hidden) stopAutoplay();
-        else startAutoplay();
-      });
-      if (quoteShuffle) {
-        quoteShuffle.addEventListener("click", function () {
+
+      [quoteShuffle, mobileQuoteShuffle].forEach(function (button) {
+        if (!(button instanceof HTMLElement)) return;
+        button.addEventListener("click", function () {
           renderQuote(randomQuote(true));
         });
-      }
+      });
 
       fetch(contentSource)
         .then(function (response) {
@@ -454,6 +475,7 @@ const sectionSpotlights = sections.map((section) => {
                   };
                 })
             : [];
+
           quotes = Array.isArray(payload.quotes)
             ? payload.quotes.map(function (item) {
                 return {
@@ -464,9 +486,10 @@ const sectionSpotlights = sections.map((section) => {
                 };
               })
             : [];
+
           if (books.length) {
             renderBook(randomBook(false));
-            startAutoplay();
+            syncMobileFocus("auto");
           }
           if (quotes.length) {
             renderQuote(randomQuote(false));

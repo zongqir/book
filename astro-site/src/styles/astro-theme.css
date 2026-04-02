@@ -753,7 +753,7 @@ img { display: block; max-width: 100%; }
   position: absolute;
   top: -4px;
   right: calc(100% + 18px);
-  z-index: 34;
+  z-index: 48;
   width: min(340px, calc(100vw - 96px));
   max-height: min(68vh, 560px);
   overflow: auto;
@@ -936,7 +936,7 @@ img { display: block; max-width: 100%; }
 .reader-notes-editor {
   position: fixed;
   inset: 0;
-  z-index: 42;
+  z-index: 52;
   display: grid;
   place-items: end center;
   padding: 24px;

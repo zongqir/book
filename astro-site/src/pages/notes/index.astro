@@ -1,0 +1,515 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="本地笔记" description="回看、导出和整理你留在这个浏览器里的阅读笔记。">
+  <div class="page-stack notes-dashboard">
+    <section class="library-panel">
+      <div class="library-hero">
+        <h1>本地笔记</h1>
+        <p>这里收着你留在这个浏览器里的高亮和笔记。可以回看，也可以导出备份。</p>
+        <div class="stats-strip">
+          <div class="stat-block">
+            <span class="stat-label">笔记</span>
+            <span class="stat-value" id="notes-total-count">0</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">书目</span>
+            <span class="stat-value" id="notes-book-count">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card notes-toolbar-card">
+      <details class="notes-filters" open>
+        <summary class="notes-filters-summary">
+          <span>搜索与筛选</span>
+          <span class="notes-filters-state" id="notes-filters-state">正在整理…</span>
+        </summary>
+
+        <div class="notes-filters-body">
+          <div class="notes-toolbar-row">
+            <label class="field-control field-control--wide notes-toolbar-search">
+              <span>搜索</span>
+              <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
+            </label>
+
+            <label class="field-control notes-toolbar-sort">
+              <span>排序</span>
+              <select id="notes-sort">
+                <option value="updated-desc">最近更新</option>
+                <option value="updated-asc">最早更新</option>
+                <option value="created-desc">最近创建</option>
+                <option value="created-asc">最早创建</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="notes-filter-row">
+            <div class="notes-filter-group" aria-label="笔记筛选">
+              <button class="notes-filter-chip is-active" type="button" data-notes-highlight="all">全部</button>
+              <button class="notes-filter-chip" type="button" data-notes-highlight="only">只看纯高亮</button>
+            </div>
+
+            <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
+              <button class="notes-filter-color is-active" type="button" data-notes-color="all">全部颜色</button>
+              <button class="notes-filter-color notes-filter-color--amber" type="button" data-notes-color="amber">黄色</button>
+              <button class="notes-filter-color notes-filter-color--teal" type="button" data-notes-color="teal">青绿</button>
+              <button class="notes-filter-color notes-filter-color--rose" type="button" data-notes-color="rose">红色</button>
+              <button class="notes-filter-color notes-filter-color--violet" type="button" data-notes-color="violet">紫色</button>
+            </div>
+          </div>
+
+          <div class="notes-toolbar-meta">
+            <p class="notes-summary" id="notes-summary">正在整理你的笔记…</p>
+            <div class="notes-actions">
+              <button class="btn" id="notes-export" type="button">导出 JSON</button>
+              <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
+              <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
+              <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
+            </div>
+          </div>
+
+          <p class="notes-status" id="notes-status">
+            导入会替换当前浏览器里的本地笔记。动手前，建议先导出一份备份。
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <section class="content-card notes-results-card">
+      <div class="notes-empty" id="notes-empty" hidden>
+        <h2 id="notes-empty-title">还没有本地笔记</h2>
+        <p>去任意一篇正文里划一段，或者导入你之前备份过的笔记。</p>
+      </div>
+      <div class="notes-results" id="notes-results" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script>
+    import {
+      clearReaderNotebook,
+      exportReaderNotebook,
+      importReaderNotebook,
+      listAllReaderNotes,
+      removeReaderNote,
+    } from "../../lib/reader-storage";
+
+    const searchInput = document.getElementById("notes-search");
+    const sortSelect = document.getElementById("notes-sort");
+    const exportButton = document.getElementById("notes-export");
+    const importButton = document.getElementById("notes-import-trigger");
+    const importInput = document.getElementById("notes-import-input");
+    const clearButton = document.getElementById("notes-clear");
+    const statusNode = document.getElementById("notes-status");
+    const summaryNode = document.getElementById("notes-summary");
+    const filterStateNode = document.getElementById("notes-filters-state");
+    const resultsNode = document.getElementById("notes-results");
+    const emptyNode = document.getElementById("notes-empty");
+    const emptyTitleNode = document.getElementById("notes-empty-title");
+    const totalCountNode = document.getElementById("notes-total-count");
+    const bookCountNode = document.getElementById("notes-book-count");
+    const highlightButtons = Array.from(document.querySelectorAll("[data-notes-highlight]"));
+    const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
+
+    const state = {
+      notes: [],
+      query: "",
+      sort: "updated-desc",
+      highlight: "all",
+      color: "all",
+      booksById: new Map(),
+      pagesById: new Map(),
+    };
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setStatus(message, tone) {
+      if (!(statusNode instanceof HTMLElement)) return;
+      statusNode.textContent = message;
+      statusNode.dataset.tone = tone || "neutral";
+    }
+
+    function setBusy(isBusy) {
+      [searchInput, sortSelect, exportButton, importButton, clearButton].forEach((node) => {
+        if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement || node instanceof HTMLSelectElement) {
+          node.disabled = isBusy;
+        }
+      });
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return "";
+      return new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(parsed);
+    }
+
+    function toNoteMeta(note) {
+      const page = state.pagesById.get(note.pageId) || null;
+      const book = page ? state.booksById.get(page.book_id) || null : null;
+      return {
+        pageTitle: page?.title || "原文页面",
+        pageUrl: page?.url || "#",
+        bookTitle: page?.book_title || book?.title || "未归档书目",
+        sectionTitle: page?.section_title || book?.section_title || "未分类",
+        tags: Array.isArray(page?.tags) ? page.tags : Array.isArray(book?.tags) ? book.tags : [],
+      };
+    }
+
+    function buildSearchText(note, meta) {
+      return [
+        note.quote,
+        note.note,
+        meta.pageTitle,
+        meta.bookTitle,
+        meta.sectionTitle,
+        meta.tags.join(" "),
+      ].join(" ").toLowerCase();
+    }
+
+    function compareNotes(left, right) {
+      const sort = state.sort;
+      const leftUpdated = String(left.updatedAt || "");
+      const rightUpdated = String(right.updatedAt || "");
+      const leftCreated = String(left.createdAt || "");
+      const rightCreated = String(right.createdAt || "");
+      if (sort === "updated-asc") return leftUpdated.localeCompare(rightUpdated) || left.id.localeCompare(right.id);
+      if (sort === "created-desc") return rightCreated.localeCompare(leftCreated) || right.id.localeCompare(left.id);
+      if (sort === "created-asc") return leftCreated.localeCompare(rightCreated) || left.id.localeCompare(right.id);
+      return rightUpdated.localeCompare(leftUpdated) || right.id.localeCompare(left.id);
+    }
+
+    function getFilteredNotes() {
+      const query = state.query.trim().toLowerCase();
+      return state.notes
+        .slice()
+        .filter((note) => {
+          if (state.highlight === "only" && String(note.note || "").trim()) return false;
+          if (state.color !== "all" && note.color !== state.color) return false;
+          if (query && !buildSearchText(note, toNoteMeta(note)).includes(query)) return false;
+          return true;
+        })
+        .sort(compareNotes);
+    }
+
+    function renderStats() {
+      if (totalCountNode) totalCountNode.textContent = String(state.notes.length);
+      const bookIds = new Set(
+        state.notes.map((note) => {
+          const page = state.pagesById.get(note.pageId);
+          return page?.book_id || note.pageId;
+        }),
+      );
+      if (bookCountNode) bookCountNode.textContent = String(bookIds.size);
+    }
+
+    function renderFilterState(visibleCount) {
+      highlightButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.classList.toggle("is-active", button.dataset.notesHighlight === state.highlight);
+      });
+      colorButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.classList.toggle("is-active", button.dataset.notesColor === state.color);
+      });
+
+      if (!state.notes.length) {
+        if (summaryNode instanceof HTMLElement) {
+          summaryNode.textContent = "这里会按书整理你留在本地的阅读痕迹。";
+        }
+        if (filterStateNode instanceof HTMLElement) {
+          filterStateNode.textContent = "还没有笔记";
+        }
+        return;
+      }
+
+      const labels = [];
+      if (state.highlight === "only") labels.push("只看纯高亮");
+      if (state.color !== "all") labels.push("颜色已筛选");
+      if (state.query) labels.push("搜索中");
+      const suffix = labels.length ? " · " + labels.join(" · ") : "";
+      if (summaryNode instanceof HTMLElement) {
+        summaryNode.textContent = "当前显示 " + visibleCount + " 条，按书归拢。" + suffix;
+      }
+      if (filterStateNode instanceof HTMLElement) {
+        filterStateNode.textContent = labels.length ? labels.join(" · ") : "全部笔记";
+      }
+    }
+
+    function renderEmpty(title, message) {
+      if (resultsNode) resultsNode.innerHTML = "";
+      if (emptyNode instanceof HTMLElement) {
+        emptyNode.hidden = false;
+        if (emptyTitleNode instanceof HTMLElement && title) {
+          emptyTitleNode.textContent = title;
+        }
+        const paragraph = emptyNode.querySelector("p");
+        if (paragraph && message) paragraph.textContent = message;
+      }
+    }
+
+    function render() {
+      renderStats();
+      if (!(resultsNode instanceof HTMLElement)) return;
+
+      const visible = getFilteredNotes();
+      renderFilterState(visible.length);
+
+      if (!state.notes.length) {
+        renderEmpty("还没有本地笔记", "去任意一篇正文里划一段，或者导入你之前备份过的笔记。");
+        return;
+      }
+
+      if (!visible.length) {
+        renderEmpty("没有符合条件的笔记", "没搜到匹配项。换个词，或者先清掉一个条件。");
+        return;
+      }
+
+      if (emptyNode instanceof HTMLElement) {
+        emptyNode.hidden = true;
+      }
+
+      const groups = new Map();
+      visible.forEach((note) => {
+        const meta = toNoteMeta(note);
+        const page = state.pagesById.get(note.pageId);
+        const key = page?.book_id || note.pageId;
+        const group = groups.get(key) || {
+          key,
+          bookTitle: meta.bookTitle,
+          sectionTitle: meta.sectionTitle,
+          notes: [],
+        };
+        group.notes.push({ note, meta });
+        groups.set(key, group);
+      });
+
+      const groupMarkup = Array.from(groups.values())
+        .sort((left, right) => compareNotes(left.notes[0].note, right.notes[0].note))
+        .map((group) => {
+          const items = group.notes
+            .map(({ note, meta }) => {
+              const noteCopy = String(note.note || "").trim();
+              return `
+                <article class="notes-note-card notes-note-card--${escapeHtml(note.color || "amber")}">
+                  <div class="notes-note-topline">
+                    <p class="notes-note-page">${escapeHtml(meta.pageTitle)}</p>
+                    <time class="notes-note-time" datetime="${escapeHtml(note.updatedAt)}">${escapeHtml(formatTime(note.updatedAt))}</time>
+                  </div>
+                  <p class="notes-note-quote">${escapeHtml(note.quote)}</p>
+                  <p class="notes-note-copy${noteCopy ? "" : " notes-note-copy--muted"}">${escapeHtml(noteCopy || "只划线，没写备注。")}</p>
+                  <div class="notes-note-actions">
+                    <a class="tool-switch tool-switch--compact" href="${escapeHtml(meta.pageUrl)}">打开原文</a>
+                    <button class="tool-switch tool-switch--compact" type="button" data-note-delete="${escapeHtml(note.id)}">删除</button>
+                  </div>
+                </article>
+              `;
+            })
+            .join("");
+          return `
+            <section class="notes-book-group">
+              <div class="notes-book-head">
+                <div>
+                  <p class="eyebrow">${escapeHtml(group.sectionTitle)}</p>
+                  <h2>${escapeHtml(group.bookTitle)}</h2>
+                </div>
+                <span class="meta-chip">${group.notes.length} 条</span>
+              </div>
+              <div class="notes-book-list">${items}</div>
+            </section>
+          `;
+        })
+        .join("");
+
+      resultsNode.innerHTML = groupMarkup;
+    }
+
+    async function loadIndex() {
+      try {
+        const response = await fetch("/data/site-content.json", { cache: "force-cache" });
+        if (!response.ok) throw new Error("Failed to load site content");
+        const payload = await response.json();
+        const books = Array.isArray(payload.books) ? payload.books : [];
+        const pages = Array.isArray(payload.pages) ? payload.pages : [];
+        books.forEach((book) => {
+          if (book && book.id) state.booksById.set(book.id, book);
+        });
+        pages.forEach((page) => {
+          if (page && page.id) state.pagesById.set(page.id, page);
+        });
+      } catch (error) {
+        console.error("Failed to load notes index", error);
+        setStatus("笔记已加载，但原文标题和书名索引暂时没拿到。", "warning");
+      }
+    }
+
+    async function refreshNotes() {
+      setBusy(true);
+      try {
+        state.notes = await listAllReaderNotes();
+        render();
+        if (state.notes.length) {
+          setStatus("这里显示的是当前浏览器里的本地笔记。", "neutral");
+        } else {
+          setStatus("这里还没有本地笔记。去正文里点一段，就会收进来。", "neutral");
+        }
+      } catch (error) {
+        console.error("Failed to load reader notes", error);
+        renderEmpty("笔记读取失败", "笔记读取失败了，刷新后再试一次。");
+        setStatus("本地笔记读取失败了。", "danger");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function downloadExport(payload) {
+      const filenameDate = new Date().toISOString().slice(0, 10);
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "reader-notes-" + filenameDate + ".json";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function readImportFile(file) {
+      const text = await file.text();
+      return JSON.parse(text);
+    }
+
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.addEventListener("input", function () {
+        state.query = searchInput.value || "";
+        render();
+      });
+    }
+
+    if (sortSelect instanceof HTMLSelectElement) {
+      sortSelect.addEventListener("change", function () {
+        state.sort = sortSelect.value || "updated-desc";
+        render();
+      });
+    }
+
+    highlightButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        state.highlight = button.dataset.notesHighlight || "all";
+        render();
+      });
+    });
+
+    colorButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        state.color = button.dataset.notesColor || "all";
+        render();
+      });
+    });
+
+    if (exportButton instanceof HTMLButtonElement) {
+      exportButton.addEventListener("click", async function () {
+        setBusy(true);
+        try {
+          const payload = await exportReaderNotebook();
+          downloadExport(payload);
+          setStatus("导出完成。可以把这份 JSON 留作备份。", "success");
+        } catch (error) {
+          console.error("Failed to export reader notes", error);
+          setStatus("导出失败了。稍后再试一次。", "danger");
+        } finally {
+          setBusy(false);
+        }
+      });
+    }
+
+    if (importButton instanceof HTMLButtonElement && importInput instanceof HTMLInputElement) {
+      importButton.addEventListener("click", function () {
+        importInput.click();
+      });
+
+      importInput.addEventListener("change", async function () {
+        const file = importInput.files && importInput.files[0];
+        if (!file) return;
+        setBusy(true);
+        try {
+          const payload = await readImportFile(file);
+          const result = await importReaderNotebook(payload);
+          state.notes = Array.isArray(result.notes) ? result.notes : [];
+          render();
+          setStatus("导入完成，当前浏览器里的本地笔记已经更新。", "success");
+        } catch (error) {
+          console.error("Failed to import reader notes", error);
+          setStatus(error instanceof Error ? error.message : "导入失败了。", "danger");
+        } finally {
+          importInput.value = "";
+          setBusy(false);
+        }
+      });
+    }
+
+    if (clearButton instanceof HTMLButtonElement) {
+      clearButton.addEventListener("click", async function () {
+        if (!window.confirm("要清空这个浏览器里的全部本地笔记吗？")) return;
+        setBusy(true);
+        try {
+          await clearReaderNotebook();
+          state.notes = [];
+          render();
+          setStatus("当前浏览器里的本地笔记已经清空。", "success");
+        } catch (error) {
+          console.error("Failed to clear reader notes", error);
+          setStatus("清空失败了。稍后再试一次。", "danger");
+        } finally {
+          setBusy(false);
+        }
+      });
+    }
+
+    if (resultsNode instanceof HTMLElement) {
+      resultsNode.addEventListener("click", async function (event) {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest("[data-note-delete]");
+        if (!(button instanceof HTMLElement)) return;
+        const noteId = button.getAttribute("data-note-delete");
+        if (!noteId) return;
+        if (!window.confirm("要删掉这条本地笔记吗？")) return;
+        setBusy(true);
+        try {
+          await removeReaderNote(noteId);
+          state.notes = state.notes.filter((note) => note.id !== noteId);
+          render();
+          setStatus("这条笔记已经删掉。", "success");
+        } catch (error) {
+          console.error("Failed to delete reader note", error);
+          setStatus("删除失败了。稍后再试一次。", "danger");
+        } finally {
+          setBusy(false);
+        }
+      });
+    }
+
+    Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {
+      render();
+    });
+  </script>
+</BaseLayout>

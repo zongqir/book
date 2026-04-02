@@ -1,0 +1,66 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="离线状态" description="当前网络不可用，你仍然可以继续查看已缓存的目录和页面。">
+  <div class="page-stack">
+    <section class="library-panel">
+      <div class="library-hero">
+        <h1>现在离线了</h1>
+        <p>网络暂时不可用。你还可以回到首页、目录，或继续看已经缓存过的页面。</p>
+        <div class="actions library-hero-actions">
+          <a class="btn" href="/">回首页</a>
+          <a class="btn btn-ghost" href="/library/">去目录</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card offline-guide">
+      <div class="mini-grid">
+        <article class="meta-card">
+          <p class="eyebrow">离线还能做什么</p>
+          <h2>已缓存的入口还能继续打开</h2>
+          <p>首页、目录、发现、笔记，以及你最近浏览过的正文，离线时都会优先尝试从缓存里打开。</p>
+        </article>
+        <article class="meta-card">
+          <p class="eyebrow">重新联网之后</p>
+          <h2>缓存会自动补到最新</h2>
+          <p>网络恢复后，不需要手动清缓存。你重新打开页面时，站点会把新的入口和页面内容补回来。</p>
+        </article>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="offline-retry" type="button">重新尝试</button>
+        <a class="btn btn-ghost" href="/notes/">去笔记</a>
+      </div>
+
+      <p class="offline-status" id="offline-status">正在检查当前网络状态…</p>
+    </section>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var retryButton = document.getElementById("offline-retry");
+      var statusNode = document.getElementById("offline-status");
+
+      function renderStatus() {
+        if (!(statusNode instanceof HTMLElement)) return;
+        if (navigator.onLine) {
+          statusNode.textContent = "网络已恢复。点“重新尝试”回到在线状态。";
+        } else {
+          statusNode.textContent = "当前仍然离线。已缓存的目录、笔记和最近访问页面仍可继续打开。";
+        }
+      }
+
+      if (retryButton instanceof HTMLButtonElement) {
+        retryButton.addEventListener("click", function () {
+          window.location.reload();
+        });
+      }
+
+      window.addEventListener("online", renderStatus);
+      window.addEventListener("offline", renderStatus);
+      renderStatus();
+    })();
+  </script>
+</BaseLayout>

@@ -16,10 +16,11 @@
 当前实际工作重心在：
 
 - `site/content/library/`：正式资料库内容
-- `site/static/diagrams/`：站点直接引用的图文件、导图与关系图产物
+- `site/static/`：站点静态资源与导出数据
+- `astro-site/`：Astro 展示层
 - `00_inbox/`：新收集的原始资料
 - `.codex/skills/`：项目级 skills
-- `scripts/`：内容校验、站点启动和辅助脚本
+- `scripts/`：内容校验、导出、站点启动和辅助脚本
 
 当前资料库分类主要在：
 
@@ -31,11 +32,11 @@
 
 默认围绕 `site/content/library/` 工作，不要在根目录再维护一套平行正文树。
 
-如果用户明确在做展示层、页面收录、图文件引用或评论开关相关任务，也直接修改：
+如果用户明确在做展示层、页面收录、图文件引用、PWA 或评论开关相关任务，也直接修改：
 
-- `site/layouts/`
+- `astro-site/src/`
 - `site/static/`
-- `site/config.toml`
+- `astro-site/astro.config.mjs`
 
 注意：当前仓库里没有现成的 `90_专题研究/` 目录。凡是涉及专题模板、`topic.yml`、`sources/`、`outputs/` 的规则，只能在用户明确要求新建专题时启用，不能当作默认前提。
 
@@ -385,7 +386,8 @@ evidence_status: "llm-draft"
 - `rg "关键词" .`：搜索书名、文稿或重复内容
 - `rg -n "这本书|这套方法|整套体系|卷一|卷二|卷三|卷四|第一章|第二章|最值得|真正|一直在拆|另一个很硬的提醒|留下来的" site/content/library/目标目录`：提交前抓正文里的泛指代词、卷次主语和评价壳句式
 - `python scripts/check-frontmatter.py`：检查 `site/content/library/` 下文稿元数据
-- `./scripts/start-site.ps1`：启动本地站点预览
+- `./scripts/start-site.ps1`：启动 Astro 本地站点预览
+- `python scripts/check-astro-build.py`：导出内容索引并构建 Astro 站点
 
 
 ## 最低校验要求

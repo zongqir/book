@@ -15,6 +15,9 @@ Desktop.ini
 
 # Node / site build outputs
 node_modules/
+astro-site/node_modules/
+astro-site/dist/
+astro-site/.astro/
 site/public/
 site/site/
 site/site/public/

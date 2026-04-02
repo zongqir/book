@@ -4,16 +4,60 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
-env:
-  HUGO_VERSION: "0.158.0"
-
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.12.0"
+          cache: "npm"
+          cache-dependency-path: astro-site/package-lock.json
+
+      - name: Install Astro dependencies
+        working-directory: ./astro-site
+        run: npm ci
+
+      - name: Check frontmatter
+        run: python3 scripts/check-frontmatter.py
+
+      - name: Check shortcodes
+        run: python3 scripts/check-shortcodes.py
+
+      - name: Check markdown structure
+        run: python3 scripts/check-markdown-structure.py
+
+      - name: Check writing patterns
+        run: python3 scripts/check-writing-patterns.py
+
+      - name: Check Astro build
+        run: python3 scripts/check-astro-build.py
+
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,18 +66,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-          package-manager-cache: false
+          node-version: "22.12.0"
+          cache: "npm"
+          cache-dependency-path: astro-site/package-lock.json
 
-      - name: Setup Hugo (Extended)
+      - name: Install Python dependencies
         run: |
-          HUGO_DEB="hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
-          curl -fsSL -o "$RUNNER_TEMP/$HUGO_DEB" "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_DEB}"
-          sudo dpkg -i "$RUNNER_TEMP/$HUGO_DEB"
-          hugo version
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
 
-      - name: Build Hugo site
-        run: hugo -s ./site -d "${{ github.workspace }}/site/public" --baseURL "https://book.zongqir.com/" --cleanDestinationDir
+      - name: Install Astro dependencies
+        working-directory: ./astro-site
+        run: npm ci
+
+      - name: Build Astro site
+        working-directory: ./astro-site
+        run: npm run build:site
 
       - name: Ensure Cloudflare Pages project exists
         env:
@@ -59,4 +107,4 @@ jobs:
           if [ -z "$PROJECT_NAME" ]; then
             PROJECT_NAME="book"
           fi
-          npx wrangler pages deploy ./site/public --project-name "$PROJECT_NAME" --branch "$GITHUB_REF_NAME"
+          npx wrangler pages deploy ./astro-site/dist --project-name "$PROJECT_NAME" --branch "$GITHUB_REF_NAME"

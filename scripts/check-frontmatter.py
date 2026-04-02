@@ -7,6 +7,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+import yaml
+
 
 COMMON_SINGLE_BOOK_FIELDS = [
     "title",
@@ -76,6 +78,12 @@ class Finding:
     issue: str
 
 
+@dataclass(frozen=True)
+class FrontmatterParseResult:
+    keys: set[str] | None
+    error: str | None = None
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Audit Markdown frontmatter completeness for this repository."
@@ -88,21 +96,27 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def extract_frontmatter_keys(text: str) -> set[str] | None:
+def extract_frontmatter_keys(text: str) -> FrontmatterParseResult:
     if not text.startswith("---\n") and not text.startswith("---\r\n"):
-        return None
+        return FrontmatterParseResult(None)
 
     match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n", text, re.DOTALL)
     if not match:
-        return None
+        return FrontmatterParseResult(None)
 
     block = match.group(1)
-    keys: set[str] = set()
-    for line in block.splitlines():
-        key_match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\s*:", line)
-        if key_match:
-            keys.add(key_match.group(1))
-    return keys
+    try:
+        parsed = yaml.safe_load(block)
+    except yaml.YAMLError as exc:
+        return FrontmatterParseResult(None, f"invalid YAML frontmatter: {exc}")
+
+    if parsed is None:
+        return FrontmatterParseResult(set())
+    if not isinstance(parsed, dict):
+        return FrontmatterParseResult(None, "frontmatter must parse to a mapping")
+
+    keys = {str(key) for key in parsed.keys()}
+    return FrontmatterParseResult(keys)
 
 
 def classify_single_book_doc(path: Path) -> TitleRule | None:
@@ -129,9 +143,14 @@ def is_single_book_doc(path: Path) -> bool:
 def audit_markdown_file(path: Path) -> list[Finding]:
     findings: list[Finding] = []
     text = path.read_text(encoding="utf-8")
-    keys = extract_frontmatter_keys(text)
+    parse_result = extract_frontmatter_keys(text)
+    keys = parse_result.keys
 
     if path.name == "_index.md":
+        return findings
+
+    if parse_result.error:
+        findings.append(Finding(path, parse_result.error))
         return findings
 
     if keys is None:

@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLibraryIndex } from "../../lib/content";
+
+const sections = getLibraryIndex().filter((section) => section.key !== "02_专业技术");
+---
+
+<BaseLayout title="目录" description="从分类进入书页和文稿，按主题一路往里读。" canonicalPath="/library/" ogDescription="从分类进入书页和文稿，按主题一路往里读。" isLibrary={true}>
+  <div class="page-stack">
+    <section class="library-panel">
+      <div class="library-hero">
+        <h1>全部分类</h1>
+        <p>先选一个主题，再往里走。</p>
+        <div class="actions library-hero-actions">
+          <a class="btn" href="/discover/">去搜索</a>
+          <a class="btn btn-ghost" href="/">随机翻书</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="library-sections">
+      {sections.map((section) => (
+        <article class="library-index-card">
+          <a href={section.url}>
+            <h3>{section.title}</h3>
+            <p class="section-volume">
+              <strong>{section.book_count}</strong>
+              <span>本书</span>
+            </p>
+            <div class="library-index-preview">
+              {section.books.slice(0, 3).map((book) => (
+                <span class="preview-item">{book.title}</span>
+              ))}
+            </div>
+            <div class="section-enter">
+              <span>打开分类</span>
+              <span>→</span>
+            </div>
+          </a>
+        </article>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

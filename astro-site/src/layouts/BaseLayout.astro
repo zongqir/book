@@ -1,0 +1,327 @@
+---
+import "../styles/astro-theme.css";
+
+type Props = {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article";
+  ogImage?: string;
+  isHome?: boolean;
+  isLibrary?: boolean;
+  isDiscover?: boolean;
+};
+
+const {
+  title = "读书库",
+  description = "读书库",
+  canonicalPath,
+  ogTitle,
+  ogDescription,
+  ogType = "website",
+  ogImage = "/icons/icon-512.png",
+  isHome = false,
+  isLibrary = false,
+  isDiscover = false,
+} = Astro.props;
+const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
+const pathname = Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath || pathname, Astro.site);
+const socialTitle = ogTitle || pageTitle;
+const socialDescription = ogDescription || description;
+const socialImage = new URL(ogImage, Astro.site);
+const isNotes = pathname.startsWith("/notes");
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" title="读书库 RSS" href="/rss.xml" />
+    <meta property="og:site_name" content="读书库" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="application-name" content="读书库" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="读书库" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#2f5b7c" />
+    <meta name="color-scheme" content="light" />
+    <meta name="msapplication-TileColor" content="#2f5b7c" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="alternate" type="application/json" title="读书库 内容索引" href="/data/site-content.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home", isDiscover && "is-discover"]}>
+    <div class="page-frame">
+      <header class="site-header-wrap">
+        <div class="site-header shell">
+          <div class="identity">
+            <a class="brand" href="/">
+              <span class="brand-mark" aria-hidden="true">BQ</span>
+              <span>读书库</span>
+            </a>
+          </div>
+          <nav class="top-nav" aria-label="主导航">
+            <a class:list={["nav-pill", isHome && "is-active"]} href="/">首页</a>
+            <a class:list={["nav-pill", isDiscover && "is-active"]} href="/discover/">发现</a>
+            <a class:list={["nav-pill", isLibrary && "is-active"]} href="/library/">目录</a>
+            <a class:list={["nav-pill", isNotes && "is-active"]} href="/notes/">笔记</a>
+            {isHome && (
+              <>
+                <a class="nav-pill nav-pill--subtle" href="#home-tools">随机翻书</a>
+                <a class="nav-pill nav-pill--subtle" href="#home-categories">分类</a>
+              </>
+            )}
+          </nav>
+        </div>
+      </header>
+    </div>
+    <main class="site-main shell">
+      <slot />
+    </main>
+    <footer class="site-footer shell">
+      <div class="site-footer-inner">
+        <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
+      </div>
+    </footer>
+
+    <div class="network-toast" id="network-toast" hidden>当前离线，优先使用已缓存页面。</div>
+
+    <section class="pwa-prompt" id="pwa-prompt" hidden aria-live="polite">
+      <div class="pwa-prompt-copy">
+        <p class="eyebrow">主屏入口</p>
+        <h2 class="pwa-prompt-title" id="pwa-prompt-title">把读书库装到主屏幕</h2>
+        <p class="pwa-prompt-text" id="pwa-prompt-text">安装后可以像应用一样打开，也能继续看已缓存的页面和笔记。</p>
+      </div>
+      <div class="pwa-prompt-actions">
+        <button class="btn" id="pwa-install-button" type="button">立即安装</button>
+        <button class="tool-switch" id="pwa-dismiss-button" type="button">稍后</button>
+      </div>
+    </section>
+
+    <script is:inline>
+      (function () {
+        var PWA_DISMISS_KEY = "book:pwa-install-dismissed-until:v1";
+        var PWA_DISMISS_MS = 1000 * 60 * 60 * 24 * 5;
+        var promptNode = document.getElementById("pwa-prompt");
+        var promptTitle = document.getElementById("pwa-prompt-title");
+        var promptText = document.getElementById("pwa-prompt-text");
+        var installButton = document.getElementById("pwa-install-button");
+        var dismissButton = document.getElementById("pwa-dismiss-button");
+        var networkToast = document.getElementById("network-toast");
+        var deferredInstallPrompt = null;
+        var networkTimer = 0;
+        var wasOffline = !navigator.onLine;
+
+        function readDismissedUntil() {
+          try {
+            return Number(window.localStorage.getItem(PWA_DISMISS_KEY) || "0");
+          } catch (error) {
+            return 0;
+          }
+        }
+
+        function writeDismissedUntil(value) {
+          try {
+            if (value) {
+              window.localStorage.setItem(PWA_DISMISS_KEY, String(value));
+            } else {
+              window.localStorage.removeItem(PWA_DISMISS_KEY);
+            }
+          } catch (error) {
+            console.warn("Failed to persist PWA prompt state", error);
+          }
+        }
+
+        function isStandalone() {
+          return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+        }
+
+        function isIosSafari() {
+          var ua = window.navigator.userAgent || "";
+          var isIosDevice = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+          var isWebkit = /WebKit/i.test(ua);
+          var isOtherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua);
+          return isIosDevice && isWebkit && !isOtherBrowser;
+        }
+
+        function canShowPrompt() {
+          return !isStandalone() && Date.now() > readDismissedUntil();
+        }
+
+        function setPromptContent(mode) {
+          if (!(promptNode instanceof HTMLElement)) return;
+          promptNode.dataset.mode = mode;
+
+          if (mode === "ios") {
+            if (promptTitle instanceof HTMLElement) {
+              promptTitle.textContent = "把读书库加到主屏幕";
+            }
+            if (promptText instanceof HTMLElement) {
+              promptText.textContent = "在 Safari 点分享，再选“添加到主屏幕”。装好后会像应用一样打开。";
+            }
+            if (installButton instanceof HTMLButtonElement) {
+              installButton.hidden = true;
+            }
+            if (dismissButton instanceof HTMLButtonElement) {
+              dismissButton.textContent = "知道了";
+            }
+            return;
+          }
+
+          if (promptTitle instanceof HTMLElement) {
+            promptTitle.textContent = "把读书库装到主屏幕";
+          }
+          if (promptText instanceof HTMLElement) {
+            promptText.textContent = "安装后可以像应用一样打开，也能继续看已缓存的页面和笔记。";
+          }
+          if (installButton instanceof HTMLButtonElement) {
+            installButton.hidden = false;
+            installButton.textContent = "立即安装";
+          }
+          if (dismissButton instanceof HTMLButtonElement) {
+            dismissButton.textContent = "稍后";
+          }
+        }
+
+        function showPrompt(mode) {
+          if (!(promptNode instanceof HTMLElement) || !canShowPrompt()) return;
+          setPromptContent(mode);
+          promptNode.hidden = false;
+          document.body.classList.add("has-pwa-prompt");
+        }
+
+        function hidePrompt(shouldPersist) {
+          if (!(promptNode instanceof HTMLElement)) return;
+          promptNode.hidden = true;
+          document.body.classList.remove("has-pwa-prompt");
+          if (shouldPersist) {
+            writeDismissedUntil(Date.now() + PWA_DISMISS_MS);
+          }
+        }
+
+        function showNetworkToast(message, sticky) {
+          if (!(networkToast instanceof HTMLElement)) return;
+          if (networkTimer) {
+            window.clearTimeout(networkTimer);
+            networkTimer = 0;
+          }
+          networkToast.textContent = message;
+          networkToast.hidden = false;
+          if (!sticky) {
+            networkTimer = window.setTimeout(function () {
+              networkToast.hidden = true;
+            }, 2600);
+          }
+        }
+
+        function syncNetworkToast() {
+          if (!navigator.onLine) {
+            showNetworkToast("当前离线，优先使用已缓存页面。", true);
+          } else if (wasOffline) {
+            showNetworkToast("网络已恢复，缓存会自动刷新。", false);
+          } else if (networkToast instanceof HTMLElement) {
+            networkToast.hidden = true;
+          }
+          wasOffline = !navigator.onLine;
+        }
+
+        window.addEventListener("offline", syncNetworkToast);
+        window.addEventListener("online", syncNetworkToast);
+        syncNetworkToast();
+
+        window.addEventListener("beforeinstallprompt", function (event) {
+          event.preventDefault();
+          deferredInstallPrompt = event;
+          showPrompt("native");
+        });
+
+        window.addEventListener("appinstalled", function () {
+          deferredInstallPrompt = null;
+          writeDismissedUntil(0);
+          hidePrompt(false);
+          showNetworkToast("已安装到主屏幕。", false);
+        });
+
+        if (installButton instanceof HTMLButtonElement) {
+          installButton.addEventListener("click", async function () {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const choice = await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            if (choice && choice.outcome === "accepted") {
+              writeDismissedUntil(0);
+              hidePrompt(false);
+              return;
+            }
+            hidePrompt(true);
+          });
+        }
+
+        if (dismissButton instanceof HTMLButtonElement) {
+          dismissButton.addEventListener("click", function () {
+            hidePrompt(true);
+          });
+        }
+
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", async function () {
+            try {
+              const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+              if (registration.waiting) {
+                registration.waiting.postMessage("SKIP_WAITING");
+              }
+              registration.addEventListener("updatefound", function () {
+                const installing = registration.installing;
+                if (!installing) return;
+                installing.addEventListener("statechange", function () {
+                  if (installing.state === "installed" && registration.waiting) {
+                    registration.waiting.postMessage("SKIP_WAITING");
+                  }
+                });
+              });
+              let refreshing = false;
+              navigator.serviceWorker.addEventListener("controllerchange", function () {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+              });
+            } catch (error) {
+              console.error("Service worker registration failed", error);
+            }
+
+            if (!deferredInstallPrompt && isIosSafari()) {
+              window.setTimeout(function () {
+                showPrompt("ios");
+              }, 900);
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

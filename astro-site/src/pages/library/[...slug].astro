@@ -1,0 +1,403 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllLibrarySlugs, getNodeBySlug } from "../../lib/content";
+
+export async function getStaticPaths() {
+  return getAllLibrarySlugs().map((slugParts) => ({
+    params: { slug: slugParts.join("/") },
+    props: { slugParts },
+  }));
+}
+
+const { slugParts } = Astro.props;
+const parts = Array.isArray(slugParts) ? slugParts : String(slugParts).split("/");
+const node = getNodeBySlug(parts);
+
+if (!node) {
+  throw new Error(`Missing library node for ${parts.join("/")}`);
+}
+
+
+const metaDescription =
+  node.kind === "section"
+    ? `${node.title}分类下共 ${node.books.length} 本书，可以直接从书页往里读。`
+    : node.kind === "book"
+      ? (node.book.summary || `${node.book.section_title}分类下的《${node.book.title}》书页与文稿入口。`)
+      : (node.page.summary || node.page.intent || `${node.book?.title || "这本书"}中的一篇文稿。`);
+const canonicalPath = node.url;
+const ogType = node.kind === "page" ? "article" : "website";
+---
+
+<BaseLayout title={node.title} description={metaDescription} canonicalPath={canonicalPath} ogDescription={metaDescription} ogType={ogType} isLibrary={true}>
+  {node.kind === "section" && (
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="page-intro">
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            <span>/</span>
+            <span>{node.title}</span>
+          </nav>
+          <h1>{node.title}</h1>
+        </div>
+      </section>
+
+      <section class="section-shelf">
+        {node.books.map((book) => (
+          <article class="book-card">
+            <a href={book.url}>
+              <div class="card-topline">
+                <span class="section-index">{book.section_title}</span>
+              </div>
+              <h3>{book.title}</h3>
+              {book.summary && <p>{book.summary}</p>}
+              <div class="book-card-footer">
+                {book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+              </div>
+              <div class="section-enter">
+                <span>进入这本书</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </section>
+    </div>
+  )}
+
+  {node.kind === "book" && (
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="page-intro">
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            <span>/</span>
+            <a href={`/library/${node.book.section_key}/`}>{node.book.section_title}</a>
+            <span>/</span>
+            <span>{node.title}</span>
+          </nav>
+          <h1>{node.title}</h1>
+          {node.book.summary && <p>{node.book.summary}</p>}
+          <div class="detail-line">
+            <span class="meta-chip">{node.book.section_title}</span>
+            {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
+          </div>
+          <div class="slot-rail">
+            {node.pages.map((page) => (
+              <a class="slot-link" href={page.url}>
+                <span class="slot-link-no">{page.slot}</span>
+                <strong>{page.title}</strong>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="book-shelf">
+        {node.pages.map((page) => (
+          <article class="doc-card">
+            <a href={page.url}>
+              <div class="card-topline">
+                <span class="slot-badge">{page.slot}</span>
+                <div class="meta-row">
+                  {page.evidence_status && <span class="meta-chip">{page.evidence_status}</span>}
+                </div>
+              </div>
+              <h3>{page.title}</h3>
+              {page.summary && <p>{page.summary}</p>}
+              <div class="doc-card-footer">
+                {page.tags.slice(0, 4).map((tag) => <span class="tag-pill">{tag}</span>)}
+              </div>
+              <div class="section-enter">
+                <span>打开文稿</span>
+                <span>→</span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </section>
+
+      {node.relatedBooks.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <h2>这一类里还能接着读</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedBooks.map((item) => (
+              <article class="book-card">
+                <a href={item.book.url}>
+                  <div class="card-topline">
+                    <span class="section-index">{item.book.section_title}</span>
+                  </div>
+                  <h3>{item.book.title}</h3>
+                  {item.book.summary && <p>{item.book.summary}</p>}
+                  <div class="book-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>继续这类书</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  )}
+
+  {node.kind === "page" && (
+    <div class="page-stack">
+      <section class="library-panel">
+        <div class="doc-hero">
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/library/">目录</a>
+            {node.section && (
+              <>
+                <span>/</span>
+                <a href={node.section.url}>{node.section.title}</a>
+              </>
+            )}
+            {node.book && (
+              <>
+                <span>/</span>
+                <a href={node.book.url}>{node.book.title}</a>
+              </>
+            )}
+          </nav>
+          <h1 class="page-title">{node.page.title}</h1>
+          {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
+          <div class="detail-line">
+            {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
+            {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
+            {node.page.status && <span class="meta-chip">{node.page.status}</span>}
+            <a
+              class="meta-chip meta-chip--link"
+              href={`/discover/?section=${encodeURIComponent(node.page.section_key)}&slot=${encodeURIComponent(node.page.slot)}`}
+            >
+              同槽位继续看
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div class="doc-grid">
+        <article class="content-card">
+          {node.headings.length > 0 && (
+            <details class="toc-card toc-card--mobile">
+              <summary class="toc-summary">本页目录</summary>
+              <ul class="toc-list">
+                {node.headings
+                  .filter((item) => item.level <= 2)
+                  .map((heading) => (
+                    <li>
+                      <a href={`#${heading.id}`}>{heading.title}</a>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
+
+          <section class="doc-content" data-reader-notes-root data-page-id={node.page.id} set:html={node.html} />
+
+          {(node.previousPage || node.nextPage) && (
+            <nav class="page-nav" aria-label="继续阅读">
+              {node.previousPage && (
+                <a class="page-nav-card" href={node.previousPage.url}>
+                  <span class="page-nav-label">上一页</span>
+                  <strong>{node.previousPage.title}</strong>
+                </a>
+              )}
+              {node.nextPage && (
+                <a class="page-nav-card" href={node.nextPage.url}>
+                  <span class="page-nav-label">下一页</span>
+                  <strong>{node.nextPage.title}</strong>
+                </a>
+              )}
+            </nav>
+          )}
+        </article>
+
+        <aside class="doc-side">
+          {node.headings.length > 0 && (
+            <div class="toc-card toc-card--desktop">
+              <h3 class="toc-title">本页目录</h3>
+              <ul class="toc-list">
+                {node.headings
+                  .filter((item) => item.level <= 2)
+                  .map((heading) => (
+                    <li>
+                      <a href={`#${heading.id}`}>{heading.title}</a>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+          {node.book && node.siblingPages.length > 0 && (
+            <div class="meta-card meta-card--book-rail">
+              <h3>继续这本书</h3>
+              <div class="doc-book-rail">
+                {node.siblingPages.map((item) => (
+                  <a
+                    class:list={["slot-link", item.id === node.page.id && "slot-link--current"]}
+                    href={item.url}
+                    aria-current={item.id === node.page.id ? "page" : undefined}
+                  >
+                    <span class="slot-link-no">{item.slot}</span>
+                    <strong>{item.title}</strong>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div class="meta-card">
+            <h3>所在位置</h3>
+            <div class="mini-grid">
+              {node.section && <a class="preview-item" href={node.section.url}>{node.section.title}</a>}
+              {node.book && <a class="preview-item" href={node.book.url}>{node.book.title}</a>}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="reader-notes-shell" data-reader-notes-shell>
+        <button
+          class="reader-notes-toggle"
+          type="button"
+          data-reader-notes-toggle
+          aria-expanded="false"
+          aria-label="打开段落笔记"
+          title="段落笔记"
+        ></button>
+
+        <section class="meta-card reader-notes-panel" data-reader-notes-panel hidden>
+          <div class="reader-notes-head reader-notes-head--panel">
+            <div>
+              <h3>段落笔记</h3>
+            </div>
+            <button class="tool-switch tool-switch--compact" type="button" data-reader-notes-close>收起</button>
+          </div>
+          <div class="reader-notes-toolbar">
+            <button class="btn" type="button" data-reader-notes-capture>开始选段</button>
+            <span class="meta-chip" data-reader-notes-count>0</span>
+          </div>
+          <p class="reader-notes-hint" data-reader-notes-hint>点“开始选段”后，再点正文。</p>
+          <p class="reader-notes-empty" data-reader-notes-empty>还没有笔记。</p>
+          <div class="reader-notes-list" data-reader-notes-list></div>
+        </section>
+
+        <div class="reader-notes-editor" data-reader-notes-editor hidden>
+          <div class="reader-notes-editor-card">
+            <div class="reader-notes-head reader-notes-head--editor">
+              <div>
+                <h3 data-reader-notes-editor-title>记下这一段</h3>
+                <p>保存在当前浏览器</p>
+              </div>
+            </div>
+            <p class="reader-notes-quote" data-reader-notes-quote></p>
+            <div class="reader-notes-field reader-notes-color-field">
+              <span>颜色</span>
+              <div class="reader-notes-colors" data-reader-notes-colors>
+                <button class="reader-notes-color is-selected" type="button" data-reader-notes-color="amber" aria-label="黄色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="teal" aria-label="青绿色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="rose" aria-label="红色高亮"></button>
+                <button class="reader-notes-color" type="button" data-reader-notes-color="violet" aria-label="紫色高亮"></button>
+              </div>
+            </div>
+            <label class="reader-notes-field">
+              <span>笔记（可不写）</span>
+              <textarea data-reader-notes-input rows="5" placeholder="可以直接保存，只划线；也可以顺手写一句提醒。"></textarea>
+            </label>
+            <div class="reader-notes-editor-actions">
+              <button class="btn btn-ghost" type="button" data-reader-notes-cancel>取消</button>
+              <button class="btn" type="button" data-reader-notes-save>保存到本地</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="reader-notes-status" data-reader-notes-status hidden></p>
+      </div>
+
+      {node.relatedPages.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <h2>同槽位与同主题延伸</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedPages.map((item) => (
+              <article class="doc-card">
+                <a href={item.page.url}>
+                  <div class="card-topline">
+                    <span class="slot-badge">{item.page.slot}</span>
+                    <div class="meta-row">
+                      {item.book && <span class="meta-chip">{item.book.title}</span>}
+                    </div>
+                  </div>
+                  <h3>{item.page.title}</h3>
+                  {(item.page.summary || item.page.intent) && <p>{item.page.summary || item.page.intent}</p>}
+                  <div class="doc-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.page.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>打开延伸阅读</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {node.relatedBooks.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <h2>同分类继续看</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.relatedBooks.map((item) => (
+              <article class="book-card">
+                <a href={item.book.url}>
+                  <div class="card-topline">
+                    <span class="section-index">{item.book.section_title}</span>
+                  </div>
+                  <h3>{item.book.title}</h3>
+                  {item.book.summary && <p>{item.book.summary}</p>}
+                  <div class="book-card-footer">
+                    {item.shared_tags.length > 0
+                      ? item.shared_tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)
+                      : item.book.tags.slice(0, 3).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>继续这类书</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  )}
+{node.kind === "page" && (
+  <script>
+    import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";
+
+    setupReaderParagraphNotes();
+  </script>
+)}
+</BaseLayout>

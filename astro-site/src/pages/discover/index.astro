@@ -1,0 +1,330 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getDiscoverData } from "../../lib/content";
+
+const discover = getDiscoverData();
+const featuredTags = discover.tags.slice(0, 12);
+---
+
+<BaseLayout title="搜索与筛选" description="按书名、标题、标签和分类找内容。" canonicalPath="/discover/" ogDescription="按书名、标题、标签和分类找内容。" isDiscover={true}>
+  <div class="page-stack">
+    <section class="library-panel">
+      <div class="library-hero">
+        <h1>搜索与筛选</h1>
+        <p>按书名、标题、标签和分类找。</p>
+        <div class="stats-strip discover-stats-strip">
+          <div class="stat-block">
+            <span class="stat-label">分类</span>
+            <span class="stat-value">{discover.counts.sections}</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">书目</span>
+            <span class="stat-value">{discover.counts.books}</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">摘句</span>
+            <span class="stat-value">{discover.counts.quotes}</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">标签</span>
+            <span class="stat-value">{discover.tags.length}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card discover-panel">
+      <label class="field-control discover-query-field">
+        <span>搜索词</span>
+        <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
+      </label>
+
+      <details class="discover-filters">
+        <summary class="discover-filters-summary">
+          <span>更多筛选</span>
+          <span class="discover-filters-state" id="discover-filters-state">未启用</span>
+        </summary>
+        <div class="discover-controls">
+          <label class="field-control">
+            <span>范围</span>
+            <select id="discover-kind">
+              <option value="all">全部</option>
+              <option value="book">书</option>
+              <option value="page">文稿</option>
+            </select>
+          </label>
+          <label class="field-control">
+            <span>分类</span>
+            <select id="discover-section">
+              <option value="">全部分类</option>
+              {discover.sections.map((section) => <option value={section.key}>{section.title}</option>)}
+            </select>
+          </label>
+          <label class="field-control">
+            <span>标签</span>
+            <input id="discover-tag" list="discover-tag-list" placeholder="比如 投资 / 心理学 / 学习科学" />
+          </label>
+          <div class="field-control field-control--action">
+            <span>操作</span>
+            <button class="btn btn-ghost" id="discover-reset" type="button">清空筛选</button>
+          </div>
+        </div>
+      </details>
+
+      <datalist id="discover-tag-list">
+        {discover.tags.map((item) => <option value={item.tag} />)}
+      </datalist>
+
+      <div class="discover-chip-row" id="discover-chip-row">
+        {featuredTags.map((item) => (
+          <button class="tag-pill tag-pill--button" type="button" data-tag-chip={item.tag}>
+            {item.tag}
+            <span>{item.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="discover-summary" id="discover-summary">正在加载索引…</div>
+      <div class="discover-results" id="discover-results" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script is:inline define:vars={{ hiddenSectionKey: "02_专业技术" }}>
+    (function () {
+      var queryInput = document.getElementById("discover-query");
+      var kindSelect = document.getElementById("discover-kind");
+      var sectionSelect = document.getElementById("discover-section");
+      var filtersPanel = document.querySelector(".discover-filters");
+      var filtersState = document.getElementById("discover-filters-state");
+      var tagInput = document.getElementById("discover-tag");
+      var resetButton = document.getElementById("discover-reset");
+      var summary = document.getElementById("discover-summary");
+      var results = document.getElementById("discover-results");
+      var chipRow = document.getElementById("discover-chip-row");
+      var state = { items: [] };
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function getParams() {
+        var params = new URLSearchParams(window.location.search);
+        return {
+          q: params.get("q") || "",
+          kind: params.get("kind") || "all",
+          section: params.get("section") || "",
+          tag: params.get("tag") || "",
+        };
+      }
+
+      function syncFilterPanel() {
+        if (!(filtersPanel instanceof HTMLDetailsElement)) return;
+        filtersPanel.open = !window.matchMedia("(max-width: 760px)").matches;
+      }
+
+      function updateFilterSummary(filters) {
+        if (!(filtersState instanceof HTMLElement)) return;
+        var labels = [];
+        if (filters.kind && filters.kind !== "all") {
+          labels.push(filters.kind === "book" ? "书" : "文稿");
+        }
+        if (filters.section && sectionSelect instanceof HTMLSelectElement) {
+          var sectionLabel = sectionSelect.selectedOptions.length ? sectionSelect.selectedOptions[0].textContent : "";
+          if (sectionLabel) labels.push(sectionLabel.trim());
+        }
+        if (filters.tag) {
+          labels.push(filters.tag);
+        }
+        filtersState.textContent = labels.length ? labels.join(" · ") : "未启用";
+      }
+
+      function syncInputsFromUrl() {
+        var params = getParams();
+        if (queryInput) queryInput.value = params.q;
+        if (kindSelect) kindSelect.value = params.kind;
+        if (sectionSelect) sectionSelect.value = params.section;
+        if (tagInput) tagInput.value = params.tag;
+        syncFilterPanel();
+      }
+
+      function updateUrl(next) {
+        var params = new URLSearchParams();
+        if (next.q) params.set("q", next.q);
+        if (next.kind && next.kind !== "all") params.set("kind", next.kind);
+        if (next.section) params.set("section", next.section);
+        if (next.tag) params.set("tag", next.tag);
+        var query = params.toString();
+        var target = query ? window.location.pathname + "?" + query : window.location.pathname;
+        window.history.replaceState({}, "", target);
+      }
+
+      function getFilters() {
+        return {
+          q: queryInput ? queryInput.value.trim().toLowerCase() : "",
+          kind: kindSelect ? kindSelect.value : "all",
+          section: sectionSelect ? sectionSelect.value : "",
+          tag: tagInput ? tagInput.value.trim() : "",
+        };
+      }
+
+      function scoreItem(item, q) {
+        if (!q) return 0;
+        var score = 0;
+        if (item.titleText.includes(q)) score += 28;
+        if (item.summaryText.includes(q)) score += 12;
+        if (item.bookTitleText.includes(q)) score += 10;
+        if (item.tagText.includes(q)) score += 18;
+        if (item.sectionTitleText.includes(q)) score += 6;
+        return score;
+      }
+
+      function passesFilters(item, filters) {
+        if (filters.kind !== "all" && item.kind !== filters.kind) return false;
+        if (filters.section && item.section_key !== filters.section) return false;
+        if (filters.tag && !item.tags.includes(filters.tag)) return false;
+        if (filters.q && scoreItem(item, filters.q) === 0) return false;
+        return true;
+      }
+
+      function renderCard(item) {
+        if (item.kind === "book") {
+          return '<article class="book-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="section-index">' + escapeHtml(item.section_title) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || "还没有摘要。") + '</p><div class="book-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>进入书页</span><span>→</span></div></a></article>';
+        }
+        return '<article class="doc-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="slot-badge">' + escapeHtml(item.slot || "--") + '</span><div class="meta-row"><span class="meta-chip">' + escapeHtml(item.book_title) + '</span></div></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || item.intent || "还没有摘要。") + '</p><div class="doc-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>打开文稿</span><span>→</span></div></a></article>';
+      }
+
+      function renderEmpty() {
+        return '<article class="discover-empty"><h3>没找到匹配项</h3><p>换个关键词，或者先去掉一个筛选条件。</p></article>';
+      }
+
+      function render() {
+        var filters = getFilters();
+        updateFilterSummary(filters);
+        updateUrl(filters);
+        var list = state.items
+          .filter(function (item) { return passesFilters(item, filters); })
+          .map(function (item) {
+            return { item: item, score: scoreItem(item, filters.q) };
+          })
+          .sort(function (left, right) {
+            if (right.score !== left.score) return right.score - left.score;
+            return String(right.item.updated_at || "").localeCompare(String(left.item.updated_at || ""));
+          });
+
+        var visible = list.slice(0, 48).map(function (entry) { return entry.item; });
+        if (summary) {
+          if (!state.items.length) summary.textContent = "正在加载索引…";
+          else if (!visible.length) summary.textContent = "没找到匹配项，换个关键词或去掉一个筛选试试。";
+          else summary.textContent = '找到 ' + list.length + ' 条结果，当前展示前 ' + visible.length + ' 条。';
+        }
+        if (results) {
+          results.innerHTML = visible.length ? visible.map(renderCard).join("") : renderEmpty();
+        }
+      }
+
+      function bind() {
+        [queryInput, kindSelect, sectionSelect, tagInput].forEach(function (node) {
+          if (!node) return;
+          node.addEventListener("input", render);
+          node.addEventListener("change", render);
+        });
+
+        if (resetButton) {
+          resetButton.addEventListener("click", function () {
+            if (queryInput) queryInput.value = "";
+            if (kindSelect) kindSelect.value = "all";
+            if (sectionSelect) sectionSelect.value = "";
+            if (tagInput) tagInput.value = "";
+            render();
+          });
+        }
+
+        if (chipRow) {
+          chipRow.addEventListener("click", function (event) {
+            var target = event.target;
+            if (!(target instanceof HTMLElement)) return;
+            var button = target.closest("[data-tag-chip]");
+            if (!(button instanceof HTMLElement)) return;
+            var tag = button.getAttribute("data-tag-chip");
+            if (!tag) return;
+            if (tagInput) tagInput.value = tag;
+            render();
+          });
+        }
+      }
+
+      syncInputsFromUrl();
+      bind();
+      window.addEventListener("resize", syncFilterPanel);
+
+      fetch("/data/site-content.json")
+        .then(function (response) {
+          if (!response.ok) throw new Error("Failed to load site content");
+          return response.json();
+        })
+        .then(function (payload) {
+          var books = Array.isArray(payload.books) ? payload.books : [];
+          var pages = Array.isArray(payload.pages) ? payload.pages : [];
+          state.items = books
+            .filter(function (item) { return item.section_key !== hiddenSectionKey; })
+            .map(function (item) {
+              return {
+                kind: "book",
+                id: item.id,
+                title: item.title || "未命名",
+                summary: item.summary || "",
+                intent: "",
+                section_key: item.section_key || "",
+                section_title: item.section_title || "未分类",
+                slot: "",
+                tags: Array.isArray(item.tags) ? item.tags : [],
+                url: item.url || "#",
+                page_count: item.page_count || 0,
+                updated_at: item.updated_at || "",
+                book_title: item.title || "未命名",
+                titleText: String(item.title || "").toLowerCase(),
+                summaryText: String(item.summary || "").toLowerCase(),
+                bookTitleText: String(item.title || "").toLowerCase(),
+                sectionTitleText: String(item.section_title || "").toLowerCase(),
+                tagText: (Array.isArray(item.tags) ? item.tags.join(" ") : "").toLowerCase(),
+              };
+            })
+            .concat(
+              pages
+                .filter(function (item) { return item.section_key !== hiddenSectionKey; })
+                .map(function (item) {
+                  return {
+                    kind: "page",
+                    id: item.id,
+                    title: item.title || "未命名",
+                    summary: item.summary || "",
+                    intent: item.intent || "",
+                    section_key: item.section_key || "",
+                    section_title: item.section_title || "未分类",
+                    slot: item.slot || "",
+                    tags: Array.isArray(item.tags) ? item.tags : [],
+                    url: item.url || "#",
+                    updated_at: item.updated_at || "",
+                    book_title: item.book_title || "",
+                    titleText: String(item.title || "").toLowerCase(),
+                    summaryText: String((item.summary || "") + " " + (item.intent || "")).toLowerCase(),
+                    bookTitleText: String(item.book_title || "").toLowerCase(),
+                    sectionTitleText: String(item.section_title || "").toLowerCase(),
+                    tagText: (Array.isArray(item.tags) ? item.tags.join(" ") : "").toLowerCase(),
+                  };
+                })
+            );
+          render();
+        })
+        .catch(function () {
+          if (summary) summary.textContent = "索引加载失败，请稍后再试。";
+          if (results) results.innerHTML = renderEmpty();
+        });
+    })();
+  </script>
+</BaseLayout>

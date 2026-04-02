@@ -975,7 +975,12 @@ img { display: block; max-width: 100%; }
   box-shadow: 0 0 0 4px rgba(29, 109, 116, 0.08);
 }
 .reader-notes-editor-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
   justify-content: flex-end;
+  padding-top: 10px;
+  background: linear-gradient(180deg, rgba(255, 251, 245, 0), rgba(255, 251, 245, 0.98) 36%);
 }
 .reader-notes-status {
   position: fixed;
@@ -2613,6 +2618,7 @@ img { display: block; max-width: 100%; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     align-items: stretch;
+    padding-top: 12px;
   }
   .reader-notes-editor-actions .btn,
   .reader-notes-editor-actions .btn-ghost {
@@ -2674,12 +2680,12 @@ img { display: block; max-width: 100%; }
     box-shadow: inset 0 0 0 6px var(--reader-color-swatch, rgba(224, 191, 106, 0.92)), 0 0 0 2px rgba(23, 48, 67, 0.12);
   }
   .reader-notes-editor {
-    padding: 12px;
+    padding: 12px 12px calc(112px + env(safe-area-inset-bottom));
     place-items: end stretch;
   }
   .reader-notes-editor-card {
     width: 100%;
-    max-height: calc(100dvh - 24px - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 132px - env(safe-area-inset-bottom));
     overflow: auto;
     padding: 18px;
     border-radius: 20px;

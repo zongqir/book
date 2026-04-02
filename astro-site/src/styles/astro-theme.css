@@ -3524,26 +3524,27 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .home-feature-open-link {
-  gap: 10px;
-  min-width: 142px;
-  min-height: 36px;
+  gap: 8px;
+  min-width: 128px;
+  min-height: 30px;
   justify-content: space-between;
-  padding: 0 8px 0 14px;
-  border-radius: 18px;
-  font-size: 0.84rem;
+  padding: 0 7px 0 12px;
+  border-radius: 15px;
+  font-size: 0.76rem;
+  line-height: 1;
   white-space: nowrap;
-  box-shadow: 0 8px 16px rgba(23, 48, 67, 0.18);
+  box-shadow: 0 6px 12px rgba(23, 48, 67, 0.16);
 }
 
 .home-feature-open-icon {
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.94);
-  font-size: 0.74rem;
+  font-size: 0.62rem;
   line-height: 1;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }

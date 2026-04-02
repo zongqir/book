@@ -55,27 +55,6 @@ const sectionPreviewMap = Object.fromEntries(
         </div>
       </article>
 
-      <article class="home-mobile-quote-panel" aria-label="摘一句">
-        <div class="home-mobile-quote-panel-head">
-          <div>
-            <p class="hero-kicker">摘句</p>
-            <h2>再读一句</h2>
-          </div>
-          <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
-        </div>
-        {firstQuote ? (
-          <div class="home-mobile-quote-card">
-            <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
-            <div class="home-mobile-quote-meta">
-              <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
-              <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-            </div>
-          </div>
-        ) : (
-          <p class="tool-empty">暂时还没有句子卡可抽。</p>
-        )}
-      </article>
-
       <section class="home-mobile-shelves" aria-label="书架方向">
         <div class="home-mobile-shelves-head">
           <div>
@@ -114,6 +93,27 @@ const sectionPreviewMap = Object.fromEntries(
           <a class="tool-switch" href="/library/">看全部目录</a>
         </div>
       </details>
+
+      <article class="home-mobile-quote-panel" aria-label="摘一句">
+        <div class="home-mobile-quote-panel-head">
+          <div>
+            <p class="hero-kicker">摘句</p>
+            <h2>再读一句</h2>
+          </div>
+          <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
+        </div>
+        {firstQuote ? (
+          <div class="home-mobile-quote-card">
+            <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
+            <div class="home-mobile-quote-meta">
+              <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
+              <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
+            </div>
+          </div>
+        ) : (
+          <p class="tool-empty">暂时还没有句子卡可抽。</p>
+        )}
+      </article>
     </section>
 
     <div class="home-desktop-flow">

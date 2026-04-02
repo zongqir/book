@@ -8,7 +8,7 @@ const featuredTags = discover.tags.slice(0, 12);
 
 <BaseLayout title="搜索与筛选" description="按书名、标题、标签和分类找内容。" canonicalPath="/discover/" ogDescription="按书名、标题、标签和分类找内容。" isDiscover={true}>
   <div class="page-stack">
-    <section class="library-panel">
+    <section class="library-panel library-panel--discover">
       <div class="library-hero">
         <h1>搜索与筛选</h1>
         <p>按书名、标题、标签和分类找。</p>
@@ -34,10 +34,18 @@ const featuredTags = discover.tags.slice(0, 12);
     </section>
 
     <section class="content-card discover-panel">
-      <label class="field-control discover-query-field">
-        <span>搜索词</span>
-        <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
-      </label>
+      <div class="discover-query-shell">
+        <label class="field-control discover-query-field">
+          <span>搜索词</span>
+          <input id="discover-query" type="search" placeholder="输入书名、标题、标签或一句关键词" />
+        </label>
+        <button class="tool-switch discover-reset-inline" id="discover-reset-inline" type="button">清空</button>
+        <div class="discover-kind-pills" aria-label="结果范围">
+          <button class="discover-kind-pill is-active" type="button" data-kind-pill="all">全部</button>
+          <button class="discover-kind-pill" type="button" data-kind-pill="book">书</button>
+          <button class="discover-kind-pill" type="button" data-kind-pill="page">文稿</button>
+        </div>
+      </div>
 
       <details class="discover-filters">
         <summary class="discover-filters-summary">
@@ -75,6 +83,13 @@ const featuredTags = discover.tags.slice(0, 12);
         {discover.tags.map((item) => <option value={item.tag} />)}
       </datalist>
 
+      <div class="discover-chip-head">
+        <div>
+          <p class="hero-kicker">高频标签</p>
+          <h2>直接筛</h2>
+        </div>
+        <span class="discover-chip-hint">点一下就收窄结果</span>
+      </div>
       <div class="discover-chip-row" id="discover-chip-row">
         {featuredTags.map((item) => (
           <button class="tag-pill tag-pill--button" type="button" data-tag-chip={item.tag}>
@@ -98,9 +113,11 @@ const featuredTags = discover.tags.slice(0, 12);
       var filtersState = document.getElementById("discover-filters-state");
       var tagInput = document.getElementById("discover-tag");
       var resetButton = document.getElementById("discover-reset");
+      var resetInlineButton = document.getElementById("discover-reset-inline");
       var summary = document.getElementById("discover-summary");
       var results = document.getElementById("discover-results");
       var chipRow = document.getElementById("discover-chip-row");
+      var kindPills = Array.prototype.slice.call(document.querySelectorAll("[data-kind-pill]"));
       var state = { items: [] };
 
       function escapeHtml(value) {
@@ -150,6 +167,14 @@ const featuredTags = discover.tags.slice(0, 12);
         if (sectionSelect) sectionSelect.value = params.section;
         if (tagInput) tagInput.value = params.tag;
         syncFilterPanel();
+        syncKindPills(params.kind || "all");
+      }
+
+      function syncKindPills(value) {
+        kindPills.forEach(function (button) {
+          if (!(button instanceof HTMLElement)) return;
+          button.classList.toggle("is-active", button.dataset.kindPill === value);
+        });
       }
 
       function updateUrl(next) {
@@ -206,6 +231,7 @@ const featuredTags = discover.tags.slice(0, 12);
         var filters = getFilters();
         updateFilterSummary(filters);
         updateUrl(filters);
+        syncKindPills(filters.kind);
         var list = state.items
           .filter(function (item) { return passesFilters(item, filters); })
           .map(function (item) {
@@ -234,15 +260,24 @@ const featuredTags = discover.tags.slice(0, 12);
           node.addEventListener("change", render);
         });
 
-        if (resetButton) {
-          resetButton.addEventListener("click", function () {
+        kindPills.forEach(function (button) {
+          if (!(button instanceof HTMLElement) || !(kindSelect instanceof HTMLSelectElement)) return;
+          button.addEventListener("click", function () {
+            kindSelect.value = button.dataset.kindPill || "all";
+            render();
+          });
+        });
+
+        [resetButton, resetInlineButton].forEach(function (button) {
+          if (!(button instanceof HTMLElement)) return;
+          button.addEventListener("click", function () {
             if (queryInput) queryInput.value = "";
             if (kindSelect) kindSelect.value = "all";
             if (sectionSelect) sectionSelect.value = "";
             if (tagInput) tagInput.value = "";
             render();
           });
-        }
+        });
 
         if (chipRow) {
           chipRow.addEventListener("click", function (event) {

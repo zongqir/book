@@ -80,7 +80,7 @@ class Finding:
 
 @dataclass(frozen=True)
 class FrontmatterParseResult:
-    keys: set[str] | None
+    data: dict[str, object] | None
     error: str | None = None
 
 
@@ -100,7 +100,7 @@ def extract_frontmatter_keys(text: str) -> FrontmatterParseResult:
     if not text.startswith("---\n") and not text.startswith("---\r\n"):
         return FrontmatterParseResult(None)
 
-    match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n", text, re.DOTALL)
+    match = re.match(r"^---\r?\n(.*?)\r?\n---(?:\r?\n|$)", text, re.DOTALL)
     if not match:
         return FrontmatterParseResult(None)
 
@@ -111,12 +111,12 @@ def extract_frontmatter_keys(text: str) -> FrontmatterParseResult:
         return FrontmatterParseResult(None, f"invalid YAML frontmatter: {exc}")
 
     if parsed is None:
-        return FrontmatterParseResult(set())
+        return FrontmatterParseResult({})
     if not isinstance(parsed, dict):
         return FrontmatterParseResult(None, "frontmatter must parse to a mapping")
 
-    keys = {str(key) for key in parsed.keys()}
-    return FrontmatterParseResult(keys)
+    normalized = {str(key): value for key, value in parsed.items()}
+    return FrontmatterParseResult(normalized)
 
 
 def classify_single_book_doc(path: Path) -> TitleRule | None:
@@ -140,14 +140,35 @@ def is_single_book_doc(path: Path) -> bool:
     )
 
 
+def is_single_book_index(path: Path) -> bool:
+    if path.name != "_index.md":
+        return False
+    parts = path.parts
+    if len(parts) < 4:
+        return False
+    if not ("site" in parts and "content" in parts and "library" in parts):
+        return False
+    if any(part == "90_专题研究" for part in parts):
+        return False
+    return any(
+        child.is_file()
+        and child.suffix == ".md"
+        and child.name != "_index.md"
+        and not child.name.endswith(".QA.md")
+        for child in path.parent.iterdir()
+    )
+
+
+def is_non_empty_string(value: object | None) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
 def audit_markdown_file(path: Path) -> list[Finding]:
     findings: list[Finding] = []
     text = path.read_text(encoding="utf-8")
     parse_result = extract_frontmatter_keys(text)
-    keys = parse_result.keys
-
-    if path.name == "_index.md":
-        return findings
+    data = parse_result.data
+    keys = set(data.keys()) if data is not None else None
 
     if parse_result.error:
         findings.append(Finding(path, parse_result.error))
@@ -155,6 +176,14 @@ def audit_markdown_file(path: Path) -> list[Finding]:
 
     if keys is None:
         findings.append(Finding(path, "missing valid frontmatter"))
+        return findings
+
+    if path.name == "_index.md":
+        if is_single_book_index(path):
+            if "title" not in keys or not is_non_empty_string(data.get("title")):
+                findings.append(Finding(path, "book index missing non-empty title"))
+            if "summary" not in keys or not is_non_empty_string(data.get("summary")):
+                findings.append(Finding(path, "book index missing non-empty summary"))
         return findings
 
     rule = classify_single_book_doc(path) if is_single_book_doc(path) else None

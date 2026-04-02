@@ -269,6 +269,12 @@ export function setupReaderParagraphNotes() {
     status.dataset.timerId = String(timerId);
   }
 
+  function syncGlobalState() {
+    const editorOpen = !editor.hidden;
+    document.body.classList.toggle("reader-notes-editor-open", editorOpen);
+    document.body.classList.toggle("reader-notes-panel-open", panelOpen);
+  }
+
   function syncPanel() {
     panel.hidden = !panelOpen;
     shell.classList.toggle("is-panel-open", panelOpen);
@@ -280,6 +286,7 @@ export function setupReaderParagraphNotes() {
     toggleButton.setAttribute("aria-label", toggleLabel);
     toggleButton.title = toggleLabel;
     toggleButton.dataset.count = String(notes.length);
+    syncGlobalState();
   }
 
   function setPickMode(next: boolean) {
@@ -365,6 +372,7 @@ export function setupReaderParagraphNotes() {
     editingId = null;
     pickedBlock = null;
     editorInput.value = "";
+    syncGlobalState();
   }
 
   async function saveCurrentNote() {
@@ -652,6 +660,7 @@ export function setupReaderParagraphNotes() {
 
   syncColorPicker();
   setPickMode(false);
+  syncGlobalState();
   void (async () => {
     try {
       await refresh();

@@ -26,56 +26,65 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </section>
 
     <section class="content-card notes-toolbar-card">
-      <div class="notes-toolbar-row">
-        <label class="field-control field-control--wide notes-toolbar-search">
-          <span>搜索</span>
-          <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
-        </label>
+      <details class="notes-filters" open>
+        <summary class="notes-filters-summary">
+          <span>搜索与筛选</span>
+          <span class="notes-filters-state" id="notes-filters-state">正在整理…</span>
+        </summary>
 
-        <label class="field-control notes-toolbar-sort">
-          <span>排序</span>
-          <select id="notes-sort">
-            <option value="updated-desc">最近更新</option>
-            <option value="updated-asc">最早更新</option>
-            <option value="created-desc">最近创建</option>
-            <option value="created-asc">最早创建</option>
-          </select>
-        </label>
-      </div>
+        <div class="notes-filters-body">
+          <div class="notes-toolbar-row">
+            <label class="field-control field-control--wide notes-toolbar-search">
+              <span>搜索</span>
+              <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
+            </label>
 
-      <div class="notes-filter-row">
-        <div class="notes-filter-group" aria-label="笔记筛选">
-          <button class="notes-filter-chip is-active" type="button" data-notes-highlight="all">全部</button>
-          <button class="notes-filter-chip" type="button" data-notes-highlight="only">只看纯高亮</button>
+            <label class="field-control notes-toolbar-sort">
+              <span>排序</span>
+              <select id="notes-sort">
+                <option value="updated-desc">最近更新</option>
+                <option value="updated-asc">最早更新</option>
+                <option value="created-desc">最近创建</option>
+                <option value="created-asc">最早创建</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="notes-filter-row">
+            <div class="notes-filter-group" aria-label="笔记筛选">
+              <button class="notes-filter-chip is-active" type="button" data-notes-highlight="all">全部</button>
+              <button class="notes-filter-chip" type="button" data-notes-highlight="only">只看纯高亮</button>
+            </div>
+
+            <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
+              <button class="notes-filter-color is-active" type="button" data-notes-color="all">全部颜色</button>
+              <button class="notes-filter-color notes-filter-color--amber" type="button" data-notes-color="amber">黄色</button>
+              <button class="notes-filter-color notes-filter-color--teal" type="button" data-notes-color="teal">青绿</button>
+              <button class="notes-filter-color notes-filter-color--rose" type="button" data-notes-color="rose">红色</button>
+              <button class="notes-filter-color notes-filter-color--violet" type="button" data-notes-color="violet">紫色</button>
+            </div>
+          </div>
+
+          <div class="notes-toolbar-meta">
+            <p class="notes-summary" id="notes-summary">正在整理你的笔记…</p>
+            <div class="notes-actions">
+              <button class="btn" id="notes-export" type="button">导出 JSON</button>
+              <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
+              <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
+              <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
+            </div>
+          </div>
+
+          <p class="notes-status" id="notes-status">
+            导入会替换当前浏览器里的本地笔记。动手前，建议先导出一份备份。
+          </p>
         </div>
-
-        <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
-          <button class="notes-filter-color is-active" type="button" data-notes-color="all">全部颜色</button>
-          <button class="notes-filter-color notes-filter-color--amber" type="button" data-notes-color="amber">黄色</button>
-          <button class="notes-filter-color notes-filter-color--teal" type="button" data-notes-color="teal">青绿</button>
-          <button class="notes-filter-color notes-filter-color--rose" type="button" data-notes-color="rose">红色</button>
-          <button class="notes-filter-color notes-filter-color--violet" type="button" data-notes-color="violet">紫色</button>
-        </div>
-      </div>
-
-      <div class="notes-toolbar-meta">
-        <p class="notes-summary" id="notes-summary">正在整理你的笔记…</p>
-        <div class="notes-actions">
-          <button class="btn" id="notes-export" type="button">导出 JSON</button>
-          <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
-          <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
-          <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
-        </div>
-      </div>
-
-      <p class="notes-status" id="notes-status">
-        导入会替换当前浏览器里的本地笔记。动手前，建议先导出一份备份。
-      </p>
+      </details>
     </section>
 
     <section class="content-card notes-results-card">
       <div class="notes-empty" id="notes-empty" hidden>
-        <h2>这里还是空的</h2>
+        <h2 id="notes-empty-title">还没有本地笔记</h2>
         <p>去任意一篇正文里划一段，或者导入你之前备份过的笔记。</p>
       </div>
       <div class="notes-results" id="notes-results" aria-live="polite"></div>
@@ -99,8 +108,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const clearButton = document.getElementById("notes-clear");
     const statusNode = document.getElementById("notes-status");
     const summaryNode = document.getElementById("notes-summary");
+    const filterStateNode = document.getElementById("notes-filters-state");
     const resultsNode = document.getElementById("notes-results");
     const emptyNode = document.getElementById("notes-empty");
+    const emptyTitleNode = document.getElementById("notes-empty-title");
     const totalCountNode = document.getElementById("notes-total-count");
     const bookCountNode = document.getElementById("notes-book-count");
     const highlightCountNode = document.getElementById("notes-highlight-count");
@@ -224,9 +235,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         button.classList.toggle("is-active", button.dataset.notesColor === state.color);
       });
 
-      if (!(summaryNode instanceof HTMLElement)) return;
       if (!state.notes.length) {
-        summaryNode.textContent = "这里会按书整理你留在本地的阅读痕迹。";
+        if (summaryNode instanceof HTMLElement) {
+          summaryNode.textContent = "这里会按书整理你留在本地的阅读痕迹。";
+        }
+        if (filterStateNode instanceof HTMLElement) {
+          filterStateNode.textContent = "还没有笔记";
+        }
         return;
       }
 
@@ -235,13 +250,21 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (state.color !== "all") labels.push("颜色已筛选");
       if (state.query) labels.push("搜索中");
       const suffix = labels.length ? " · " + labels.join(" · ") : "";
-      summaryNode.textContent = "当前显示 " + visibleCount + " 条，按书归拢。" + suffix;
+      if (summaryNode instanceof HTMLElement) {
+        summaryNode.textContent = "当前显示 " + visibleCount + " 条，按书归拢。" + suffix;
+      }
+      if (filterStateNode instanceof HTMLElement) {
+        filterStateNode.textContent = labels.length ? labels.join(" · ") : "全部笔记";
+      }
     }
 
-    function renderEmpty(message) {
+    function renderEmpty(title, message) {
       if (resultsNode) resultsNode.innerHTML = "";
       if (emptyNode instanceof HTMLElement) {
         emptyNode.hidden = false;
+        if (emptyTitleNode instanceof HTMLElement && title) {
+          emptyTitleNode.textContent = title;
+        }
         const paragraph = emptyNode.querySelector("p");
         if (paragraph && message) paragraph.textContent = message;
       }
@@ -255,12 +278,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       renderFilterState(visible.length);
 
       if (!state.notes.length) {
-        renderEmpty("去任意一篇正文里划一段，或者导入你之前备份过的笔记。");
+        renderEmpty("还没有本地笔记", "去任意一篇正文里划一段，或者导入你之前备份过的笔记。");
         return;
       }
 
       if (!visible.length) {
-        renderEmpty("没搜到匹配项。换个词，或者先清掉一个条件。");
+        renderEmpty("没有符合条件的笔记", "没搜到匹配项。换个词，或者先清掉一个条件。");
         return;
       }
 
@@ -354,7 +377,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         }
       } catch (error) {
         console.error("Failed to load reader notes", error);
-        renderEmpty("笔记读取失败了，刷新后再试一次。");
+        renderEmpty("笔记读取失败", "笔记读取失败了，刷新后再试一次。");
         setStatus("本地笔记读取失败了。", "danger");
       } finally {
         setBusy(false);

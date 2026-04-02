@@ -65,12 +65,6 @@ export type RelatedBook = {
   shared_tags: string[];
 };
 
-export type RelatedPage = {
-  page: PageSummary;
-  book: BookSummary | undefined;
-  shared_tags: string[];
-};
-
 export type PageNode =
   | {
       kind: "section";
@@ -99,7 +93,6 @@ export type PageNode =
       siblingPages: PageSummary[];
       previousPage: PageSummary | null;
       nextPage: PageSummary | null;
-      relatedPages: RelatedPage[];
       relatedBooks: RelatedBook[];
     };
 
@@ -206,7 +199,6 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     siblingPages,
     previousPage: pageIndex > 0 ? siblingPages[pageIndex - 1] : null,
     nextPage: pageIndex >= 0 && pageIndex < siblingPages.length - 1 ? siblingPages[pageIndex + 1] : null,
-    relatedPages: getRelatedPages(index, page, 4),
     relatedBooks: parentBook ? getRelatedBooks(index, parentBook, 3) : [],
   };
 }
@@ -230,26 +222,6 @@ function getRelatedBooks(index: SiteIndex, currentBook: BookSummary, limit: numb
     )
     .slice(0, limit)
     .map(({ book, shared_tags }) => ({ book, shared_tags }));
-}
-
-function getRelatedPages(index: SiteIndex, currentPage: PageSummary, limit: number): RelatedPage[] {
-  return index.pages
-    .filter((item) => item.id !== currentPage.id && item.book_id !== currentPage.book_id)
-    .map((page) => {
-      const sharedTags = getSharedTags(currentPage.tags, page.tags);
-      const sameSection = page.section_key === currentPage.section_key ? 1 : 0;
-      const sameSlot = page.slot === currentPage.slot ? 1 : 0;
-      return {
-        page,
-        book: index.books.find((item) => item.id === page.book_id),
-        shared_tags: sharedTags,
-        score: sameSection * 18 + sameSlot * 14 + sharedTags.length * 6,
-      };
-    })
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || a.page.title.localeCompare(b.page.title, "zh-CN"))
-    .slice(0, limit)
-    .map(({ page, book, shared_tags }) => ({ page, book, shared_tags }));
 }
 
 function getSharedTags(left: string[], right: string[]): string[] {

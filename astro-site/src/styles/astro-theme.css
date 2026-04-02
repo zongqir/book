@@ -1523,13 +1523,14 @@ body.reader-notes-editor-open .reader-notes-shell {
   padding: 16px 18px;
   border-radius: 20px;
   border: 1px solid rgba(23, 48, 67, 0.08);
-  background: rgba(255, 255, 255, 0.52);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 249, 243, 0.62));
 }
 
 .slot-link:hover,
 .slot-link:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 14px 24px rgba(23, 48, 67, 0.1);
+  border-color: rgba(23, 48, 67, 0.14);
+  box-shadow: 0 16px 28px rgba(23, 48, 67, 0.12);
 }
 
 .slot-link--current {
@@ -2339,36 +2340,45 @@ body.reader-notes-editor-open .reader-notes-shell {
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
+    min-height: 72px;
+    padding: 14px 16px;
     border-radius: 18px;
+    box-shadow: 0 14px 26px rgba(23, 48, 67, 0.06);
   }
   .page-intro--book .slot-link::after {
-    content: "→";
-    color: var(--text-faint);
+    content: "↗";
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: rgba(23, 48, 67, 0.06);
+    color: var(--navy);
     font-weight: 700;
   }
   .page-intro--book .slot-link-no {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 38px;
-    min-height: 38px;
-    padding: 0 8px;
-    border-radius: 12px;
-    background: rgba(23, 48, 67, 0.05);
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0 9px;
+    border-radius: 14px;
+    background: rgba(23, 48, 67, 0.06);
     color: var(--accent-strong);
     letter-spacing: 0.03em;
   }
   .page-intro--book .slot-link strong {
-    font-size: 1rem;
-    line-height: 1.32;
+    font-size: 1.02rem;
+    line-height: 1.35;
   }
   .page-intro--book .slot-link--current .slot-link-no {
     background: rgba(255, 255, 255, 0.12);
     color: #f8f3ea;
   }
   .page-intro--book .slot-link--current::after {
-    color: rgba(248, 243, 234, 0.78);
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(248, 243, 234, 0.9);
   }
   .library-panel--index .library-hero h1,
   .notes-hero h1 {
@@ -3522,6 +3532,26 @@ body.reader-notes-editor-open .reader-notes-shell {
   display: flex;
   justify-content: flex-start;
   padding-left: 18px;
+}
+
+.home-feature-open-link {
+  gap: 14px;
+  min-width: 208px;
+  justify-content: space-between;
+  padding: 0 14px 0 22px;
+}
+
+.home-feature-open-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .home-side-column {

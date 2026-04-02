@@ -61,17 +61,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
 
           <div class="notes-filter-row">
-            <div class="notes-filter-group" aria-label="笔记筛选">
-              <button class="notes-filter-chip is-active" type="button" data-notes-highlight="all">全部</button>
-              <button class="notes-filter-chip" type="button" data-notes-highlight="only">只看纯高亮</button>
-            </div>
-
             <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
-              <button class="notes-filter-color is-active" type="button" data-notes-color="all">全部颜色</button>
-              <button class="notes-filter-color notes-filter-color--amber" type="button" data-notes-color="amber">黄色</button>
-              <button class="notes-filter-color notes-filter-color--teal" type="button" data-notes-color="teal">青绿</button>
-              <button class="notes-filter-color notes-filter-color--rose" type="button" data-notes-color="rose">红色</button>
-              <button class="notes-filter-color notes-filter-color--violet" type="button" data-notes-color="violet">紫色</button>
+              <span class="notes-filter-label">颜色</span>
+              <button class="notes-filter-all is-active" type="button" data-notes-color="all" aria-label="全部颜色">全部</button>
+              <button class="notes-filter-dot notes-filter-dot--amber" type="button" data-notes-color="amber" aria-label="筛选黄色高亮"></button>
+              <button class="notes-filter-dot notes-filter-dot--teal" type="button" data-notes-color="teal" aria-label="筛选青绿高亮"></button>
+              <button class="notes-filter-dot notes-filter-dot--rose" type="button" data-notes-color="rose" aria-label="筛选红色高亮"></button>
+              <button class="notes-filter-dot notes-filter-dot--violet" type="button" data-notes-color="violet" aria-label="筛选紫色高亮"></button>
             </div>
           </div>
 
@@ -115,14 +111,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const emptyTitleNode = document.getElementById("notes-empty-title");
     const totalCountNode = document.getElementById("notes-total-count");
     const bookCountNode = document.getElementById("notes-book-count");
-    const highlightButtons = Array.from(document.querySelectorAll("[data-notes-highlight]"));
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
+    const colorLabels = {
+      all: "全部颜色",
+      amber: "黄色",
+      teal: "青绿",
+      rose: "红色",
+      violet: "紫色",
+    };
 
     const state = {
       notes: [],
       query: "",
       sort: "updated-desc",
-      highlight: "all",
       color: "all",
       booksById: new Map(),
       pagesById: new Map(),
@@ -205,7 +206,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       return state.notes
         .slice()
         .filter((note) => {
-          if (state.highlight === "only" && String(note.note || "").trim()) return false;
           if (state.color !== "all" && note.color !== state.color) return false;
           if (query && !buildSearchText(note, toNoteMeta(note)).includes(query)) return false;
           return true;
@@ -225,13 +225,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function renderFilterState(visibleCount) {
-      highlightButtons.forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) return;
-        button.classList.toggle("is-active", button.dataset.notesHighlight === state.highlight);
-      });
       colorButtons.forEach((button) => {
         if (!(button instanceof HTMLButtonElement)) return;
-        button.classList.toggle("is-active", button.dataset.notesColor === state.color);
+        const isActive = button.dataset.notesColor === state.color;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
       });
 
       if (!state.notes.length) {
@@ -245,8 +243,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
 
       const labels = [];
-      if (state.highlight === "only") labels.push("只看纯高亮");
-      if (state.color !== "all") labels.push("颜色已筛选");
+      if (state.color !== "all") labels.push(colorLabels[state.color] || "已筛颜色");
       if (state.query) labels.push("搜索中");
       if (summaryNode instanceof HTMLElement) {
         summaryNode.textContent =
@@ -422,14 +419,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         render();
       });
     }
-
-    highlightButtons.forEach((button) => {
-      if (!(button instanceof HTMLButtonElement)) return;
-      button.addEventListener("click", function () {
-        state.highlight = button.dataset.notesHighlight || "all";
-        render();
-      });
-    });
 
     colorButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;

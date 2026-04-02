@@ -32,17 +32,21 @@ const ogType = node.kind === "page" ? "article" : "website";
   {node.kind === "section" && (
     <div class="page-stack">
       <section class="library-panel">
-        <div class="page-intro">
+        <div class="page-intro page-intro--section">
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a href="/library/">目录</a>
             <span>/</span>
             <span>{node.title}</span>
           </nav>
           <h1>{node.title}</h1>
+          <div class="detail-line">
+            <span class="meta-chip">{node.books.length} 本书</span>
+            {node.books[0] && <span class="meta-chip">{node.books[0].title}</span>}
+          </div>
         </div>
       </section>
 
-      <section class="section-shelf">
+      <section class="section-shelf section-shelf--section-node">
         {node.books.map((book) => (
           <article class="book-card">
             <a href={book.url}>
@@ -68,7 +72,7 @@ const ogType = node.kind === "page" ? "article" : "website";
   {node.kind === "book" && (
     <div class="page-stack">
       <section class="library-panel">
-        <div class="page-intro">
+        <div class="page-intro page-intro--book">
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a href="/library/">目录</a>
             <span>/</span>
@@ -79,6 +83,7 @@ const ogType = node.kind === "page" ? "article" : "website";
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
           <div class="detail-line">
+            <span class="meta-chip">{node.pages.length} 个入口</span>
             <span class="meta-chip">{node.book.section_title}</span>
             {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
           </div>

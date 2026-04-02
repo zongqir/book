@@ -31,6 +31,7 @@ const DRAG_THRESHOLD = 6;
 const FAB_MARGIN = 12;
 const MOBILE_FAB_SIZE = 52;
 const DESKTOP_FAB_SIZE = 54;
+const MOBILE_DOCK_CLEARANCE = 108;
 const READER_NOTES_CHANNEL = "book-reader-notes";
 const DEFAULT_COLOR: ReaderNoteColor = "amber";
 const NOTE_COLORS: ReaderNoteColor[] = ["amber", "teal", "rose", "violet"];
@@ -167,7 +168,8 @@ export function setupReaderParagraphNotes() {
   function normalizePosition(position: ReaderNotePosition): ReaderNotePosition {
     const size = getFabSize();
     const maxX = Math.max(FAB_MARGIN, window.innerWidth - size - FAB_MARGIN);
-    const maxY = Math.max(FAB_MARGIN, window.innerHeight - size - FAB_MARGIN);
+    const bottomClearance = currentMode() === "mobile" ? MOBILE_DOCK_CLEARANCE : FAB_MARGIN;
+    const maxY = Math.max(FAB_MARGIN, window.innerHeight - size - bottomClearance);
     return {
       x: clamp(position.x, FAB_MARGIN, maxX),
       y: clamp(position.y, FAB_MARGIN, maxY),
@@ -197,7 +199,7 @@ export function setupReaderParagraphNotes() {
     if (currentMode() === "mobile") {
       return normalizePosition({
         x: window.innerWidth - size - FAB_MARGIN,
-        y: window.innerHeight - size - (FAB_MARGIN + 8),
+        y: window.innerHeight - size - MOBILE_DOCK_CLEARANCE,
       });
     }
 

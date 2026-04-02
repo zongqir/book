@@ -1,6 +1,5 @@
 import MarkdownIt from "markdown-it";
 import { getContentSource, type SiteIndex } from "./content-source";
-import { DISCOVER_THEMES, type DiscoverThemeConfig } from "./discover-themes";
 
 const md = new MarkdownIt({
   html: true,
@@ -72,45 +71,6 @@ export type RelatedPage = {
   shared_tags: string[];
 };
 
-export type DiscoverData = {
-  counts: {
-    sections: number;
-    books: number;
-    pages: number;
-    quotes: number;
-  };
-  sections: SectionSummary[];
-  slots: string[];
-  tags: { tag: string; count: number }[];
-};
-
-export type DiscoverThemeSummary = {
-  slug: string;
-  title: string;
-  summary: string;
-  prompt: string;
-  tags: string[];
-  counts: {
-    books: number;
-    pages: number;
-    items: number;
-  };
-  leadBook: BookSummary | null;
-  leadPage: PageSummary | null;
-  relatedTags: { tag: string; count: number }[];
-};
-
-export type DiscoverThemeDetail = DiscoverThemeSummary & {
-  books: BookSummary[];
-  pages: PageSummary[];
-  neighborThemes: {
-    slug: string;
-    title: string;
-    summary: string;
-    sharedTags: string[];
-  }[];
-};
-
 export type PageNode =
   | {
       kind: "section";
@@ -166,65 +126,6 @@ export function getHomeData() {
     books,
     quotes,
   };
-}
-
-export function getDiscoverData(): DiscoverData {
-  const index = loadSiteIndex();
-  const sections = index.sections.filter((item) => !HIDDEN_SECTION_KEYS.has(item.key));
-  const books = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
-  const pages = index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
-  const tagCounts = new Map<string, number>();
-
-  for (const item of [...books, ...pages]) {
-    for (const tag of uniqueTags(item.tags)) {
-      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-    }
-  }
-
-  const tags = [...tagCounts.entries()]
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "zh-CN"));
-
-  const slots = [...new Set(pages.map((item) => item.slot).filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b, "zh-CN"),
-  );
-
-  return {
-    counts: {
-      sections: sections.length,
-      books: books.length,
-      pages: pages.length,
-      quotes: index.quotes.length,
-    },
-    sections,
-    slots,
-    tags,
-  };
-}
-
-export function getDiscoverThemes(): DiscoverThemeSummary[] {
-  const index = loadSiteIndex();
-  return DISCOVER_THEMES.map((theme) => buildDiscoverThemeDetail(index, theme)).map((item) => ({
-    slug: item.slug,
-    title: item.title,
-    summary: item.summary,
-    prompt: item.prompt,
-    tags: item.tags,
-    counts: item.counts,
-    leadBook: item.leadBook,
-    leadPage: item.leadPage,
-    relatedTags: item.relatedTags,
-  }));
-}
-
-export function getDiscoverThemeSlugs(): string[] {
-  return DISCOVER_THEMES.map((item) => item.slug);
-}
-
-export function getDiscoverThemeDetail(slug: string): DiscoverThemeDetail | null {
-  const config = DISCOVER_THEMES.find((item) => item.slug === slug);
-  if (!config) return null;
-  return buildDiscoverThemeDetail(loadSiteIndex(), config);
 }
 
 export function getLibraryIndex() {
@@ -329,117 +230,6 @@ function getRelatedBooks(index: SiteIndex, currentBook: BookSummary, limit: numb
     )
     .slice(0, limit)
     .map(({ book, shared_tags }) => ({ book, shared_tags }));
-}
-
-function buildDiscoverThemeDetail(index: SiteIndex, theme: DiscoverThemeConfig): DiscoverThemeDetail {
-  const books = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
-  const pages = index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
-  const allItems = [...books, ...pages];
-
-  const rankedBooks = books
-    .map((item) => ({ item, score: getThemeScore(item, theme) }))
-    .filter((item) => item.score > 0)
-    .sort(
-      (a, b) =>
-        b.score - a.score ||
-        b.item.page_count - a.item.page_count ||
-        a.item.title.localeCompare(b.item.title, "zh-CN"),
-    );
-
-  const rankedPages = pages
-    .map((item) => ({ item, score: getThemeScore(item, theme) }))
-    .filter((item) => item.score > 0)
-    .sort(
-      (a, b) =>
-        b.score - a.score ||
-        a.item.slot.localeCompare(b.item.slot, "zh-CN") ||
-        a.item.title.localeCompare(b.item.title, "zh-CN"),
-    );
-
-  const matchedItems = allItems.filter((item) => getThemeScore(item, theme) > 0);
-  const relatedTagCounts = new Map<string, number>();
-  const primaryTags = new Set(theme.tags);
-
-  for (const item of matchedItems) {
-    for (const tag of uniqueTags(item.tags)) {
-      if (primaryTags.has(tag)) continue;
-      relatedTagCounts.set(tag, (relatedTagCounts.get(tag) ?? 0) + 1);
-    }
-  }
-
-  const relatedTags = [...relatedTagCounts.entries()]
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag, "zh-CN"))
-    .slice(0, 8);
-
-  const neighborThemes = DISCOVER_THEMES
-    .filter((item) => item.slug !== theme.slug)
-    .map((item) => {
-      const sharedTags = uniqueTags([...theme.tags, ...(theme.optionalTags ?? [])]).filter((tag) =>
-        new Set([...item.tags, ...(item.optionalTags ?? [])]).has(tag),
-      );
-      return {
-        slug: item.slug,
-        title: item.title,
-        summary: item.summary,
-        sharedTags,
-        score: sharedTags.length,
-      };
-    })
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "zh-CN"))
-    .slice(0, 3)
-    .map(({ slug, title, summary, sharedTags }) => ({ slug, title, summary, sharedTags }));
-
-  return {
-    slug: theme.slug,
-    title: theme.title,
-    summary: theme.summary,
-    prompt: theme.prompt,
-    tags: theme.tags,
-    counts: {
-      books: rankedBooks.length,
-      pages: rankedPages.length,
-      items: rankedBooks.length + rankedPages.length,
-    },
-    leadBook: rankedBooks[0]?.item ?? null,
-    leadPage: rankedPages[0]?.item ?? null,
-    relatedTags,
-    books: rankedBooks.slice(1, 7).map((item) => item.item),
-    pages: rankedPages.slice(0, 8).map((item) => item.item),
-    neighborThemes,
-  };
-}
-
-function getThemeScore(
-  item: Pick<BookSummary, "section_key" | "tags" | "title"> | Pick<PageSummary, "section_key" | "tags" | "slot" | "title">,
-  theme: DiscoverThemeConfig,
-): number {
-  const tags = uniqueTags(item.tags);
-  let score = 0;
-
-  tags.forEach((tag) => {
-    const coreIndex = theme.tags.indexOf(tag);
-    if (coreIndex >= 0) {
-      score += 20 - coreIndex * 2;
-      return;
-    }
-    const optionalIndex = theme.optionalTags?.indexOf(tag) ?? -1;
-    if (optionalIndex >= 0) {
-      score += 8 - Math.min(optionalIndex, 4);
-    }
-  });
-
-  if (theme.sectionKeys?.includes(item.section_key)) score += 4;
-  if ("slot" in item) {
-    if (item.slot === "00") score += 5;
-    if (item.slot === "04" || item.slot === "05" || item.slot === "02") score += 2;
-  }
-  if ("page_count" in item) {
-    score += Math.min(item.page_count, 6);
-  }
-
-  return score;
 }
 
 function getRelatedPages(index: SiteIndex, currentPage: PageSummary, limit: number): RelatedPage[] {

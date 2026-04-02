@@ -1,4 +1,4 @@
-import { getDiscoverThemeSlugs, loadSiteIndex } from "../lib/content";
+import { loadSiteIndex } from "../lib/content";
 
 function escapeXml(value: string) {
   return String(value || "")
@@ -14,8 +14,6 @@ export function GET({ site }: { site: URL }) {
   const siteUrl = site || new URL("https://book.zongqir.com");
   const urls = [
     { path: "/", updatedAt: "" },
-    { path: "/discover/", updatedAt: "" },
-    ...getDiscoverThemeSlugs().map((slug) => ({ path: `/discover/${slug}/`, updatedAt: "" })),
     { path: "/library/", updatedAt: "" },
     { path: "/notes/", updatedAt: "" },
     ...index.sections

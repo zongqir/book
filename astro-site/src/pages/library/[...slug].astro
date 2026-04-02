@@ -181,11 +181,8 @@ const ogType = node.kind === "page" ? "article" : "website";
             {node.page.updated_at && <span class="meta-chip">更新于 {node.page.updated_at.slice(0, 10)}</span>}
             {node.page.evidence_status && <span class="meta-chip">{node.page.evidence_status}</span>}
             {node.page.status && <span class="meta-chip">{node.page.status}</span>}
-            <a
-              class="meta-chip meta-chip--link"
-              href="/discover/"
-            >
-              去主题阅读
+            <a class="meta-chip meta-chip--link" href="/library/">
+              回目录继续看
             </a>
           </div>
         </div>

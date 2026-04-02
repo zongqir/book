@@ -33,6 +33,7 @@ const socialTitle = ogTitle || pageTitle;
 const socialDescription = ogDescription || description;
 const socialImage = new URL(ogImage, Astro.site);
 const isNotes = pathname.startsWith("/notes");
+const mobileSectionLabel = isHome ? "首页" : isDiscover ? "发现" : isLibrary ? "目录" : isNotes ? "笔记" : title;
 ---
 
 <!doctype html>
@@ -84,6 +85,7 @@ const isNotes = pathname.startsWith("/notes");
               <span class="brand-mark" aria-hidden="true">BQ</span>
               <span>读书库</span>
             </a>
+            <span class="mobile-page-badge">{mobileSectionLabel}</span>
           </div>
           <nav class="top-nav" aria-label="主导航">
             <a class:list={["nav-pill", isHome && "is-active"]} href="/">首页</a>
@@ -104,6 +106,25 @@ const isNotes = pathname.startsWith("/notes");
         </div>
       </footer>
     )}
+
+    <nav class="mobile-app-dock" aria-label="移动导航">
+      <a class:list={["mobile-dock-item", isHome && "is-active"]} href="/">
+        <span class="mobile-dock-dot" aria-hidden="true"></span>
+        <span>首页</span>
+      </a>
+      <a class:list={["mobile-dock-item", isDiscover && "is-active"]} href="/discover/">
+        <span class="mobile-dock-dot" aria-hidden="true"></span>
+        <span>发现</span>
+      </a>
+      <a class:list={["mobile-dock-item", isLibrary && "is-active"]} href="/library/">
+        <span class="mobile-dock-dot" aria-hidden="true"></span>
+        <span>目录</span>
+      </a>
+      <a class:list={["mobile-dock-item", isNotes && "is-active"]} href="/notes/">
+        <span class="mobile-dock-dot" aria-hidden="true"></span>
+        <span>笔记</span>
+      </a>
+    </nav>
 
     <div class="network-toast" id="network-toast" hidden>当前离线，优先使用已缓存页面。</div>
 

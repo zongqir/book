@@ -2890,6 +2890,7 @@ img { display: block; max-width: 100%; }
 }
 
 .home-mobile-focus,
+.home-mobile-shelves,
 .home-mobile-drawer,
 .home-mobile-quote-panel {
   border-radius: 26px;
@@ -2908,6 +2909,72 @@ img { display: block; max-width: 100%; }
   display: grid;
   gap: 16px;
   padding: 20px;
+}
+
+.home-mobile-shelves {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.home-mobile-shelves-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-mobile-shelves-head h2 {
+  margin: 4px 0 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.24rem;
+  line-height: 1.18;
+}
+
+.home-mobile-shelves-head .hero-kicker {
+  margin: 0;
+}
+
+.home-mobile-shelf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.home-mobile-shelf-card {
+  display: grid;
+  gap: 10px;
+  min-height: 118px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.home-mobile-shelf-top {
+  display: grid;
+  gap: 4px;
+}
+
+.home-mobile-shelf-top strong {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+  line-height: 1.18;
+}
+
+.home-mobile-shelf-top span,
+.home-mobile-shelf-card p {
+  margin: 0;
+  color: var(--text-faint);
+}
+
+.home-mobile-shelf-top span {
+  font-size: 0.76rem;
+}
+
+.home-mobile-shelf-card p {
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .home-mobile-quote-panel-head {
@@ -3185,6 +3252,16 @@ img { display: block; max-width: 100%; }
     border-radius: 22px;
   }
 
+  .home-mobile-shelves {
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .home-mobile-shelves-head h2 {
+    font-size: 1.08rem;
+  }
+
   .home-mobile-quote-panel-head {
     align-items: flex-start;
   }
@@ -3241,6 +3318,20 @@ img { display: block; max-width: 100%; }
     min-height: 82px;
     padding: 12px;
     border-radius: 16px;
+  }
+
+  .home-mobile-shelf-grid {
+    gap: 8px;
+  }
+
+  .home-mobile-shelf-card {
+    min-height: 108px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .home-mobile-shelf-card p {
+    font-size: 0.78rem;
   }
 
   .section-preview-line {

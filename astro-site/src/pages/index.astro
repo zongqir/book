@@ -76,9 +76,30 @@ const sectionPreviewMap = Object.fromEntries(
         )}
       </article>
 
+      <section class="home-mobile-shelves" aria-label="书架方向">
+        <div class="home-mobile-shelves-head">
+          <div>
+            <p class="hero-kicker">书架方向</p>
+            <h2>先挑个方向</h2>
+          </div>
+          <span class="meta-chip">{sections.length} 个方向</span>
+        </div>
+        <div class="home-mobile-shelf-grid">
+          {sections.slice(0, 4).map((section) => (
+            <a class="home-mobile-shelf-card" href={section.url}>
+              <div class="home-mobile-shelf-top">
+                <strong>{section.title}</strong>
+                <span>{section.book_count} 本</span>
+              </div>
+              <p>{sectionPreviewMap[section.key]?.[0]?.title ?? "打开这个方向看看"}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+
       <details class="home-mobile-drawer home-mobile-drawer--sections">
         <summary>
-          <span>书架方向</span>
+          <span>全部方向</span>
           <em>{sections.length} 个方向</em>
         </summary>
         <div class="home-mobile-drawer-body">

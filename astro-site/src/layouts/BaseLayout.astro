@@ -90,12 +90,6 @@ const isNotes = pathname.startsWith("/notes");
             <a class:list={["nav-pill", isDiscover && "is-active"]} href="/discover/">发现</a>
             <a class:list={["nav-pill", isLibrary && "is-active"]} href="/library/">目录</a>
             <a class:list={["nav-pill", isNotes && "is-active"]} href="/notes/">笔记</a>
-            {isHome && (
-              <>
-                <a class="nav-pill nav-pill--subtle" href="#home-tools">随机翻书</a>
-                <a class="nav-pill nav-pill--subtle" href="#home-categories">分类</a>
-              </>
-            )}
           </nav>
         </div>
       </header>
@@ -103,11 +97,13 @@ const isNotes = pathname.startsWith("/notes");
     <main class="site-main shell">
       <slot />
     </main>
-    <footer class="site-footer shell">
-      <div class="site-footer-inner">
-        <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
-      </div>
-    </footer>
+    {!isHome && (
+      <footer class="site-footer shell">
+        <div class="site-footer-inner">
+          <p class="site-footer-meta">book.zongqir.com · {new Date().getFullYear()}</p>
+        </div>
+      </footer>
+    )}
 
     <div class="network-toast" id="network-toast" hidden>当前离线，优先使用已缓存页面。</div>
 

@@ -39,11 +39,11 @@ const sectionPreviewMap = Object.fromEntries(
     <section class="home-mobile-shell" aria-label="手机首页">
       <article class="home-mobile-focus" id="home-mobile-focus-card">
         <p class="home-mobile-focus-topline">
-          <span class="meta-chip" id="home-mobile-focus-mode-chip">随机一本</span>
+          <span class="meta-chip" id="home-mobile-focus-mode-chip">此刻入口</span>
           <span id="home-mobile-focus-category">{firstBook?.section_title ?? "书库"}</span>
         </p>
-        <h2 id="home-mobile-focus-title">{firstBook?.title ?? "先翻一本到"}</h2>
-        <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "从书库里随机挑一本，先读进去再说。"}</p>
+        <h2 id="home-mobile-focus-title">{firstBook?.title ?? "随机一本到"}</h2>
+        <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
         <div class="home-mobile-focus-tags" id="home-mobile-focus-tags">
           {firstBook?.tags.slice(0, 4).map((tag) => <span class="book-dice-tag">{tag}</span>)}
         </div>
@@ -55,10 +55,10 @@ const sectionPreviewMap = Object.fromEntries(
         </div>
       </article>
 
-      <article class="home-mobile-quote-panel" aria-label="每日一句">
+      <article class="home-mobile-quote-panel" aria-label="摘一句">
         <div class="home-mobile-quote-panel-head">
           <div>
-            <p class="hero-kicker">每日一句</p>
+            <p class="hero-kicker">摘句</p>
             <h2>再读一句</h2>
           </div>
           <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
@@ -78,7 +78,7 @@ const sectionPreviewMap = Object.fromEntries(
 
       <details class="home-mobile-drawer home-mobile-drawer--sections">
         <summary>
-          <span>全部分类</span>
+          <span>书架方向</span>
           <em>{sections.length} 个方向</em>
         </summary>
         <div class="home-mobile-drawer-body">
@@ -97,16 +97,11 @@ const sectionPreviewMap = Object.fromEntries(
 
     <div class="home-desktop-flow">
       <section class="hero-panel home-stage" id="home-tools">
-        <div class="home-stage-head home-stage-head--mobile">
-          <p class="hero-kicker">首页入口</p>
-          <h1>先翻一本到，再读一句</h1>
-        </div>
-
         <div class="hero-tools hero-tools--stage">
           <article class="hero-tool-card hero-tool-card--quote" data-random-quote>
             <header class="hero-tool-head">
               <div>
-                <h2>今日一句</h2>
+                <h2>摘句</h2>
               </div>
               <button class="tool-switch" type="button" id="random-quote-shuffle">换一句</button>
             </header>
@@ -126,7 +121,7 @@ const sectionPreviewMap = Object.fromEntries(
           <article class="hero-tool-card hero-tool-card--resume" id="home-resume-card" hidden>
             <header class="hero-tool-head">
               <div>
-                <h2>继续上次</h2>
+                <h2>接上次</h2>
               </div>
               <span class="meta-chip">自动记住</span>
             </header>
@@ -146,7 +141,7 @@ const sectionPreviewMap = Object.fromEntries(
           <article class="hero-tool-card hero-tool-card--primary" data-book-dice>
             <header class="hero-tool-head">
               <div>
-                <h2>先看一本</h2>
+                <h2>随机一本到</h2>
               </div>
               <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
             </header>
@@ -176,7 +171,7 @@ const sectionPreviewMap = Object.fromEntries(
       <section id="home-categories">
         <div class="section-head section-head--home-categories">
           <div>
-            <h2>按方向开始</h2>
+            <h2>书架方向</h2>
           </div>
         </div>
 
@@ -184,17 +179,15 @@ const sectionPreviewMap = Object.fromEntries(
           {sections.map((section) => (
             <article class="section-card">
               <a href={section.url}>
-                <div class="section-card-top">
-                  <p class="section-volume-inline">
-                    <strong>{section.book_count}</strong>
-                    <span>本书</span>
-                  </p>
-                </div>
+                <p class="section-volume-inline">
+                  <strong>{section.book_count}</strong>
+                  <span>本书</span>
+                </p>
                 <div class="section-card-copy">
                   <h3>{section.title}</h3>
-                  <div class="section-preview">
+                  <div class="section-preview-list">
                     {(sectionPreviewMap[section.key] ?? []).map((book) => (
-                      <span class="preview-pill">{book.title}</span>
+                      <span class="section-preview-line">{book.title}</span>
                     ))}
                   </div>
                 </div>
@@ -310,7 +303,7 @@ const sectionPreviewMap = Object.fromEntries(
       function renderMobileFocusBook(current) {
         if (!current) return;
         mobileFocusState = "book";
-        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "随机一本";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "此刻入口";
         if (mobileFocusCategory) mobileFocusCategory.textContent = current.category || "未分类";
         if (mobileFocusTitle) mobileFocusTitle.textContent = current.title || "未命名";
         if (mobileFocusCopy) mobileFocusCopy.textContent = current.summary || "";

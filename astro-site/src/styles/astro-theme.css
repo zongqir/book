@@ -2609,8 +2609,14 @@ img { display: block; max-width: 100%; }
     gap: 8px;
   }
   .reader-notes-editor-actions {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
     align-items: stretch;
+  }
+  .reader-notes-editor-actions .btn,
+  .reader-notes-editor-actions .btn-ghost {
+    min-height: 44px;
   }
   .reader-notes-item {
     gap: 8px;

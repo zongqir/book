@@ -2,13 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="本地笔记" description="回看、导出和整理你留在这个浏览器里的阅读笔记。">
+<BaseLayout title="本地笔记" description="回看你留在这个浏览器里的高亮与笔记。">
   <div class="page-stack notes-dashboard">
-    <section class="library-panel">
-      <div class="library-hero">
-        <h1>本地笔记</h1>
-        <p>这里收着你留在这个浏览器里的高亮和笔记。可以回看，也可以导出备份。</p>
-        <div class="stats-strip">
+    <section class="library-panel notes-stage">
+      <div class="library-hero notes-hero">
+        <div class="notes-hero-head">
+          <div>
+            <p class="hero-kicker">回看与整理</p>
+            <h1>本地笔记</h1>
+          </div>
+          <div class="notes-stage-actions">
+            <button class="btn" id="notes-export" type="button">导出 JSON</button>
+            <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
+            <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
+            <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
+          </div>
+        </div>
+        <div class="stats-strip notes-stage-strip">
           <div class="stat-block">
             <span class="stat-label">笔记</span>
             <span class="stat-value" id="notes-total-count">0</span>
@@ -18,6 +28,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             <span class="stat-value" id="notes-book-count">0</span>
           </div>
         </div>
+        <p class="notes-summary notes-summary--hero" id="notes-summary">正在整理你的笔记…</p>
+        <p class="notes-status notes-status--hero" id="notes-status">
+          导入会替换当前浏览器里的本地笔记。动手前，先导出一份备份。
+        </p>
       </div>
     </section>
 
@@ -62,18 +76,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
 
           <div class="notes-toolbar-meta">
-            <p class="notes-summary" id="notes-summary">正在整理你的笔记…</p>
-            <div class="notes-actions">
-              <button class="btn" id="notes-export" type="button">导出 JSON</button>
-              <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
-              <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
-              <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
-            </div>
+            <p class="notes-toolbar-kicker">筛选范围</p>
+            <span class="notes-toolbar-state" id="notes-filters-state">正在整理…</span>
           </div>
-
-          <p class="notes-status" id="notes-status">
-            导入会替换当前浏览器里的本地笔记。动手前，建议先导出一份备份。
-          </p>
         </div>
       </details>
     </section>
@@ -160,15 +165,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function toNoteMeta(note) {
-      const page = state.pagesById.get(note.pageId) || null;
-      const book = page ? state.booksById.get(page.book_id) || null : null;
-      return {
-        pageTitle: page?.title || "原文页面",
-        pageUrl: page?.url || "#",
-        bookTitle: page?.book_title || book?.title || "未归档书目",
-        sectionTitle: page?.section_title || book?.section_title || "未分类",
-        tags: Array.isArray(page?.tags) ? page.tags : Array.isArray(book?.tags) ? book.tags : [],
-      };
+        const page = state.pagesById.get(note.pageId) || null;
+        const book = page ? state.booksById.get(page.book_id) || null : null;
+        return {
+          pageTitle: page?.title || "原文页面",
+          pageUrl: page?.url || "#",
+          bookTitle: page?.book_title || book?.title || "未归档书目",
+          bookUrl: book?.url || page?.book_url || "#",
+          sectionTitle: page?.section_title || book?.section_title || "未分类",
+          tags: Array.isArray(page?.tags) ? page.tags : Array.isArray(book?.tags) ? book.tags : [],
+        };
     }
 
     function buildSearchText(note, meta) {
@@ -230,7 +236,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       if (!state.notes.length) {
         if (summaryNode instanceof HTMLElement) {
-          summaryNode.textContent = "这里会按书整理你留在本地的阅读痕迹。";
+          summaryNode.textContent = "这里会按书收拢你留下的段落。";
         }
         if (filterStateNode instanceof HTMLElement) {
           filterStateNode.textContent = "还没有笔记";
@@ -242,9 +248,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (state.highlight === "only") labels.push("只看纯高亮");
       if (state.color !== "all") labels.push("颜色已筛选");
       if (state.query) labels.push("搜索中");
-      const suffix = labels.length ? " · " + labels.join(" · ") : "";
       if (summaryNode instanceof HTMLElement) {
-        summaryNode.textContent = "当前显示 " + visibleCount + " 条，按书归拢。" + suffix;
+        summaryNode.textContent =
+          (visibleCount === state.notes.length ? "共 " + visibleCount + " 条，按书回看。" : "筛到 " + visibleCount + " 条，原始共 " + state.notes.length + " 条。") +
+          (labels.length ? " " + labels.join(" · ") : "");
       }
       if (filterStateNode instanceof HTMLElement) {
         filterStateNode.textContent = labels.length ? labels.join(" · ") : "全部笔记";
@@ -292,6 +299,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         const group = groups.get(key) || {
           key,
           bookTitle: meta.bookTitle,
+          bookUrl: meta.bookUrl,
           sectionTitle: meta.sectionTitle,
           notes: [],
         };
@@ -308,7 +316,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               return `
                 <article class="notes-note-card notes-note-card--${escapeHtml(note.color || "amber")}">
                   <div class="notes-note-topline">
-                    <p class="notes-note-page">${escapeHtml(meta.pageTitle)}</p>
+                    <p class="notes-note-page">
+                      <span class="notes-note-color-dot notes-note-color-dot--${escapeHtml(note.color || "amber")}" aria-hidden="true"></span>
+                      <span>${escapeHtml(meta.pageTitle)}</span>
+                    </p>
                     <time class="notes-note-time" datetime="${escapeHtml(note.updatedAt)}">${escapeHtml(formatTime(note.updatedAt))}</time>
                   </div>
                   <p class="notes-note-quote">${escapeHtml(note.quote)}</p>
@@ -328,7 +339,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   <p class="eyebrow">${escapeHtml(group.sectionTitle)}</p>
                   <h2>${escapeHtml(group.bookTitle)}</h2>
                 </div>
-                <span class="meta-chip">${group.notes.length} 条</span>
+                <div class="notes-book-meta">
+                  <span class="meta-chip">${group.notes.length} 条</span>
+                  ${group.bookUrl && group.bookUrl !== "#" ? `<a class="tool-switch tool-switch--compact" href="${escapeHtml(group.bookUrl)}">回到这本书</a>` : ""}
+                </div>
               </div>
               <div class="notes-book-list">${items}</div>
             </section>
@@ -364,7 +378,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         state.notes = await listAllReaderNotes();
         render();
         if (state.notes.length) {
-          setStatus("这里显示的是当前浏览器里的本地笔记。", "neutral");
+          setStatus("这里只显示当前浏览器里的本地笔记。", "neutral");
         } else {
           setStatus("这里还没有本地笔记。去正文里点一段，就会收进来。", "neutral");
         }

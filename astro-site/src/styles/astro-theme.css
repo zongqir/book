@@ -1628,10 +1628,56 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 24px;
 }
 
+.notes-stage {
+  padding: 0;
+}
+
+.notes-hero {
+  display: grid;
+  gap: 18px;
+  padding: 26px 28px;
+}
+
+.notes-hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.notes-stage-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notes-stage-strip {
+  grid-template-columns: repeat(2, minmax(140px, 200px));
+}
+
+.notes-summary--hero,
+.notes-status--hero {
+  max-width: 52rem;
+}
+
 .notes-toolbar-card,
 .notes-results-card {
   display: grid;
   gap: 18px;
+}
+
+.notes-results-card {
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.notes-results-card::before {
+  display: none;
 }
 
 .notes-filters {
@@ -1681,6 +1727,23 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.notes-toolbar-kicker,
+.notes-toolbar-state {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.notes-toolbar-kicker {
+  color: var(--accent-strong);
+}
+
+.notes-toolbar-state {
+  color: var(--text-faint);
 }
 
 .notes-summary,
@@ -1797,6 +1860,13 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 14px;
 }
 
+.notes-book-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .notes-book-head h2 {
   font-family: "Noto Serif SC", serif;
   font-size: clamp(1.35rem, 2.2vw, 1.7rem);
@@ -1861,11 +1931,38 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .notes-note-page {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   max-width: min(100%, 30ch);
 }
 
 .notes-note-time {
   flex: 0 0 auto;
+}
+
+.notes-note-color-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(164, 91, 42, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75);
+}
+
+.notes-note-color-dot--amber {
+  background: rgba(164, 91, 42, 0.82);
+}
+
+.notes-note-color-dot--teal {
+  background: rgba(23, 121, 129, 0.82);
+}
+
+.notes-note-color-dot--rose {
+  background: rgba(183, 58, 91, 0.82);
+}
+
+.notes-note-color-dot--violet {
+  background: rgba(108, 80, 182, 0.82);
 }
 
 .notes-note-quote {
@@ -2496,6 +2593,29 @@ body.reader-notes-editor-open .reader-notes-shell {
     padding: 18px 16px;
     border-radius: 18px;
   }
+  .notes-hero {
+    gap: 14px;
+    padding-top: 20px;
+    padding-bottom: 18px;
+  }
+  .notes-hero-head {
+    gap: 14px;
+  }
+  .notes-stage-actions {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .notes-stage-actions::-webkit-scrollbar {
+    display: none;
+  }
+  .notes-stage-actions .btn,
+  .notes-stage-actions .tool-switch {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
   .notes-filter-chip,
   .notes-filter-color {
     width: auto;
@@ -2522,6 +2642,15 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-dashboard .stat-value {
     margin-top: 4px;
     font-size: clamp(1.1rem, 5vw, 1.45rem);
+  }
+  .notes-summary--hero,
+  .notes-status--hero {
+    max-width: none;
+    font-size: 0.92rem;
+    line-height: 1.64;
+  }
+  .notes-results-card {
+    gap: 14px;
   }
   .notes-note-card {
     padding: 14px;

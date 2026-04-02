@@ -6,17 +6,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <div class="page-stack notes-dashboard">
     <section class="library-panel notes-stage">
       <div class="library-hero notes-hero">
-        <div class="notes-hero-head">
-          <div>
-            <p class="hero-kicker">回看与整理</p>
-            <h1>本地笔记</h1>
-          </div>
-          <div class="notes-stage-actions">
-            <button class="btn" id="notes-export" type="button">导出 JSON</button>
-            <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
-            <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
-            <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
-          </div>
+        <div>
+          <p class="hero-kicker">回看与整理</p>
+          <h1>本地笔记</h1>
         </div>
         <div class="stats-strip notes-stage-strip">
           <div class="stat-block">
@@ -49,31 +41,33 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
             </label>
 
-            <label class="field-control notes-toolbar-sort">
-              <span>排序</span>
-              <select id="notes-sort">
-                <option value="updated-desc">最近更新</option>
-                <option value="updated-asc">最早更新</option>
-                <option value="created-desc">最近创建</option>
-                <option value="created-asc">最早创建</option>
-              </select>
-            </label>
+            <div class="notes-toolbar-tools">
+              <div class="notes-sort-group" role="group" aria-label="排序">
+                <button class="notes-icon-button is-active" id="notes-sort-desc" type="button" data-notes-sort="updated-desc" aria-label="最近更新" title="最近更新">
+                  ↓
+                </button>
+                <button class="notes-icon-button" id="notes-sort-asc" type="button" data-notes-sort="updated-asc" aria-label="最早更新" title="最早更新">
+                  ↑
+                </button>
+              </div>
+
+              <div class="notes-stage-actions" aria-label="笔记工具">
+                <button class="notes-icon-button" id="notes-import-trigger" type="button" aria-label="导入 JSON" title="导入 JSON">↑</button>
+                <button class="notes-icon-button" id="notes-export" type="button" aria-label="导出 JSON" title="导出 JSON">↓</button>
+                <button class="notes-icon-button notes-icon-button--danger" id="notes-clear" type="button" aria-label="清空本地" title="清空本地">×</button>
+                <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
+              </div>
+            </div>
           </div>
 
           <div class="notes-filter-row">
             <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
-              <span class="notes-filter-label">颜色</span>
-              <button class="notes-filter-all is-active" type="button" data-notes-color="all" aria-label="全部颜色">全部</button>
+              <button class="notes-filter-reset is-active" type="button" data-notes-color="all" aria-label="全部颜色" title="全部颜色">◎</button>
               <button class="notes-filter-dot notes-filter-dot--amber" type="button" data-notes-color="amber" aria-label="筛选黄色高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--teal" type="button" data-notes-color="teal" aria-label="筛选青绿高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--rose" type="button" data-notes-color="rose" aria-label="筛选红色高亮"></button>
               <button class="notes-filter-dot notes-filter-dot--violet" type="button" data-notes-color="violet" aria-label="筛选紫色高亮"></button>
             </div>
-          </div>
-
-          <div class="notes-toolbar-meta">
-            <p class="notes-toolbar-kicker">筛选范围</p>
-            <span class="notes-toolbar-state" data-notes-filters-state>正在整理…</span>
           </div>
         </div>
       </details>
@@ -98,7 +92,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     } from "../../lib/reader-storage";
 
     const searchInput = document.getElementById("notes-search");
-    const sortSelect = document.getElementById("notes-sort");
+    const sortButtons = Array.from(document.querySelectorAll("[data-notes-sort]"));
     const exportButton = document.getElementById("notes-export");
     const importButton = document.getElementById("notes-import-trigger");
     const importInput = document.getElementById("notes-import-input");
@@ -145,7 +139,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function setBusy(isBusy) {
-      [searchInput, sortSelect, exportButton, importButton, clearButton].forEach((node) => {
+      [searchInput, exportButton, importButton, clearButton, ...sortButtons].forEach((node) => {
         if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement || node instanceof HTMLSelectElement) {
           node.disabled = isBusy;
         }
@@ -190,14 +184,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function compareNotes(left, right) {
-      const sort = state.sort;
       const leftUpdated = String(left.updatedAt || "");
       const rightUpdated = String(right.updatedAt || "");
-      const leftCreated = String(left.createdAt || "");
-      const rightCreated = String(right.createdAt || "");
-      if (sort === "updated-asc") return leftUpdated.localeCompare(rightUpdated) || left.id.localeCompare(right.id);
-      if (sort === "created-desc") return rightCreated.localeCompare(leftCreated) || right.id.localeCompare(left.id);
-      if (sort === "created-asc") return leftCreated.localeCompare(rightCreated) || left.id.localeCompare(right.id);
+      if (state.sort === "updated-asc") return leftUpdated.localeCompare(rightUpdated) || left.id.localeCompare(right.id);
       return rightUpdated.localeCompare(leftUpdated) || right.id.localeCompare(left.id);
     }
 
@@ -225,6 +214,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function renderFilterState(visibleCount) {
+      sortButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const isActive = button.dataset.notesSort === state.sort;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
       colorButtons.forEach((button) => {
         if (!(button instanceof HTMLButtonElement)) return;
         const isActive = button.dataset.notesColor === state.color;
@@ -237,7 +233,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           summaryNode.textContent = "这里会按书收拢你留下的段落。";
         }
         filterStateNodes.forEach((node) => {
-          if (node instanceof HTMLElement) node.textContent = "还没有笔记";
+          if (node instanceof HTMLElement) node.textContent = "";
         });
         return;
       }
@@ -251,7 +247,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           (labels.length ? " " + labels.join(" · ") : "");
       }
       filterStateNodes.forEach((node) => {
-        if (node instanceof HTMLElement) node.textContent = labels.length ? labels.join(" · ") : "全部笔记";
+        if (node instanceof HTMLElement) node.textContent = labels.join(" · ");
       });
     }
 
@@ -413,12 +409,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     }
 
-    if (sortSelect instanceof HTMLSelectElement) {
-      sortSelect.addEventListener("change", function () {
-        state.sort = sortSelect.value || "updated-desc";
+    sortButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        state.sort = button.dataset.notesSort || "updated-desc";
         render();
       });
-    }
+    });
 
     colorButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;

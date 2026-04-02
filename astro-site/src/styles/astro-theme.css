@@ -1618,14 +1618,6 @@ body.reader-notes-editor-open .reader-notes-shell {
   padding: 26px 28px;
 }
 
-.notes-hero-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
 .notes-stage-actions {
   display: flex;
   align-items: center;
@@ -1682,18 +1674,18 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .notes-toolbar-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(220px, 0.55fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
   align-items: end;
 }
 
 .notes-toolbar-search,
-.notes-toolbar-sort {
+.notes-toolbar-tools {
   min-width: 0;
 }
 
-.notes-filter-row,
-.notes-toolbar-meta {
+.notes-toolbar-tools,
+.notes-filter-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1709,34 +1701,8 @@ body.reader-notes-editor-open .reader-notes-shell {
   flex-wrap: wrap;
 }
 
-.notes-filter-group--colors {
-  gap: 12px;
-}
-
-.notes-filter-label {
-  margin: 0;
-  color: var(--text-faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.notes-toolbar-kicker,
-.notes-toolbar-state {
-  margin: 0;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.notes-toolbar-kicker {
-  color: var(--accent-strong);
-}
-
-.notes-toolbar-state {
-  color: var(--text-faint);
+.notes-toolbar-tools {
+  justify-content: flex-end;
 }
 
 .notes-summary,
@@ -1766,7 +1732,16 @@ body.reader-notes-editor-open .reader-notes-shell {
   color: var(--accent-strong);
 }
 
-.notes-filter-all,
+.notes-sort-group,
+.notes-stage-actions,
+.notes-filter-group--colors {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-icon-button,
+.notes-filter-reset,
 .notes-filter-dot {
   display: inline-flex;
   align-items: center;
@@ -1777,19 +1752,35 @@ body.reader-notes-editor-open .reader-notes-shell {
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
-.notes-filter-all {
+.notes-icon-button,
+.notes-filter-reset {
+  min-width: 34px;
   min-height: 34px;
-  padding: 0 12px;
+  padding: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   color: var(--text-soft);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.92rem;
+  line-height: 1;
 }
 
-.notes-filter-all.is-active {
+.notes-icon-button.is-active,
+.notes-filter-reset.is-active {
   color: #f8f3ea;
   border-color: transparent;
   background: linear-gradient(135deg, var(--navy), #2a5e7f);
   box-shadow: 0 12px 20px rgba(23, 48, 67, 0.16);
+}
+
+.notes-icon-button--danger {
+  color: #8c4450;
+}
+
+.notes-icon-button--danger:hover,
+.notes-icon-button--danger:focus-visible {
+  border-color: rgba(163, 59, 70, 0.18);
+  background: rgba(255, 242, 243, 0.88);
 }
 
 .notes-filter-dot {
@@ -1803,8 +1794,10 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .notes-filter-dot:hover,
 .notes-filter-dot:focus-visible,
-.notes-filter-all:hover,
-.notes-filter-all:focus-visible {
+.notes-filter-reset:hover,
+.notes-filter-reset:focus-visible,
+.notes-icon-button:hover,
+.notes-icon-button:focus-visible {
   transform: translateY(-1px);
 }
 
@@ -2467,7 +2460,6 @@ body.reader-notes-editor-open .reader-notes-shell {
     margin-top: 12px;
   }
   .notes-filter-row,
-  .notes-toolbar-meta,
   .notes-book-head,
   .notes-note-topline {
     display: grid;
@@ -2494,14 +2486,10 @@ body.reader-notes-editor-open .reader-notes-shell {
     padding-top: 20px;
     padding-bottom: 18px;
   }
-  .notes-hero-head {
-    gap: 14px;
-  }
-  .notes-hero-head > div:first-child {
+  .notes-hero > div:first-child {
     display: none;
   }
   .notes-stage-actions {
-    width: 100%;
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 2px;
@@ -2511,15 +2499,21 @@ body.reader-notes-editor-open .reader-notes-shell {
     display: none;
   }
   .notes-stage-actions .btn,
-  .notes-stage-actions .tool-switch {
+  .notes-stage-actions .tool-switch,
+  .notes-stage-actions .notes-icon-button,
+  .notes-sort-group .notes-icon-button {
     flex: 0 0 auto;
     white-space: nowrap;
   }
-  .notes-filter-all {
-    width: auto;
+  .notes-toolbar-tools {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+  .notes-icon-button,
+  .notes-filter-reset {
     flex: 0 0 auto;
     min-height: 36px;
-    padding: 0 12px;
+    min-width: 36px;
   }
   .notes-filter-dot {
     flex: 0 0 auto;

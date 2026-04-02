@@ -1,16 +1,15 @@
-name: Build Android App
+name: Build Android Release
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    tags:
+      - "app-v*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: android-build-${{ github.ref }}
+  group: android-release-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -64,18 +63,49 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug
 
-      - name: Upload debug APK
+      - name: Prepare release asset
+        id: asset
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          APK_PATH=$(find astro-site/android/app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "APK not found"
+            exit 1
+          fi
+          ASSET_NAME="book-${TAG_NAME}-android-debug.apk"
+          RELEASE_NOTES="/tmp/release-notes.txt"
+          cp "$APK_PATH" "/tmp/${ASSET_NAME}"
+          {
+            echo "读书库 Android 调试包"
+            echo
+            echo "- Tag: ${TAG_NAME}"
+            echo "- Commit: ${GITHUB_SHA}"
+          } > "$RELEASE_NOTES"
+          echo "asset_path=/tmp/${ASSET_NAME}" >> "$GITHUB_OUTPUT"
+          echo "asset_name=${ASSET_NAME}" >> "$GITHUB_OUTPUT"
+          echo "release_notes=${RELEASE_NOTES}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload debug APK artifact
         uses: actions/upload-artifact@v5
         with:
           name: book-android-debug-apk
-          path: astro-site/android/app/build/outputs/apk/debug/*.apk
+          path: ${{ steps.asset.outputs.asset_path }}
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload web bundle
-        uses: actions/upload-artifact@v5
-        with:
-          name: book-astro-dist
-          path: astro-site/dist
-          if-no-files-found: error
-          retention-days: 14
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
+            gh release create "${GITHUB_REF_NAME}" \
+              --title "Android ${GITHUB_REF_NAME}" \
+              --notes-file "${{ steps.asset.outputs.release_notes }}"
+
+      - name: Upload APK to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" \
+            "${{ steps.asset.outputs.asset_path }}#${{ steps.asset.outputs.asset_name }}" \
+            --clobber

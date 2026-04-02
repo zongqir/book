@@ -1032,6 +1032,90 @@ img { display: block; max-width: 100%; }
 }
 .site-footer p { margin: 0; }
 .site-footer-meta { font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--text-faint); }
+
+.network-toast,
+.pwa-prompt {
+  position: fixed;
+  z-index: 60;
+}
+
+.network-toast {
+  top: 18px;
+  left: 50%;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(23, 48, 67, 0.12);
+  background: rgba(23, 48, 67, 0.9);
+  color: #f8f3ea;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  transform: translateX(-50%);
+  box-shadow: 0 16px 30px rgba(14, 29, 43, 0.2);
+}
+
+.pwa-prompt {
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  width: min(360px, calc(100vw - 36px));
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(245, 239, 230, 0.92));
+  box-shadow: 0 26px 60px rgba(14, 29, 43, 0.2);
+  backdrop-filter: blur(18px);
+}
+
+.network-toast[hidden],
+.pwa-prompt[hidden] {
+  display: none;
+}
+
+.pwa-prompt-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.pwa-prompt-title,
+.pwa-prompt-text {
+  margin: 0;
+}
+
+.pwa-prompt-title {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.pwa-prompt-text {
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+
+.pwa-prompt-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pwa-prompt-actions .btn,
+.pwa-prompt-actions .tool-switch {
+  flex: 1 1 140px;
+}
+
+.offline-guide {
+  gap: 20px;
+}
+
+.offline-status {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1797,6 +1881,31 @@ img { display: block; max-width: 100%; }
     min-height: 46px;
     padding: 0 14px;
     border-radius: 14px;
+  }
+  .network-toast {
+    top: calc(12px + env(safe-area-inset-top));
+    max-width: calc(100vw - 24px);
+    font-size: 0.72rem;
+  }
+  .pwa-prompt {
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .pwa-prompt-title {
+    font-size: 1.16rem;
+  }
+  .pwa-prompt-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .pwa-prompt-actions .btn,
+  .pwa-prompt-actions .tool-switch {
+    width: 100%;
   }
   .discover-chip-row {
     flex-wrap: nowrap;

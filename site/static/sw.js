@@ -1,4 +1,4 @@
-const VERSION = "book-site-v5";
+const VERSION = "book-site-v6";
 const APP_CACHE = `${VERSION}:app`;
 const PAGE_CACHE = `${VERSION}:pages`;
 const DATA_CACHE = `${VERSION}:data`;
@@ -18,6 +18,7 @@ const APP_SHELL = [
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/data/site-content.json",
+  "/data/site-page-content.json",
 ];
 
 self.addEventListener("install", (event) => {

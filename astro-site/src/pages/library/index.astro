@@ -16,10 +16,10 @@ const books = sections.flatMap((section) =>
     <section class="library-panel library-panel--index">
       <div class="library-hero">
         <h1>全部分类</h1>
-        <p>先搜书名或分类，再往里走。</p>
+        <p>直接搜书名。</p>
         <label class="field-control library-index-search">
           <span>筛选</span>
-          <input id="library-index-search" type="search" placeholder="搜书名或分类" />
+          <input id="library-index-search" type="search" placeholder="搜书名" />
         </label>
       </div>
     </section>
@@ -30,7 +30,7 @@ const books = sections.flatMap((section) =>
           class="library-search-card"
           href={book.url}
           data-library-book-item
-          data-search-text={`${book.title} ${book.section_title}`}
+          data-search-text={book.title}
         >
           <span class="meta-chip">{book.section_title}</span>
           <strong>{book.title}</strong>
@@ -80,35 +80,11 @@ const books = sections.flatMap((section) =>
         .replace(/[\s\p{P}\p{S}]+/gu, "");
     }
 
-    function isSubsequence(source, query) {
-      if (!query) return true;
-      let queryIndex = 0;
-      for (const char of source) {
-        if (char === query[queryIndex]) queryIndex += 1;
-        if (queryIndex >= query.length) return true;
-      }
-      return false;
-    }
-
     function matchesSearch(searchText, query) {
       const normalizedSource = normalizeSearchText(searchText);
-      const tokens = String(query || "")
-        .trim()
-        .toLowerCase()
-        .normalize("NFKC")
-        .split(/\s+/)
-        .filter(Boolean);
-
-      if (tokens.length === 0) return true;
-
-      return tokens.every((token) => {
-        const normalizedToken = normalizeSearchText(token);
-        return (
-          searchText.includes(token) ||
-          normalizedSource.includes(normalizedToken) ||
-          isSubsequence(normalizedSource, normalizedToken)
-        );
-      });
+      const normalizedQuery = normalizeSearchText(query);
+      if (!normalizedQuery) return true;
+      return normalizedSource.includes(normalizedQuery);
     }
 
     function updateLibraryIndexFilter() {

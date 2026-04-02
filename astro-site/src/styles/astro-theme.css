@@ -2142,10 +2142,15 @@ body.reader-notes-editor-open .reader-notes-shell {
   }
   .page-frame { position: sticky; top: 0; z-index: 24; padding-top: 8px; backdrop-filter: blur(10px); }
   .is-home .page-frame,
-  .is-library .page-frame {
-    display: none;
-  }
+  .is-library .page-frame,
   .is-notes .page-frame {
+    position: static;
+    padding-top: 0;
+    backdrop-filter: none;
+  }
+  .is-home .site-header-wrap,
+  .is-library .site-header-wrap,
+  .is-notes .site-header-wrap {
     display: none;
   }
   .site-header-wrap { position: relative; }

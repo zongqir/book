@@ -52,14 +52,55 @@ const sections = getLibraryIndex().filter((section) => section.key !== "02_ä¸“ä¸
     const items = Array.from(document.querySelectorAll("[data-library-index-item]"));
     const empty = document.getElementById("library-index-empty");
 
+    function normalizeSearchText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFKC")
+        .replace(/[\s\p{P}\p{S}]+/gu, "");
+    }
+
+    function isSubsequence(source, query) {
+      if (!query) return true;
+      let queryIndex = 0;
+      for (const char of source) {
+        if (char === query[queryIndex]) queryIndex += 1;
+        if (queryIndex >= query.length) return true;
+      }
+      return false;
+    }
+
+    function matchesSearch(searchText, query) {
+      const normalizedSource = normalizeSearchText(searchText);
+      const tokens = String(query || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFKC")
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if (tokens.length === 0) return true;
+
+      return tokens.every((token) => {
+        const normalizedToken = normalizeSearchText(token);
+        return (
+          searchText.includes(token) ||
+          normalizedSource.includes(normalizedToken) ||
+          isSubsequence(normalizedSource, normalizedToken)
+        );
+      });
+    }
+
     function updateLibraryIndexFilter() {
-      const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+      const query =
+        searchInput instanceof HTMLInputElement
+          ? searchInput.value.trim().toLowerCase().normalize("NFKC")
+          : "";
       let visibleCount = 0;
 
       items.forEach((item) => {
         if (!(item instanceof HTMLElement)) return;
-        const searchText = (item.dataset.searchText || "").toLowerCase();
-        const matched = !query || searchText.includes(query);
+        const searchText = String(item.dataset.searchText || "").toLowerCase().normalize("NFKC");
+        const matched = matchesSearch(searchText, query);
         item.hidden = !matched;
         if (matched) visibleCount += 1;
       });

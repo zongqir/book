@@ -20,10 +20,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             <span class="stat-value" id="notes-book-count">0</span>
           </div>
         </div>
-        <p class="notes-summary notes-summary--hero" id="notes-summary">正在整理你的笔记…</p>
-        <p class="notes-status notes-status--hero" id="notes-status">
-          导入会覆盖当前浏览器里的笔记。动手前，先导出一份。
-        </p>
       </div>
     </section>
 
@@ -94,6 +90,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </button>
               <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
             </div>
+          </div>
+
+          <div class="notes-meta-line">
+            <p class="notes-summary" id="notes-summary">正在整理…</p>
+            <p class="notes-status" id="notes-status">仅本地保存，导入前先导出。</p>
           </div>
         </div>
       </details>
@@ -259,7 +260,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       if (!state.notes.length) {
         if (summaryNode instanceof HTMLElement) {
-          summaryNode.textContent = "这里会按书收拢你留下的段落。";
+          summaryNode.textContent = "还没有笔记。";
         }
         filterStateNodes.forEach((node) => {
           if (node instanceof HTMLElement) node.textContent = "";
@@ -271,10 +272,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (state.color !== "all") labels.push(colorLabels[state.color] || "已筛颜色");
       if (state.query) labels.push("搜索中");
       if (summaryNode instanceof HTMLElement) {
-        const countText =
-          visibleCount === state.notes.length
-            ? "按书回看最近留下的段落。"
-            : "当前显示 " + visibleCount + " / " + state.notes.length + " 条。";
+        const countText = visibleCount === state.notes.length ? "共 " + state.notes.length + " 条。" : "已筛到 " + visibleCount + " / " + state.notes.length + " 条。";
         summaryNode.textContent = countText + (labels.length ? " " + labels.join(" · ") : "");
       }
       filterStateNodes.forEach((node) => {
@@ -402,9 +400,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         state.notes = await listAllReaderNotes();
         render();
         if (state.notes.length) {
-          setStatus("这里只显示当前浏览器里的本地笔记。", "neutral");
+          setStatus("仅本地保存，导入前先导出。", "neutral");
         } else {
-          setStatus("这里还没有本地笔记。去正文里点一段，就会收进来。", "neutral");
+          setStatus("仅本地保存，导入前先导出。", "neutral");
         }
       } catch (error) {
         console.error("Failed to load reader notes", error);

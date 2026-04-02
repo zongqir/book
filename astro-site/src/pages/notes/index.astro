@@ -17,10 +17,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             <span class="stat-label">书目</span>
             <span class="stat-value" id="notes-book-count">0</span>
           </div>
-          <div class="stat-block">
-            <span class="stat-label">纯高亮</span>
-            <span class="stat-value" id="notes-highlight-count">0</span>
-          </div>
         </div>
       </div>
     </section>
@@ -114,7 +110,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const emptyTitleNode = document.getElementById("notes-empty-title");
     const totalCountNode = document.getElementById("notes-total-count");
     const bookCountNode = document.getElementById("notes-book-count");
-    const highlightCountNode = document.getElementById("notes-highlight-count");
     const highlightButtons = Array.from(document.querySelectorAll("[data-notes-highlight]"));
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
 
@@ -221,8 +216,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         }),
       );
       if (bookCountNode) bookCountNode.textContent = String(bookIds.size);
-      const pureHighlights = state.notes.filter((note) => !String(note.note || "").trim()).length;
-      if (highlightCountNode) highlightCountNode.textContent = String(pureHighlights);
     }
 
     function renderFilterState(visibleCount) {

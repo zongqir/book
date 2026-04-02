@@ -73,18 +73,11 @@ const books = sections.flatMap((section) =>
     const bookItems = Array.from(document.querySelectorAll("[data-library-book-item]"));
     const empty = document.getElementById("library-index-empty");
 
-    function normalizeSearchText(value) {
-      return String(value || "")
-        .toLowerCase()
-        .normalize("NFKC")
-        .replace(/[\s\p{P}\p{S}]+/gu, "");
-    }
-
     function matchesSearch(searchText, query) {
-      const normalizedSource = normalizeSearchText(searchText);
-      const normalizedQuery = normalizeSearchText(query);
+      const source = String(searchText || "").toLowerCase().normalize("NFKC");
+      const normalizedQuery = String(query || "").toLowerCase().normalize("NFKC").trim();
       if (!normalizedQuery) return true;
-      return normalizedSource.includes(normalizedQuery);
+      return source.includes(normalizedQuery);
     }
 
     function updateLibraryIndexFilter() {
@@ -107,7 +100,7 @@ const books = sections.flatMap((section) =>
 
       bookItems.forEach((item) => {
         if (!(item instanceof HTMLElement)) return;
-        const searchText = String(item.dataset.searchText || "").toLowerCase().normalize("NFKC");
+        const searchText = String(item.dataset.searchText || "");
         const matched = matchesSearch(searchText, query);
         item.hidden = !matched;
         if (matched) visibleCount += 1;

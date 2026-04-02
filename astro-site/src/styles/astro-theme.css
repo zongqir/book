@@ -2138,9 +2138,7 @@ body.reader-notes-editor-open .reader-notes-shell {
   }
   .page-frame { position: sticky; top: 0; z-index: 24; padding-top: 8px; backdrop-filter: blur(10px); }
   .is-library .page-frame {
-    position: static;
-    padding-top: 0;
-    backdrop-filter: none;
+    display: none;
   }
   .site-header-wrap { position: relative; }
   .site-header {

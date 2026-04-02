@@ -411,24 +411,17 @@ const ogType = node.kind === "page" ? "article" : "website";
     const sectionBookItems = Array.from(document.querySelectorAll("[data-section-book-item]"));
     const sectionEmpty = document.getElementById("section-library-empty");
 
-    function normalizeSectionSearchText(value) {
-      return String(value || "")
-        .toLowerCase()
-        .normalize("NFKC")
-        .replace(/[\s\p{P}\p{S}]+/gu, "");
-    }
-
     function updateSectionFilter() {
       const query =
         sectionSearchInput instanceof HTMLInputElement
-          ? normalizeSectionSearchText(sectionSearchInput.value)
+          ? String(sectionSearchInput.value || "").toLowerCase().normalize("NFKC").trim()
           : "";
 
       let visibleCount = 0;
 
       sectionBookItems.forEach((item) => {
         if (!(item instanceof HTMLElement)) return;
-        const searchText = normalizeSectionSearchText(item.dataset.searchText || "");
+        const searchText = String(item.dataset.searchText || "").toLowerCase().normalize("NFKC");
         const matched = !query || searchText.includes(query);
         item.hidden = !matched;
         if (matched) visibleCount += 1;

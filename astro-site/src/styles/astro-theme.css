@@ -2544,6 +2544,11 @@ body.reader-notes-editor-open .reader-notes-shell {
   .notes-book-group {
     gap: 14px;
   }
+  .notes-toolbar-card,
+  .notes-results-card {
+    padding-left: 0;
+    padding-right: 0;
+  }
   .notes-filters {
     gap: 0;
     padding: 14px 16px;

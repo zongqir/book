@@ -1528,6 +1528,13 @@ body.reader-notes-editor-open .reader-notes-shell {
   box-shadow: 0 16px 28px rgba(23, 48, 67, 0.16);
 }
 
+.discover-section-pill:hover,
+.discover-section-pill:focus-visible,
+.discover-tag-chip:hover,
+.discover-tag-chip:focus-visible {
+  transform: translateY(-1px);
+}
+
 .discover-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -1578,6 +1585,12 @@ body.reader-notes-editor-open .reader-notes-shell {
     linear-gradient(180deg, rgba(248, 252, 252, 0.98), rgba(240, 248, 248, 0.86));
 }
 
+.discover-tag-chip--large {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 0.98rem;
+}
+
 .tag-pill--button {
   cursor: pointer;
   gap: 8px;
@@ -1603,6 +1616,52 @@ body.reader-notes-editor-open .reader-notes-shell {
 .discover-tag-chip.is-muted {
   opacity: 0.44;
   filter: saturate(0.72);
+}
+
+.discover-active-rail {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border-top: 1px solid rgba(23, 48, 67, 0.08);
+  border-bottom: 1px solid rgba(23, 48, 67, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 249, 242, 0.22));
+}
+
+.discover-active-rail p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.62;
+}
+
+.discover-active-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.discover-active-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(23, 48, 67, 0.08);
+  color: var(--navy);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.discover-active-pill--tag {
+  background: rgba(164, 91, 42, 0.12);
+  color: var(--accent-strong);
+}
+
+.discover-active-pill--muted {
+  background: rgba(23, 48, 67, 0.05);
+  color: var(--text-faint);
 }
 
 .discover-summary {
@@ -1632,6 +1691,30 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 14px;
   min-height: 100%;
   padding: 18px 18px 20px;
+}
+
+.discover-result-card--lead {
+  grid-column: 1 / -1;
+}
+
+.discover-result-card--lead a {
+  gap: 18px;
+  padding: 24px 24px 26px;
+}
+
+.discover-result-card--lead h3 {
+  font-size: clamp(1.55rem, 2.6vw, 2rem);
+  line-height: 1.18;
+}
+
+.discover-result-card--lead .discover-result-summary {
+  max-width: 48rem;
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+.discover-result-card--lead .discover-result-tags {
+  gap: 10px;
 }
 
 .discover-result-card--book {
@@ -2663,6 +2746,8 @@ body.reader-notes-editor-open .reader-notes-shell {
     font-size: 0.84rem;
   }
   .discover-section-pills {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
   .discover-section-pill {
@@ -2693,6 +2778,23 @@ body.reader-notes-editor-open .reader-notes-shell {
     padding: 0 11px;
     border-radius: 12px;
   }
+  .discover-tag-chip--large {
+    min-height: 36px;
+    padding: 0 13px;
+    font-size: 0.92rem;
+  }
+  .discover-active-rail {
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid rgba(23, 48, 67, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+  }
+  .discover-active-pill {
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 0.68rem;
+  }
   .discover-summary {
     display: block;
     min-height: 0;
@@ -2708,6 +2810,17 @@ body.reader-notes-editor-open .reader-notes-shell {
   }
   .discover-result-card {
     border-radius: 22px;
+  }
+  .discover-result-card--lead a {
+    padding: 18px 16px 20px;
+  }
+  .discover-result-card--lead h3 {
+    font-size: 1.32rem;
+    line-height: 1.24;
+  }
+  .discover-result-card--lead .discover-result-summary {
+    font-size: 0.95rem;
+    line-height: 1.72;
   }
   .discover-result-card a {
     gap: 12px;

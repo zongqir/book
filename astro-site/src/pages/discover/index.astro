@@ -56,6 +56,7 @@ const discoverTags = discover.tags;
               "discover-tag-chip",
               item.count >= 18 && "discover-tag-chip--strong",
               item.count >= 10 && item.count < 18 && "discover-tag-chip--medium",
+              item.count >= 18 && "discover-tag-chip--large",
             ]}
             type="button"
             data-tag-chip={item.tag}
@@ -66,6 +67,7 @@ const discoverTags = discover.tags;
         ))}
       </div>
 
+      <div class="discover-active-rail" id="discover-active-rail" aria-live="polite"></div>
       <div class="discover-summary" id="discover-summary">正在加载索引…</div>
       <div class="discover-results" id="discover-results" aria-live="polite"></div>
     </section>
@@ -74,6 +76,7 @@ const discoverTags = discover.tags;
   <script is:inline define:vars={{ hiddenSectionKey: "02_专业技术" }}>
     (function () {
       var resetInlineButton = document.getElementById("discover-reset-inline");
+      var activeRail = document.getElementById("discover-active-rail");
       var summary = document.getElementById("discover-summary");
       var results = document.getElementById("discover-results");
       var chipRow = document.getElementById("discover-chip-row");
@@ -162,13 +165,32 @@ const discoverTags = discover.tags;
         return true;
       }
 
-      function renderCard(item) {
+      function renderActiveRail(filters, listLength) {
+        if (!activeRail) return;
+        if (!filters.section && !filters.tag) {
+          activeRail.innerHTML =
+            '<div class="discover-active-pill discover-active-pill--muted">还没选方向</div>' +
+            '<p>先点一个分类，或者直接从标签里挑一条线。</p>';
+          return;
+        }
+
+        var parts = [];
+        if (filters.section) parts.push('<span class="discover-active-pill">' + escapeHtml(getSectionLabel(filters.section)) + '</span>');
+        if (filters.tag) parts.push('<span class="discover-active-pill discover-active-pill--tag">' + escapeHtml(filters.tag) + '</span>');
+
+        activeRail.innerHTML =
+          '<div class="discover-active-pills">' + parts.join("") + '</div>' +
+          '<p>这条线上现在接出 <strong>' + listLength + '</strong> 条内容。</p>';
+      }
+
+      function renderCard(item, index) {
         var tags = item.tags.slice(0, 4).map(function (tag) {
           return '<span class="tag-pill">' + escapeHtml(tag) + '</span>';
         }).join("");
+        var leadClass = index === 0 ? ' discover-result-card--lead' : '';
         if (item.kind === "book") {
           return '' +
-            '<article class="discover-result-card discover-result-card--book">' +
+            '<article class="discover-result-card discover-result-card--book' + leadClass + '">' +
               '<a href="' + escapeHtml(item.url) + '">' +
                 '<div class="discover-result-topline">' +
                   '<p class="discover-result-kicker">书</p>' +
@@ -182,7 +204,7 @@ const discoverTags = discover.tags;
             '</article>';
         }
         return '' +
-          '<article class="discover-result-card discover-result-card--page">' +
+          '<article class="discover-result-card discover-result-card--page' + leadClass + '">' +
             '<a href="' + escapeHtml(item.url) + '">' +
               '<div class="discover-result-topline">' +
                   '<p class="discover-result-kicker">页面</p>' +
@@ -214,18 +236,21 @@ const discoverTags = discover.tags;
         var hasActiveFilters = Boolean(filters.section || filters.tag);
         var list = state.items.filter(function (item) { return passesFilters(item, filters); });
         var visible = list.slice(0, 36);
+        renderActiveRail(filters, list.length);
         if (summary) {
           if (!state.items.length) summary.textContent = "正在加载索引…";
-          else if (!hasActiveFilters) summary.textContent = "先定一个主题，再往里走。";
+          else if (!hasActiveFilters) summary.textContent = "标签都摊开了，直接点就行。";
           else if (!visible.length) summary.textContent = trail ? trail + " · 还没接出内容。" : "这条线暂时还没接出内容。";
-          else if (list.length > visible.length) summary.textContent = trail + ' · 先看 ' + visible.length + ' 条，这条线上一共有 ' + list.length + ' 条。';
-          else summary.textContent = trail + ' · 现在能直接打开 ' + visible.length + ' 条。';
+          else if (list.length > visible.length) summary.textContent = trail + ' · 先展开前 ' + visible.length + ' 条。';
+          else summary.textContent = trail + ' · 从上往下翻就行。';
         }
         if (results) {
           if (!hasActiveFilters) {
             results.innerHTML = renderEmpty();
           } else {
-            results.innerHTML = visible.length ? visible.map(renderCard).join("") : renderNoMatch();
+            results.innerHTML = visible.length ? visible.map(function (item, index) {
+              return renderCard(item, index);
+            }).join("") : renderNoMatch();
           }
         }
       }

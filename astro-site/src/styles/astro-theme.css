@@ -1225,6 +1225,180 @@ img { display: block; max-width: 100%; }
   background: rgba(255, 255, 255, 0.86);
 }
 
+
+.notes-dashboard {
+  gap: 24px;
+}
+
+.notes-toolbar-card,
+.notes-results-card {
+  display: grid;
+  gap: 18px;
+}
+
+.notes-toolbar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) repeat(3, minmax(150px, 0.52fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.notes-toolbar-search {
+  min-width: 0;
+}
+
+.notes-status {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
+.notes-status[data-tone="success"] {
+  color: var(--teal);
+}
+
+.notes-status[data-tone="danger"] {
+  color: #a23b46;
+}
+
+.notes-status[data-tone="warning"] {
+  color: var(--accent-strong);
+}
+
+.notes-results {
+  display: grid;
+  gap: 18px;
+}
+
+.notes-empty {
+  display: grid;
+  gap: 10px;
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px dashed rgba(23, 48, 67, 0.18);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.notes-empty h2,
+.notes-empty p,
+.notes-book-head h2,
+.notes-note-page,
+.notes-note-time,
+.notes-note-quote,
+.notes-note-copy {
+  margin: 0;
+}
+
+.notes-book-group {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 26px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.notes-book-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.notes-book-head h2 {
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+}
+
+.notes-book-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.notes-note-card {
+  --notes-card-tint: rgba(224, 191, 106, 0.12);
+  --notes-card-border: rgba(164, 91, 42, 0.14);
+  --notes-card-accent: rgba(124, 65, 29, 0.72);
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid var(--notes-card-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), var(--notes-card-tint));
+}
+
+.notes-note-card--amber {
+  --notes-card-tint: rgba(224, 191, 106, 0.13);
+  --notes-card-border: rgba(164, 91, 42, 0.18);
+  --notes-card-accent: rgba(124, 65, 29, 0.78);
+}
+
+.notes-note-card--teal {
+  --notes-card-tint: rgba(106, 201, 197, 0.14);
+  --notes-card-border: rgba(23, 121, 129, 0.16);
+  --notes-card-accent: rgba(18, 96, 102, 0.78);
+}
+
+.notes-note-card--rose {
+  --notes-card-tint: rgba(233, 129, 153, 0.14);
+  --notes-card-border: rgba(173, 67, 91, 0.16);
+  --notes-card-accent: rgba(136, 42, 68, 0.78);
+}
+
+.notes-note-card--violet {
+  --notes-card-tint: rgba(159, 132, 232, 0.14);
+  --notes-card-border: rgba(102, 77, 164, 0.16);
+  --notes-card-accent: rgba(77, 56, 132, 0.78);
+}
+
+.notes-note-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notes-note-page,
+.notes-note-time {
+  color: var(--text-faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}
+
+.notes-note-page {
+  max-width: min(100%, 30ch);
+}
+
+.notes-note-time {
+  flex: 0 0 auto;
+}
+
+.notes-note-quote {
+  padding-left: 12px;
+  border-left: 3px solid var(--notes-card-accent);
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.notes-note-copy {
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+
+.notes-note-copy--muted {
+  color: var(--text-faint);
+}
+
+.notes-note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-panel,
@@ -1245,6 +1419,9 @@ img { display: block; max-width: 100%; }
   .toc-card,
   .meta-card { position: static; }
   .field-control--wide { grid-column: span 1; }
+  .notes-toolbar-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 760px) {
   :root { --container: min(1180px, calc(100vw - 24px)); --radius-xl: 26px; }
@@ -1399,6 +1576,34 @@ img { display: block; max-width: 100%; }
   }
   .discover-controls {
     gap: 12px;
+  }
+  .notes-toolbar-row,
+  .notes-book-list {
+    grid-template-columns: 1fr;
+  }
+  .notes-toolbar-card,
+  .notes-results-card,
+  .notes-book-group {
+    gap: 14px;
+  }
+  .notes-empty,
+  .notes-book-group {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .notes-book-head,
+  .notes-note-topline {
+    display: grid;
+    gap: 8px;
+  }
+  .notes-note-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .notes-note-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
   .field-control {
     gap: 8px;

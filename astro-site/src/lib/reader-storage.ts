@@ -26,11 +26,21 @@ export type ReaderNotePosition = {
 
 export type ReaderNotePositions = Partial<Record<"desktop" | "mobile", ReaderNotePosition>>;
 
+export type ReaderNotebookExport = {
+  schema_version: 1;
+  exported_at: string;
+  notes: ReaderParagraphNote[];
+  positions: ReaderNotePositions;
+};
+
 export type NoteStore = {
   list(pageId: string): Promise<ReaderParagraphNote[]>;
+  listAll(): Promise<ReaderParagraphNote[]>;
   create(draft: ReaderParagraphNoteDraft): Promise<ReaderParagraphNote>;
   update(id: string, payload: { note: string; color: ReaderNoteColor }): Promise<ReaderParagraphNote | null>;
   remove(id: string): Promise<void>;
+  replaceAll(notes: ReaderParagraphNote[]): Promise<void>;
+  clear(): Promise<void>;
 };
 
 export type PositionStore = {
@@ -75,7 +85,7 @@ class BrowserLocalNoteStore implements NoteStore {
       if (!raw) return { version: 1, notes: [] };
       const parsed = JSON.parse(raw) as Partial<StorePayload>;
       const notes = Array.isArray(parsed.notes)
-        ? parsed.notes.map(normalizeStoredNote).filter((note): note is ReaderParagraphNote => !!note)
+        ? normalizeImportedNotes(parsed.notes)
         : [];
       return { version: 1, notes };
     } catch {
@@ -88,7 +98,11 @@ class BrowserLocalNoteStore implements NoteStore {
   }
 
   async list(pageId: string) {
-    return this.load().notes.filter((note) => note.pageId === pageId).sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+    return this.load().notes.filter((note) => note.pageId === pageId).sort(compareByCreatedAtAsc);
+  }
+
+  async listAll() {
+    return [...this.load().notes].sort(compareByCreatedAtAsc);
   }
 
   async create(draft: ReaderParagraphNoteDraft) {
@@ -105,6 +119,7 @@ class BrowserLocalNoteStore implements NoteStore {
       updatedAt: now,
     };
     payload.notes.push(note);
+    payload.notes = normalizeImportedNotes(payload.notes);
     this.save(payload);
     return note;
   }
@@ -116,6 +131,7 @@ class BrowserLocalNoteStore implements NoteStore {
     target.note = payload.note;
     target.color = payload.color;
     target.updatedAt = new Date().toISOString();
+    store.notes = normalizeImportedNotes(store.notes);
     this.save(store);
     return target;
   }
@@ -125,6 +141,14 @@ class BrowserLocalNoteStore implements NoteStore {
     payload.notes = payload.notes.filter((item) => item.id !== id);
     this.save(payload);
   }
+
+  async replaceAll(notes: ReaderParagraphNote[]) {
+    this.save({ version: 1, notes: normalizeImportedNotes(notes) });
+  }
+
+  async clear() {
+    this.save({ version: 1, notes: [] });
+  }
 }
 
 class BrowserLocalPositionStore implements PositionStore {
@@ -133,22 +157,27 @@ class BrowserLocalPositionStore implements PositionStore {
       const raw = window.localStorage.getItem(POSITION_STORAGE_KEY);
       if (!raw) return {};
       const parsed = JSON.parse(raw) as ReaderNotePositions;
-      return parsed && typeof parsed === "object" ? parsed : {};
+      return normalizePositions(parsed);
     } catch {
       return {};
     }
   }
 
   async write(payload: ReaderNotePositions) {
-    window.localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(payload));
+    window.localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(normalizePositions(payload)));
   }
 }
 
 class IndexedDbNoteStore implements NoteStore {
   async list(pageId: string): Promise<ReaderParagraphNote[]> {
+    const notes = await this.listAll();
+    return notes.filter((note) => note.pageId === pageId);
+  }
+
+  async listAll(): Promise<ReaderParagraphNote[]> {
     const db = await openReaderDb();
     const notes = await readAllRecords<ReaderParagraphNote>(db, NOTE_STORE_NAME);
-    return notes.filter((note) => note.pageId === pageId).sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+    return normalizeImportedNotes(notes).sort(compareByCreatedAtAsc);
   }
 
   async create(draft: ReaderParagraphNoteDraft): Promise<ReaderParagraphNote> {
@@ -186,18 +215,28 @@ class IndexedDbNoteStore implements NoteStore {
     const db = await openReaderDb();
     await deleteRecord(db, NOTE_STORE_NAME, id);
   }
+
+  async replaceAll(notes: ReaderParagraphNote[]): Promise<void> {
+    const db = await openReaderDb();
+    await replaceAllRecords(db, NOTE_STORE_NAME, normalizeImportedNotes(notes));
+  }
+
+  async clear(): Promise<void> {
+    const db = await openReaderDb();
+    await clearStore(db, NOTE_STORE_NAME);
+  }
 }
 
 class IndexedDbPositionStore implements PositionStore {
   async read(): Promise<ReaderNotePositions> {
     const db = await openReaderDb();
     const record = await getRecord<PositionRecord>(db, POSITION_STORE_NAME, "fab");
-    return record?.value ?? {};
+    return normalizePositions(record?.value ?? {});
   }
 
   async write(payload: ReaderNotePositions): Promise<void> {
     const db = await openReaderDb();
-    await putRecord<PositionRecord>(db, POSITION_STORE_NAME, { id: "fab", value: payload });
+    await putRecord<PositionRecord>(db, POSITION_STORE_NAME, { id: "fab", value: normalizePositions(payload) });
   }
 }
 
@@ -225,10 +264,14 @@ function isReaderNoteColor(value: unknown): value is ReaderNoteColor {
   return typeof value === "string" && NOTE_COLORS.includes(value as ReaderNoteColor);
 }
 
+function isValidTimestamp(value: unknown): value is string {
+  return typeof value === "string" && !Number.isNaN(new Date(value).getTime());
+}
+
 function normalizeStoredNote(value: unknown): ReaderParagraphNote | null {
   if (!value || typeof value !== "object") return null;
   const candidate = value as Partial<ReaderParagraphNote>;
-  if (!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string" && typeof candidate.createdAt === "string" && typeof candidate.updatedAt === "string")) {
+  if (!(candidate.id && candidate.pageId && candidate.blockId && typeof candidate.quote === "string" && typeof candidate.note === "string" && isValidTimestamp(candidate.createdAt) && isValidTimestamp(candidate.updatedAt))) {
     return null;
   }
   return {
@@ -241,6 +284,39 @@ function normalizeStoredNote(value: unknown): ReaderParagraphNote | null {
     createdAt: candidate.createdAt,
     updatedAt: candidate.updatedAt,
   };
+}
+
+function normalizeImportedNotes(values: unknown[]): ReaderParagraphNote[] {
+  const notesById = new Map<string, ReaderParagraphNote>();
+  for (const value of values) {
+    const note = normalizeStoredNote(value);
+    if (!note) continue;
+    notesById.set(note.id, note);
+  }
+  return [...notesById.values()].sort(compareByCreatedAtAsc);
+}
+
+function normalizePositions(value: unknown): ReaderNotePositions {
+  if (!value || typeof value !== "object") return {};
+  const candidate = value as ReaderNotePositions;
+  const next: ReaderNotePositions = {};
+  if (isValidPosition(candidate.desktop)) {
+    next.desktop = { x: candidate.desktop.x, y: candidate.desktop.y };
+  }
+  if (isValidPosition(candidate.mobile)) {
+    next.mobile = { x: candidate.mobile.x, y: candidate.mobile.y };
+  }
+  return next;
+}
+
+function isValidPosition(value: unknown): value is ReaderNotePosition {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<ReaderNotePosition>;
+  return Number.isFinite(candidate.x) && Number.isFinite(candidate.y);
+}
+
+function compareByCreatedAtAsc(left: ReaderParagraphNote, right: ReaderParagraphNote) {
+  return left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id);
 }
 
 function createId() {
@@ -323,6 +399,28 @@ function deleteRecord(db: IDBDatabase, storeName: string, key: IDBValidKey): Pro
   });
 }
 
+function clearStore(db: IDBDatabase, storeName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, "readwrite");
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error ?? new Error(`Failed to clear ${storeName}`));
+    transaction.objectStore(storeName).clear();
+  });
+}
+
+function replaceAllRecords<T extends { id: IDBValidKey }>(db: IDBDatabase, storeName: string, values: T[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, "readwrite");
+    const store = transaction.objectStore(storeName);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error ?? new Error(`Failed to replace ${storeName}`));
+    store.clear();
+    values.forEach((value) => {
+      store.put(value);
+    });
+  });
+}
+
 export function createBrowserNoteStore(): NoteStore {
   return new BrowserLocalNoteStore();
 }
@@ -345,6 +443,57 @@ export function createNoteStore(): NoteStore {
 
 export function createPositionStore(): PositionStore {
   return resolveProvider().createPositionStore();
+}
+
+export async function listAllReaderNotes(): Promise<ReaderParagraphNote[]> {
+  return createNoteStore().listAll();
+}
+
+export async function removeReaderNote(id: string): Promise<void> {
+  await createNoteStore().remove(id);
+}
+
+export async function clearReaderNotebook(): Promise<void> {
+  const noteStore = createNoteStore();
+  const positionStore = createPositionStore();
+  await Promise.all([noteStore.clear(), positionStore.write({})]);
+}
+
+export async function exportReaderNotebook(): Promise<ReaderNotebookExport> {
+  const noteStore = createNoteStore();
+  const positionStore = createPositionStore();
+  const [notes, positions] = await Promise.all([noteStore.listAll(), positionStore.read()]);
+  return {
+    schema_version: 1,
+    exported_at: new Date().toISOString(),
+    notes,
+    positions,
+  };
+}
+
+export async function importReaderNotebook(payload: unknown): Promise<ReaderNotebookExport> {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("导入文件格式不对。");
+  }
+
+  const candidate = payload as Partial<ReaderNotebookExport> & { notes?: unknown; positions?: unknown };
+  const notes = Array.isArray(candidate.notes) ? normalizeImportedNotes(candidate.notes) : null;
+  if (!notes) {
+    throw new Error("导入文件里没有可用的笔记列表。");
+  }
+  const positions = normalizePositions(candidate.positions);
+
+  const noteStore = createNoteStore();
+  const positionStore = createPositionStore();
+  await noteStore.replaceAll(notes);
+  await positionStore.write(positions);
+
+  return {
+    schema_version: 1,
+    exported_at: new Date().toISOString(),
+    notes,
+    positions,
+  };
 }
 
 export function registerReaderStorageProviderFactory(factory: ReaderStorageProviderFactory) {

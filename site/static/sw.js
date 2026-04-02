@@ -1,4 +1,4 @@
-const VERSION = "book-site-v4";
+const VERSION = "book-site-v5";
 const APP_CACHE = `${VERSION}:app`;
 const PAGE_CACHE = `${VERSION}:pages`;
 const DATA_CACHE = `${VERSION}:data`;
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "/",
   "/library/",
   "/discover/",
+  "/notes/",
   OFFLINE_URL,
   "/manifest.webmanifest",
   "/favicon.svg",

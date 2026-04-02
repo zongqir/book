@@ -555,10 +555,19 @@ img { display: block; max-width: 100%; }
   min-height: 300px;
   padding: 0;
 }
+.library-index-card[hidden] {
+  display: none;
+}
 .book-card,
 .doc-card { min-height: 260px; }
 .library-index-card a { padding: 24px; align-content: space-between; gap: 14px; }
-.library-hero-actions { margin-top: 2px; }
+.library-index-search {
+  max-width: min(420px, 100%);
+  margin-top: 2px;
+}
+.library-index-empty {
+  min-height: 48px;
+}
 .library-index-preview,
 .mini-grid { display: grid; }
 .doc-side { display: flex; flex-direction: column; gap: 14px; align-self: start; }
@@ -1642,9 +1651,12 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .notes-toolbar-card {
   gap: 14px;
-  padding: 18px 20px;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255, 252, 248, 0.84), rgba(255, 248, 241, 0.74));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .notes-toolbar-card::before {
@@ -1666,6 +1678,11 @@ body.reader-notes-editor-open .reader-notes-shell {
 .notes-filters {
   display: grid;
   gap: 18px;
+  padding: 18px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.86), rgba(255, 248, 241, 0.74));
+  box-shadow: var(--shadow-card);
 }
 
 .notes-filters-summary {
@@ -2229,15 +2246,8 @@ body.reader-notes-editor-open .reader-notes-shell {
   .section-card a { gap: 10px; }
   .library-index-card a { gap: 12px; }
   .section-card .section-enter { margin-top: 6px; padding-top: 0; }
-  .library-hero-actions {
-    width: 100%;
-    gap: 10px;
-    margin-top: 4px;
-  }
-  .library-hero-actions .btn {
-    min-height: 44px;
-    padding-left: 16px;
-    padding-right: 16px;
+  .library-index-search {
+    max-width: none;
   }
   .page-intro--section h1 {
     font-size: clamp(2.5rem, 12vw, 3.4rem);
@@ -2481,10 +2491,11 @@ body.reader-notes-editor-open .reader-notes-shell {
   }
   .notes-filters {
     gap: 0;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border: 1px solid rgba(23, 48, 67, 0.08);
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.44);
+    box-shadow: none;
   }
   .notes-filters-summary {
     display: flex;

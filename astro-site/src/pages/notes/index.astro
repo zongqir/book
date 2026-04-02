@@ -32,20 +32,39 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <input id="notes-search" type="search" placeholder="搜书名、文稿标题、摘句或你写下的提醒" />
         </label>
 
-        <div class="field-control field-control--action">
-          <span>导出</span>
+        <label class="field-control notes-toolbar-sort">
+          <span>排序</span>
+          <select id="notes-sort">
+            <option value="updated-desc">最近更新</option>
+            <option value="updated-asc">最早更新</option>
+            <option value="created-desc">最近创建</option>
+            <option value="created-asc">最早创建</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="notes-filter-row">
+        <div class="notes-filter-group" aria-label="笔记筛选">
+          <button class="notes-filter-chip is-active" type="button" data-notes-highlight="all">全部</button>
+          <button class="notes-filter-chip" type="button" data-notes-highlight="only">只看纯高亮</button>
+        </div>
+
+        <div class="notes-filter-group notes-filter-group--colors" aria-label="颜色筛选">
+          <button class="notes-filter-color is-active" type="button" data-notes-color="all">全部颜色</button>
+          <button class="notes-filter-color notes-filter-color--amber" type="button" data-notes-color="amber">黄色</button>
+          <button class="notes-filter-color notes-filter-color--teal" type="button" data-notes-color="teal">青绿</button>
+          <button class="notes-filter-color notes-filter-color--rose" type="button" data-notes-color="rose">红色</button>
+          <button class="notes-filter-color notes-filter-color--violet" type="button" data-notes-color="violet">紫色</button>
+        </div>
+      </div>
+
+      <div class="notes-toolbar-meta">
+        <p class="notes-summary" id="notes-summary">正在整理你的笔记…</p>
+        <div class="notes-actions">
           <button class="btn" id="notes-export" type="button">导出 JSON</button>
-        </div>
-
-        <div class="field-control field-control--action">
-          <span>导入</span>
           <button class="btn btn-ghost" id="notes-import-trigger" type="button">导入 JSON</button>
-          <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
-        </div>
-
-        <div class="field-control field-control--action">
-          <span>清空</span>
           <button class="tool-switch" id="notes-clear" type="button">清空本地</button>
+          <input id="notes-import-input" type="file" accept="application/json,.json" hidden />
         </div>
       </div>
 
@@ -73,24 +92,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     } from "../../lib/reader-storage";
 
     const searchInput = document.getElementById("notes-search");
+    const sortSelect = document.getElementById("notes-sort");
     const exportButton = document.getElementById("notes-export");
     const importButton = document.getElementById("notes-import-trigger");
     const importInput = document.getElementById("notes-import-input");
     const clearButton = document.getElementById("notes-clear");
     const statusNode = document.getElementById("notes-status");
+    const summaryNode = document.getElementById("notes-summary");
     const resultsNode = document.getElementById("notes-results");
     const emptyNode = document.getElementById("notes-empty");
     const totalCountNode = document.getElementById("notes-total-count");
     const bookCountNode = document.getElementById("notes-book-count");
     const highlightCountNode = document.getElementById("notes-highlight-count");
+    const highlightButtons = Array.from(document.querySelectorAll("[data-notes-highlight]"));
+    const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
 
     const state = {
       notes: [],
       query: "",
-      loading: true,
+      sort: "updated-desc",
+      highlight: "all",
+      color: "all",
       booksById: new Map(),
       pagesById: new Map(),
-      indexReady: false,
     };
 
     function escapeHtml(value) {
@@ -109,8 +133,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     function setBusy(isBusy) {
-      [searchInput, exportButton, importButton, clearButton].forEach((node) => {
-        if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement) {
+      [searchInput, sortSelect, exportButton, importButton, clearButton].forEach((node) => {
+        if (node instanceof HTMLInputElement || node instanceof HTMLButtonElement || node instanceof HTMLSelectElement) {
           node.disabled = isBusy;
         }
       });
@@ -152,13 +176,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       ].join(" ").toLowerCase();
     }
 
+    function compareNotes(left, right) {
+      const sort = state.sort;
+      const leftUpdated = String(left.updatedAt || "");
+      const rightUpdated = String(right.updatedAt || "");
+      const leftCreated = String(left.createdAt || "");
+      const rightCreated = String(right.createdAt || "");
+      if (sort === "updated-asc") return leftUpdated.localeCompare(rightUpdated) || left.id.localeCompare(right.id);
+      if (sort === "created-desc") return rightCreated.localeCompare(leftCreated) || right.id.localeCompare(left.id);
+      if (sort === "created-asc") return leftCreated.localeCompare(rightCreated) || left.id.localeCompare(right.id);
+      return rightUpdated.localeCompare(leftUpdated) || right.id.localeCompare(left.id);
+    }
+
     function getFilteredNotes() {
       const query = state.query.trim().toLowerCase();
-      const list = state.notes
+      return state.notes
         .slice()
-        .sort((left, right) => String(right.updatedAt || "").localeCompare(String(left.updatedAt || "")));
-      if (!query) return list;
-      return list.filter((note) => buildSearchText(note, toNoteMeta(note)).includes(query));
+        .filter((note) => {
+          if (state.highlight === "only" && String(note.note || "").trim()) return false;
+          if (state.color !== "all" && note.color !== state.color) return false;
+          if (query && !buildSearchText(note, toNoteMeta(note)).includes(query)) return false;
+          return true;
+        })
+        .sort(compareNotes);
     }
 
     function renderStats() {
@@ -172,6 +212,30 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (bookCountNode) bookCountNode.textContent = String(bookIds.size);
       const pureHighlights = state.notes.filter((note) => !String(note.note || "").trim()).length;
       if (highlightCountNode) highlightCountNode.textContent = String(pureHighlights);
+    }
+
+    function renderFilterState(visibleCount) {
+      highlightButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.classList.toggle("is-active", button.dataset.notesHighlight === state.highlight);
+      });
+      colorButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.classList.toggle("is-active", button.dataset.notesColor === state.color);
+      });
+
+      if (!(summaryNode instanceof HTMLElement)) return;
+      if (!state.notes.length) {
+        summaryNode.textContent = "这里会按书整理你留在本地的阅读痕迹。";
+        return;
+      }
+
+      const labels = [];
+      if (state.highlight === "only") labels.push("只看纯高亮");
+      if (state.color !== "all") labels.push("颜色已筛选");
+      if (state.query) labels.push("搜索中");
+      const suffix = labels.length ? " · " + labels.join(" · ") : "";
+      summaryNode.textContent = "当前显示 " + visibleCount + " 条，按书归拢。" + suffix;
     }
 
     function renderEmpty(message) {
@@ -188,6 +252,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (!(resultsNode instanceof HTMLElement)) return;
 
       const visible = getFilteredNotes();
+      renderFilterState(visible.length);
+
       if (!state.notes.length) {
         renderEmpty("去任意一篇正文里划一段，或者导入你之前备份过的笔记。");
         return;
@@ -218,11 +284,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
 
       const groupMarkup = Array.from(groups.values())
-        .sort((left, right) => {
-          const leftTime = left.notes[0]?.note.updatedAt || "";
-          const rightTime = right.notes[0]?.note.updatedAt || "";
-          return String(rightTime).localeCompare(String(leftTime));
-        })
+        .sort((left, right) => compareNotes(left.notes[0].note, right.notes[0].note))
         .map((group) => {
           const items = group.notes
             .map(({ note, meta }) => {
@@ -274,7 +336,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         pages.forEach((page) => {
           if (page && page.id) state.pagesById.set(page.id, page);
         });
-        state.indexReady = true;
       } catch (error) {
         console.error("Failed to load notes index", error);
         setStatus("笔记已加载，但原文标题和书名索引暂时没拿到。", "warning");
@@ -282,7 +343,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function refreshNotes() {
-      state.loading = true;
       setBusy(true);
       try {
         state.notes = await listAllReaderNotes();
@@ -297,7 +357,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         renderEmpty("笔记读取失败了，刷新后再试一次。");
         setStatus("本地笔记读取失败了。", "danger");
       } finally {
-        state.loading = false;
         setBusy(false);
       }
     }
@@ -326,6 +385,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         render();
       });
     }
+
+    if (sortSelect instanceof HTMLSelectElement) {
+      sortSelect.addEventListener("change", function () {
+        state.sort = sortSelect.value || "updated-desc";
+        render();
+      });
+    }
+
+    highlightButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        state.highlight = button.dataset.notesHighlight || "all";
+        render();
+      });
+    });
+
+    colorButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        state.color = button.dataset.notesColor || "all";
+        render();
+      });
+    });
 
     if (exportButton instanceof HTMLButtonElement) {
       exportButton.addEventListener("click", async function () {

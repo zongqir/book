@@ -117,6 +117,7 @@ const featuredTags = discover.tags.slice(0, 12);
       var summary = document.getElementById("discover-summary");
       var results = document.getElementById("discover-results");
       var chipRow = document.getElementById("discover-chip-row");
+      var tagChips = Array.prototype.slice.call(document.querySelectorAll("[data-tag-chip]"));
       var kindPills = Array.prototype.slice.call(document.querySelectorAll("[data-kind-pill]"));
       var state = { items: [] };
 
@@ -174,6 +175,13 @@ const featuredTags = discover.tags.slice(0, 12);
         kindPills.forEach(function (button) {
           if (!(button instanceof HTMLElement)) return;
           button.classList.toggle("is-active", button.dataset.kindPill === value);
+        });
+      }
+
+      function syncTagChips(value) {
+        tagChips.forEach(function (button) {
+          if (!(button instanceof HTMLElement)) return;
+          button.classList.toggle("is-active", button.getAttribute("data-tag-chip") === value);
         });
       }
 
@@ -260,6 +268,7 @@ const featuredTags = discover.tags.slice(0, 12);
         updateFilterSummary(filters);
         updateUrl(filters);
         syncKindPills(filters.kind);
+        syncTagChips(filters.tag);
         var list = state.items
           .filter(function (item) { return passesFilters(item, filters); })
           .map(function (item) {
@@ -316,7 +325,7 @@ const featuredTags = discover.tags.slice(0, 12);
             if (!(button instanceof HTMLElement)) return;
             var tag = button.getAttribute("data-tag-chip");
             if (!tag) return;
-            if (tagInput) tagInput.value = tag;
+            if (tagInput) tagInput.value = tagInput.value.trim() === tag ? "" : tag;
             render();
           });
         }

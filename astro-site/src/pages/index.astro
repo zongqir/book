@@ -25,6 +25,17 @@ const sectionPreviewMap = Object.fromEntries(
       .map((book) => ({ title: book.title, url: book.url })),
   ]),
 );
+const sectionSpotlights = sections.map((section) => {
+  const sectionBooks = books.filter((book) => book.section_key === section.key);
+  const leadBook = sectionBooks[0] ?? null;
+  const leadEntry = leadBook ? getBookEntry(leadBook.id, leadBook.url) : null;
+  return {
+    ...section,
+    leadBook,
+    leadEntry,
+    previewBooks: sectionBooks.slice(1, 4).map((book) => ({ title: book.title, url: book.url })),
+  };
+});
 ---
 
 <BaseLayout
@@ -40,16 +51,7 @@ const sectionPreviewMap = Object.fromEntries(
       <div class="home-stage-head home-stage-head--mobile">
         <p class="hero-kicker">手机先做一件事</p>
         <h1>先看到一句，再决定今天往哪走</h1>
-        <p class="home-stage-copy">首页先只给一个入口，不把整个书库一次铺开。看一句，接上次，或直接翻一本到，都比不停下拉更像在用手机。</p>
-      </div>
-
-      <div class="home-mobile-strip" aria-label="快捷分类">
-        {sections.map((section) => (
-          <a class="home-mobile-chip" href={section.url}>
-            <span>{section.title}</span>
-            <em>{section.book_count} 本</em>
-          </a>
-        ))}
+        <p class="home-stage-copy">看一句，接上次，或者直接翻一本到。</p>
       </div>
 
       <div class="hero-tools hero-tools--stage">
@@ -127,7 +129,65 @@ const sectionPreviewMap = Object.fromEntries(
       <div class="section-head section-head--home-categories">
         <div>
           <h2>按方向开始</h2>
-          <p class="section-head-copy">不必一次看完整个库。先挑一条线，进到那本书里再决定要不要继续深挖。</p>
+          <p class="section-head-copy">先定方向，再进书里。</p>
+        </div>
+        <a class="tool-switch tool-switch--compact section-head-action" href="/library/">看全部</a>
+      </div>
+
+      <div class="home-category-hub" data-home-category-hub>
+        <div class="home-category-tabs" role="tablist" aria-label="首页分类">
+          {sectionSpotlights.map((section, index) => (
+            <button
+              class:list={["home-category-tab", index === 0 && "is-active"]}
+              type="button"
+              role="tab"
+              aria-selected={index === 0 ? "true" : "false"}
+              data-home-section-tab
+              data-key={section.key}
+              data-title={section.title}
+            >
+              <span>{section.title}</span>
+              <em>{section.book_count} 本</em>
+            </button>
+          ))}
+        </div>
+
+        <div class="home-category-panels">
+          {sectionSpotlights.map((section, index) => (
+            <article
+              class:list={["home-category-spotlight", index === 0 && "is-active"]}
+              data-home-section-panel
+              data-key={section.key}
+              hidden={index !== 0}
+            >
+              <div class="home-category-spotlight-head">
+                <div>
+                  <p class="home-category-meta">{section.book_count} 本书 · {section.page_count} 篇内容</p>
+                  <h3>{section.title}</h3>
+                </div>
+                <a class="tool-switch tool-switch--compact" href={section.url}>进入分类</a>
+              </div>
+
+              {section.leadBook && (
+                <a class="home-category-lead" href={section.leadEntry?.url ?? section.leadBook.url}>
+                  <span class="home-category-lead-label">{section.leadEntry?.label ?? "先看"}</span>
+                  <strong>{section.leadBook.title}</strong>
+                  <p>{section.leadBook.summary}</p>
+                </a>
+              )}
+
+              {section.previewBooks.length > 0 && (
+                <div class="home-category-preview-stack">
+                  <p class="home-category-preview-label">这类书</p>
+                  <div class="home-category-preview-list">
+                    {section.previewBooks.map((book) => (
+                      <a class="home-category-preview-item" href={book.url}>{book.title}</a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </article>
+          ))}
         </div>
       </div>
 
@@ -257,6 +317,51 @@ const sectionPreviewMap = Object.fromEntries(
       var quoteLink = document.getElementById("random-quote-link");
       var quoteShuffle = document.getElementById("random-quote-shuffle");
       var currentQuote = 0;
+      var HOME_SECTION_KEY = "book:home-section:v1";
+      var sectionTabs = Array.prototype.slice.call(document.querySelectorAll("[data-home-section-tab]"));
+      var sectionPanels = Array.prototype.slice.call(document.querySelectorAll("[data-home-section-panel]"));
+
+      function readSavedSection() {
+        try {
+          return window.localStorage.getItem(HOME_SECTION_KEY) || "";
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function saveSection(key) {
+        try {
+          if (key) window.localStorage.setItem(HOME_SECTION_KEY, key);
+        } catch (error) {}
+      }
+
+      function detectSectionFromVisit() {
+        var lastVisit = readLastVisit();
+        if (!lastVisit || !lastVisit.context) return "";
+        var matchedTab = sectionTabs.find(function (tab) {
+          return tab instanceof HTMLElement
+            && tab.dataset.title
+            && lastVisit.context.indexOf(tab.dataset.title) !== -1;
+        });
+        return matchedTab instanceof HTMLElement ? (matchedTab.dataset.key || "") : "";
+      }
+
+      function setActiveSection(key, persist) {
+        if (!key) return;
+        sectionTabs.forEach(function (tab) {
+          if (!(tab instanceof HTMLElement)) return;
+          var isActive = tab.dataset.key === key;
+          tab.classList.toggle("is-active", isActive);
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+        sectionPanels.forEach(function (panel) {
+          if (!(panel instanceof HTMLElement)) return;
+          var isActive = panel.dataset.key === key;
+          panel.hidden = !isActive;
+          panel.classList.toggle("is-active", isActive);
+        });
+        if (persist) saveSection(key);
+      }
 
       function renderQuote(index) {
         if (!quotes.length) return;
@@ -283,6 +388,16 @@ const sectionPreviewMap = Object.fromEntries(
       }
 
       renderResume(readLastVisit());
+      if (sectionTabs.length && sectionPanels.length) {
+        var preferredSection = readSavedSection() || detectSectionFromVisit() || (sectionTabs[0] && sectionTabs[0].dataset.key) || "";
+        setActiveSection(preferredSection, false);
+        sectionTabs.forEach(function (tab) {
+          if (!(tab instanceof HTMLElement)) return;
+          tab.addEventListener("click", function () {
+            setActiveSection(tab.dataset.key || "", true);
+          });
+        });
+      }
 
       if (bookShuffle) {
         bookShuffle.addEventListener("click", function () {

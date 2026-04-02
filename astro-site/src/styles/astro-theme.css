@@ -1518,7 +1518,104 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .discover-result-card {
-  min-height: 250px;
+  min-height: 0;
+  border-radius: 26px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.9), rgba(255, 247, 239, 0.72));
+  box-shadow: 0 18px 40px rgba(23, 48, 67, 0.08);
+  overflow: hidden;
+}
+
+.discover-result-card a {
+  display: grid;
+  gap: 14px;
+  min-height: 100%;
+  padding: 18px 18px 20px;
+}
+
+.discover-result-card--book {
+  background:
+    radial-gradient(circle at top right, rgba(164, 91, 42, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 245, 0.94), rgba(255, 246, 236, 0.72));
+}
+
+.discover-result-card--page {
+  background:
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(248, 252, 252, 0.94), rgba(240, 248, 248, 0.78));
+}
+
+.discover-result-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.discover-result-kicker,
+.discover-result-section,
+.discover-result-slot,
+.discover-result-book {
+  margin: 0;
+}
+
+.discover-result-kicker,
+.discover-result-section,
+.discover-result-slot {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discover-result-kicker {
+  color: var(--accent-strong);
+}
+
+.discover-result-section,
+.discover-result-slot {
+  color: var(--text-faint);
+}
+
+.discover-result-book {
+  color: var(--text-faint);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.discover-result-card h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.4rem;
+  line-height: 1.24;
+}
+
+.discover-result-summary {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.74;
+}
+
+.discover-result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.discover-result-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.discover-result-card:hover,
+.discover-result-card:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(23, 48, 67, 0.12);
 }
 
 .discover-empty {
@@ -2417,6 +2514,38 @@ body.reader-notes-editor-open .reader-notes-shell {
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.58);
     font-size: 0.88rem;
+  }
+  .discover-results {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .discover-result-card {
+    border-radius: 22px;
+  }
+  .discover-result-card a {
+    gap: 12px;
+    padding: 16px;
+  }
+  .discover-result-card h3 {
+    font-size: 1.22rem;
+    line-height: 1.26;
+  }
+  .discover-result-summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    font-size: 0.94rem;
+    line-height: 1.66;
+  }
+  .discover-result-book {
+    font-size: 0.82rem;
+  }
+  .discover-result-tags {
+    gap: 6px;
+  }
+  .discover-result-action {
+    font-size: 0.96rem;
   }
   .content-card--reading .doc-content {
     font-size: 1rem;

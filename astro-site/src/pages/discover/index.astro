@@ -217,10 +217,38 @@ const featuredTags = discover.tags.slice(0, 12);
       }
 
       function renderCard(item) {
+        var tags = item.tags.slice(0, 4).map(function (tag) {
+          return '<span class="tag-pill">' + escapeHtml(tag) + '</span>';
+        }).join("");
         if (item.kind === "book") {
-          return '<article class="book-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="section-index">' + escapeHtml(item.section_title) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || "还没有摘要。") + '</p><div class="book-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>进入书页</span><span>→</span></div></a></article>';
+          return '' +
+            '<article class="discover-result-card discover-result-card--book">' +
+              '<a href="' + escapeHtml(item.url) + '">' +
+                '<div class="discover-result-topline">' +
+                  '<p class="discover-result-kicker">书</p>' +
+                  '<span class="discover-result-section">' + escapeHtml(item.section_title) + '</span>' +
+                '</div>' +
+                '<h3>' + escapeHtml(item.title) + '</h3>' +
+                '<p class="discover-result-summary">' + escapeHtml(item.summary || "先打开书页，再决定从哪一篇开始。") + '</p>' +
+                '<div class="discover-result-tags">' + tags + '</div>' +
+                '<div class="discover-result-action"><span>进入这本书</span><span>→</span></div>' +
+              '</a>' +
+            '</article>';
         }
-        return '<article class="doc-card discover-result-card"><a href="' + escapeHtml(item.url) + '"><div class="card-topline"><span class="slot-badge">' + escapeHtml(item.slot || "--") + '</span><div class="meta-row"><span class="meta-chip">' + escapeHtml(item.book_title) + '</span></div></div><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary || item.intent || "还没有摘要。") + '</p><div class="doc-card-footer">' + item.tags.slice(0, 4).map(function (tag) { return '<span class="tag-pill">' + escapeHtml(tag) + '</span>'; }).join("") + '</div><div class="section-enter"><span>打开文稿</span><span>→</span></div></a></article>';
+        return '' +
+          '<article class="discover-result-card discover-result-card--page">' +
+            '<a href="' + escapeHtml(item.url) + '">' +
+              '<div class="discover-result-topline">' +
+                '<p class="discover-result-kicker">文稿</p>' +
+                '<span class="discover-result-slot">' + escapeHtml(item.slot || "--") + '</span>' +
+              '</div>' +
+              '<p class="discover-result-book">' + escapeHtml(item.book_title) + '</p>' +
+              '<h3>' + escapeHtml(item.title) + '</h3>' +
+              '<p class="discover-result-summary">' + escapeHtml(item.summary || item.intent || "打开这一页，直接进入正文。") + '</p>' +
+              '<div class="discover-result-tags">' + tags + '</div>' +
+              '<div class="discover-result-action"><span>打开这一页</span><span>→</span></div>' +
+            '</a>' +
+          '</article>';
       }
 
       function renderEmpty() {
@@ -245,8 +273,9 @@ const featuredTags = discover.tags.slice(0, 12);
         var visible = list.slice(0, 48).map(function (entry) { return entry.item; });
         if (summary) {
           if (!state.items.length) summary.textContent = "正在加载索引…";
-          else if (!visible.length) summary.textContent = "没找到匹配项，换个关键词或去掉一个筛选试试。";
-          else summary.textContent = '找到 ' + list.length + ' 条结果，当前展示前 ' + visible.length + ' 条。';
+          else if (!visible.length) summary.textContent = "没找到合适的入口，换个词或拿掉一个条件试试。";
+          else if (list.length > visible.length) summary.textContent = '先给你 ' + visible.length + ' 条，命中的一共有 ' + list.length + ' 条。';
+          else summary.textContent = '现在能直接看的有 ' + visible.length + ' 条。';
         }
         if (results) {
           results.innerHTML = visible.length ? visible.map(renderCard).join("") : renderEmpty();

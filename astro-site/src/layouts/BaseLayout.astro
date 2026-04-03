@@ -48,6 +48,27 @@ const appHref = toInternalHref("/app/");
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      (function () {
+        function applyNativeAppClass() {
+          var root = document.documentElement;
+          var ua = window.navigator.userAgent || "";
+          var capacitor = window.Capacitor;
+          var isNativeApp = Boolean(
+            capacitor && typeof capacitor.isNativePlatform === "function" && capacitor.isNativePlatform(),
+          );
+
+          if (!isNativeApp) return;
+          root.classList.add("is-capacitor-app");
+          if (/Android/i.test(ua)) {
+            root.classList.add("is-capacitor-android");
+          }
+        }
+
+        applyNativeAppClass();
+        document.addEventListener("DOMContentLoaded", applyNativeAppClass, { once: true });
+      })();
+    </script>
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />

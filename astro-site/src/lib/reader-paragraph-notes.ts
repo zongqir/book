@@ -165,10 +165,19 @@ export function setupReaderParagraphNotes() {
     return currentMode() === "mobile" ? MOBILE_FAB_SIZE : DESKTOP_FAB_SIZE;
   }
 
+  function getMobileDockClearance() {
+    if (currentMode() !== "mobile") return FAB_MARGIN;
+    const dock = document.querySelector<HTMLElement>(".mobile-app-dock");
+    if (!dock) return MOBILE_DOCK_CLEARANCE;
+    const rect = dock.getBoundingClientRect();
+    if (rect.height <= 0 || rect.top >= window.innerHeight) return MOBILE_DOCK_CLEARANCE;
+    return Math.max(MOBILE_DOCK_CLEARANCE, Math.ceil(window.innerHeight - rect.top + FAB_MARGIN));
+  }
+
   function normalizePosition(position: ReaderNotePosition): ReaderNotePosition {
     const size = getFabSize();
     const maxX = Math.max(FAB_MARGIN, window.innerWidth - size - FAB_MARGIN);
-    const bottomClearance = currentMode() === "mobile" ? MOBILE_DOCK_CLEARANCE : FAB_MARGIN;
+    const bottomClearance = currentMode() === "mobile" ? getMobileDockClearance() : FAB_MARGIN;
     const maxY = Math.max(FAB_MARGIN, window.innerHeight - size - bottomClearance);
     return {
       x: clamp(position.x, FAB_MARGIN, maxX),
@@ -197,9 +206,10 @@ export function setupReaderParagraphNotes() {
   function getDefaultPosition() {
     const size = getFabSize();
     if (currentMode() === "mobile") {
+      const bottomClearance = getMobileDockClearance();
       return normalizePosition({
         x: window.innerWidth - size - FAB_MARGIN,
-        y: window.innerHeight - size - MOBILE_DOCK_CLEARANCE,
+        y: window.innerHeight - size - bottomClearance,
       });
     }
 

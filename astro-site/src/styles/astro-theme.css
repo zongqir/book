@@ -18,7 +18,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 html.is-capacitor-android {
-  --safe-top: max(18px, env(safe-area-inset-top));
+  --safe-top: env(safe-area-inset-top);
   --safe-bottom: max(16px, env(safe-area-inset-bottom));
 }
 body {
@@ -2349,9 +2349,6 @@ html.is-capacitor-app .tool-switch--share {
       radial-gradient(circle at 20% 0%, rgba(164, 91, 42, 0.16), transparent 26%),
       radial-gradient(circle at 100% 10%, rgba(29, 109, 116, 0.18), transparent 28%),
       linear-gradient(180deg, #f4ede1 0%, #f6f1e7 38%, #f3ece0 100%);
-  }
-  html.is-capacitor-app body {
-    padding-top: var(--safe-top);
   }
   .page-frame { position: sticky; top: 0; z-index: 24; padding-top: 8px; backdrop-filter: blur(10px); }
   .is-home .page-frame,

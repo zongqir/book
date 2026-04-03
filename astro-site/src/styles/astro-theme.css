@@ -563,10 +563,13 @@ img { display: block; max-width: 100%; }
 }
 .share-inline {
   position: relative;
-  display: inline-flex;
+  display: none;
   align-items: center;
   gap: 10px;
   margin-left: auto;
+}
+html.is-capacitor-app .share-inline {
+  display: inline-flex;
 }
 .share-icon-button {
   display: inline-flex;

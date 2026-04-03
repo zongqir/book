@@ -88,40 +88,29 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
-          <section class="share-card share-card--book" aria-label="分享这本书">
-            <div class="share-card-copy">
-              <p class="eyebrow">带走这本书</p>
-              <p class="share-card-note">发给朋友，或者先留给自己，下次继续读就能直接回来。</p>
-            </div>
-            <div class="share-card-preview share-card-preview--book" aria-hidden="true">
-              <p class="share-card-kicker">{node.book.section_title}</p>
-              <h2>{node.title}</h2>
-              <p class="share-card-preview-text">
-                {node.book.summary || `${node.pages.length} 个入口，适合从书页直接往里读。`}
-              </p>
-              <div class="share-card-preview-tags">
-                <span class="preview-pill">{node.pages.length} 个入口</span>
-                {node.book.tags.slice(0, 3).map((tag) => <span class="preview-pill">{tag}</span>)}
-              </div>
-            </div>
-            <div class="share-card-actions">
+          <div class="detail-line">
+            <span class="meta-chip">{node.pages.length} 个入口</span>
+            <span class="meta-chip">{node.book.section_title}</span>
+            {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
+            <div class="share-inline" data-share-area>
               <button
-                class="share-button"
+                class="share-icon-button"
                 type="button"
                 data-share-trigger
                 data-share-title={node.title}
                 data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
                 data-share-url={node.book.url}
+                aria-label={`分享《${node.title}》`}
+                title="分享这本书"
               >
-                <span class="share-button-icon" aria-hidden="true">↗</span>
-                <span>分享这本书</span>
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M13 4.5h2.5v2.5"></path>
+                  <path d="M8.25 11.75 15.5 4.5"></path>
+                  <path d="M15.5 10v4.25A1.25 1.25 0 0 1 14.25 15.5h-8.5A1.25 1.25 0 0 1 4.5 14.25v-8.5A1.25 1.25 0 0 1 5.75 4.5H10"></path>
+                </svg>
               </button>
+              <span class="share-inline-feedback" data-share-feedback aria-live="polite"></span>
             </div>
-          </section>
-          <div class="detail-line">
-            <span class="meta-chip">{node.pages.length} 个入口</span>
-            <span class="meta-chip">{node.book.section_title}</span>
-            {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
           </div>
           <div class="slot-rail">
             {node.pages.map((page) => (
@@ -210,36 +199,27 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
-          <section class="share-card share-card--page" aria-label="分享这一页">
-            <div class="share-card-copy">
-              <p class="eyebrow">带走这一页</p>
-              <p class="share-card-note">适合直接发给别人，也适合发回给自己，稍后接着读。</p>
-            </div>
-            <div class="share-card-preview share-card-preview--page" aria-hidden="true">
-              <p class="share-card-kicker">{node.book?.title || "读书库"}</p>
-              <h2>{node.page.title}</h2>
-              <p class="share-card-preview-text">
-                {node.page.summary || node.page.intent || "这一页里最核心的判断，适合直接分享出去。"}
-              </p>
-              <div class="share-card-preview-tags">
-                {node.section && <span class="preview-pill">{node.section.title}</span>}
-                {node.page.tags.slice(0, 2).map((tag) => <span class="preview-pill">{tag}</span>)}
-              </div>
-            </div>
-            <div class="share-card-actions">
+          <div class="doc-hero-actions">
+            <div class="share-inline" data-share-area>
               <button
-                class="share-button"
+                class="share-icon-button"
                 type="button"
                 data-share-trigger
                 data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
                 data-share-text={node.page.summary || node.page.intent || node.page.title}
                 data-share-url={node.page.url}
+                aria-label={`分享《${node.page.title}》`}
+                title="分享这一页"
               >
-                <span class="share-button-icon" aria-hidden="true">↗</span>
-                <span>分享这一页</span>
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M13 4.5h2.5v2.5"></path>
+                  <path d="M8.25 11.75 15.5 4.5"></path>
+                  <path d="M15.5 10v4.25A1.25 1.25 0 0 1 14.25 15.5h-8.5A1.25 1.25 0 0 1 4.5 14.25v-8.5A1.25 1.25 0 0 1 5.75 4.5H10"></path>
+                </svg>
               </button>
+              <span class="share-inline-feedback" data-share-feedback aria-live="polite"></span>
             </div>
-          </section>
+          </div>
         </div>
       </section>
 
@@ -463,6 +443,28 @@ const libraryHref = toInternalHref("/library/");
 
     const shareButtons = Array.from(document.querySelectorAll("[data-share-trigger]"));
 
+    function setShareFeedback(button, message, tone) {
+      if (!(button instanceof HTMLElement)) return;
+      const area = button.closest("[data-share-area]");
+      const feedback = area instanceof HTMLElement ? area.querySelector("[data-share-feedback]") : null;
+      if (!(feedback instanceof HTMLElement)) return;
+
+      if (feedback.dataset.timerId) {
+        window.clearTimeout(Number(feedback.dataset.timerId));
+      }
+
+      feedback.textContent = message;
+      feedback.dataset.tone = tone || "neutral";
+
+      if (!message) return;
+
+      const timerId = window.setTimeout(() => {
+        feedback.textContent = "";
+        delete feedback.dataset.timerId;
+      }, 2200);
+      feedback.dataset.timerId = String(timerId);
+    }
+
     shareButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;
       button.addEventListener("click", async function () {
@@ -471,23 +473,18 @@ const libraryHref = toInternalHref("/library/");
           text: button.dataset.shareText || "",
           url: button.dataset.shareUrl || window.location.href,
         };
-        const originalText = button.textContent || "分享";
 
         try {
+          button.disabled = true;
+          setShareFeedback(button, "正在处理…", "neutral");
           const result = await shareContent(payload);
-          if (result.method === "clipboard") {
-            button.textContent = "已复制链接";
-            window.setTimeout(() => {
-              button.textContent = originalText;
-            }, 1800);
-          }
+          setShareFeedback(button, result.method === "clipboard" ? "已复制链接" : "已打开分享", "success");
         } catch (error) {
           if (error instanceof DOMException && error.name === "AbortError") return;
           console.error("Failed to share page", error);
-          button.textContent = "分享失败";
-          window.setTimeout(() => {
-            button.textContent = originalText;
-          }, 1800);
+          setShareFeedback(button, "分享失败", "danger");
+        } finally {
+          button.disabled = false;
         }
       });
     });

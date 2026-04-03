@@ -725,6 +725,9 @@ img { display: block; max-width: 100%; }
   flex: 1 1 0;
   justify-content: center;
 }
+.share-card-preview-actions .btn {
+  width: 100%;
+}
 body.share-card-preview-open {
   overflow: hidden;
 }
@@ -2538,10 +2541,9 @@ html.is-capacitor-app .tool-switch--share {
     padding: 14px;
   }
   .share-card-preview-actions {
-    gap: 8px;
+    gap: 0;
   }
-  .share-card-preview-actions .btn,
-  .share-card-preview-actions .tool-switch {
+  .share-card-preview-actions .btn {
     min-height: 44px;
   }
   .doc-hero--page .doc-summary {

@@ -20,7 +20,6 @@ type ShareCardPreviewElements = {
   title: HTMLElement;
   status: HTMLElement;
   shareButton: HTMLButtonElement;
-  openButton: HTMLButtonElement;
 };
 
 let shareCardPreview: ShareCardPreviewElements | null = null;
@@ -240,7 +239,6 @@ function ensureShareCardPreview() {
       <p class="share-card-preview-title" data-share-card-title></p>
       <p class="share-card-preview-status" data-share-card-status aria-live="polite"></p>
       <div class="share-card-preview-actions">
-        <button class="tool-switch" type="button" data-share-card-open>查看卡片</button>
         <button class="btn" type="button" data-share-card-share>立即分享</button>
       </div>
     </div>
@@ -252,13 +250,11 @@ function ensureShareCardPreview() {
   const title = root.querySelector("[data-share-card-title]");
   const status = root.querySelector("[data-share-card-status]");
   const shareButton = root.querySelector("[data-share-card-share]");
-  const openButton = root.querySelector("[data-share-card-open]");
   if (
     !(image instanceof HTMLImageElement) ||
     !(title instanceof HTMLElement) ||
     !(status instanceof HTMLElement) ||
-    !(shareButton instanceof HTMLButtonElement) ||
-    !(openButton instanceof HTMLButtonElement)
+    !(shareButton instanceof HTMLButtonElement)
   ) {
     root.remove();
     return null;
@@ -270,15 +266,6 @@ function ensureShareCardPreview() {
 
     if (target.closest("[data-share-card-close]")) {
       closeShareCardPreview();
-      return;
-    }
-
-    if (target.closest("[data-share-card-open]")) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (activePreviewPayload?.imageUrl) {
-        window.open(activePreviewPayload.imageUrl, "_blank", "noopener");
-      }
       return;
     }
 
@@ -295,7 +282,6 @@ function ensureShareCardPreview() {
     title,
     status,
     shareButton,
-    openButton,
   };
   return shareCardPreview;
 }
@@ -313,7 +299,6 @@ function openShareCardPreview(payload: SharePayload, area: HTMLElement) {
   preview.root.hidden = false;
   preview.root.setAttribute("aria-hidden", "false");
   preview.shareButton.disabled = false;
-  preview.openButton.disabled = false;
   document.body.classList.add("share-card-preview-open");
 }
 
@@ -323,7 +308,6 @@ function closeShareCardPreview() {
   shareCardPreview.root.setAttribute("aria-hidden", "true");
   shareCardPreview.status.textContent = "";
   shareCardPreview.shareButton.disabled = false;
-  shareCardPreview.openButton.disabled = false;
   document.body.classList.remove("share-card-preview-open");
   activePreviewPayload = null;
   activePreviewArea = null;
@@ -334,12 +318,11 @@ async function submitShareCardPreview() {
 
   try {
     shareCardPreview.shareButton.disabled = true;
-    shareCardPreview.openButton.disabled = true;
     shareCardPreview.status.textContent = "正在打开系统分享…";
 
     const result = await shareImageCard(activePreviewPayload);
     if (activePreviewArea) {
-      setShareFeedback(activePreviewArea, result.method === "download" ? "已打开卡片" : "已打开分享", "success");
+      setShareFeedback(activePreviewArea, result.method === "clipboard" ? "已复制卡片链接" : "已打开分享", "success");
     }
     closeShareCardPreview();
   } catch (error) {
@@ -350,7 +333,6 @@ async function submitShareCardPreview() {
     console.error("Failed to share card preview", error);
     shareCardPreview.status.textContent = "分享失败，请重试";
     shareCardPreview.shareButton.disabled = false;
-    shareCardPreview.openButton.disabled = false;
   }
 }
 

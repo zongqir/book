@@ -118,39 +118,39 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
   const title = (payload.title || "").trim();
   const text = (payload.text || "").trim();
   const imageUrl = resolveShareUrl(payload.imageUrl);
+  const url = resolveShareUrl(payload.url);
 
   if (!imageUrl) {
     throw new Error("missing-image-url");
   }
 
+  const mergedText = [text, `卡片预览：${imageUrl}`].filter(Boolean).join("\n");
+  const sharePayload = {
+    title,
+    text: mergedText,
+    url: url || imageUrl,
+  };
+
   const capacitor = getCapacitorRuntime();
   if (capacitor?.isNativePlatform?.()) {
-    if (await tryCapacitorShare({
-        title,
-        text,
-        url: imageUrl,
-      })) {
+    if (await tryCapacitorShare(sharePayload)) {
       return { method: "native-share" };
     }
   }
 
   if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
     try {
-      await navigator.share({
-        title,
-        text,
-        url: imageUrl,
-      });
+      await navigator.share(sharePayload);
       return { method: "web-share" };
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") throw error;
     }
   }
 
-  if (typeof window !== "undefined") {
-    window.open(imageUrl, "_blank", "noopener");
-    return { method: "download" };
-  }
-
-  throw new Error("image-share-unavailable");
+  await copyShareText({
+    title,
+    text: mergedText,
+    url: url || imageUrl,
+  });
+  return { method: "clipboard" };
 }

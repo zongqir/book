@@ -330,7 +330,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   <p class="notes-note-copy${noteCopy ? "" : " notes-note-copy--muted"}">${escapeHtml(noteCopy || "只划线，没写备注。")}</p>
                   <div class="notes-note-actions">
                     <a class="tool-switch tool-switch--compact" href="${escapeHtml(meta.pageUrl)}">打开原文</a>
-                    <button class="tool-switch tool-switch--compact" type="button" data-note-share="${escapeHtml(note.id)}">分享</button>
+                    <button class="tool-switch tool-switch--compact tool-switch--share" type="button" data-note-share="${escapeHtml(note.id)}">
+                      <span aria-hidden="true">↗</span>
+                      <span>分享</span>
+                    </button>
                     <button class="tool-switch tool-switch--compact" type="button" data-note-delete="${escapeHtml(note.id)}">删除</button>
                   </div>
                 </article>

@@ -88,18 +88,25 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
-          <div class="page-share-row">
-            <button
-              class="tool-switch tool-switch--compact"
-              type="button"
-              data-share-trigger
-              data-share-title={node.title}
-              data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
-              data-share-url={node.book.url}
-            >
-              分享这本书
-            </button>
-          </div>
+          <section class="share-card share-card--book" aria-label="分享这本书">
+            <div class="share-card-copy">
+              <p class="eyebrow">带走这本书</p>
+              <p class="share-card-note">发给朋友，或者先留给自己，下次继续读就能直接回来。</p>
+            </div>
+            <div class="share-card-actions">
+              <button
+                class="share-button"
+                type="button"
+                data-share-trigger
+                data-share-title={node.title}
+                data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
+                data-share-url={node.book.url}
+              >
+                <span class="share-button-icon" aria-hidden="true">↗</span>
+                <span>分享这本书</span>
+              </button>
+            </div>
+          </section>
           <div class="detail-line">
             <span class="meta-chip">{node.pages.length} 个入口</span>
             <span class="meta-chip">{node.book.section_title}</span>
@@ -192,18 +199,25 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
-          <div class="page-share-row">
-            <button
-              class="tool-switch tool-switch--compact"
-              type="button"
-              data-share-trigger
-              data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
-              data-share-text={node.page.summary || node.page.intent || node.page.title}
-              data-share-url={node.page.url}
-            >
-              分享这一页
-            </button>
-          </div>
+          <section class="share-card share-card--page" aria-label="分享这一页">
+            <div class="share-card-copy">
+              <p class="eyebrow">带走这一页</p>
+              <p class="share-card-note">适合直接发给别人，也适合发回给自己，稍后接着读。</p>
+            </div>
+            <div class="share-card-actions">
+              <button
+                class="share-button"
+                type="button"
+                data-share-trigger
+                data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
+                data-share-text={node.page.summary || node.page.intent || node.page.title}
+                data-share-url={node.page.url}
+              >
+                <span class="share-button-icon" aria-hidden="true">↗</span>
+                <span>分享这一页</span>
+              </button>
+            </div>
+          </section>
         </div>
       </section>
 

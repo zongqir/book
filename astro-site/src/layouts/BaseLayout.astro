@@ -11,6 +11,7 @@ type Props = {
   ogDescription?: string;
   ogType?: "website" | "article";
   ogImage?: string;
+  ogImageAlt?: string;
   isHome?: boolean;
   isLibrary?: boolean;
 };
@@ -23,6 +24,7 @@ const {
   ogDescription,
   ogType = "website",
   ogImage = "/icons/icon-512.png",
+  ogImageAlt,
   isHome = false,
   isLibrary = false,
 } = Astro.props;
@@ -32,6 +34,7 @@ const canonicalUrl = new URL(canonicalPath || pathname, Astro.site);
 const socialTitle = ogTitle || pageTitle;
 const socialDescription = ogDescription || description;
 const socialImage = new URL(ogImage, Astro.site);
+const socialImageAlt = ogImageAlt || socialTitle;
 const isNotes = pathname.startsWith("/notes");
 const isAppDownload = pathname.startsWith("/app");
 const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "笔记" : title;
@@ -100,10 +103,15 @@ const appHref = toInternalHref("/app/");
     <meta property="og:description" content={socialDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content={ogImage.endsWith(".svg") ? "image/svg+xml" : "image/png"} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={socialTitle} />
     <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
     <meta name="application-name" content="读书库" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

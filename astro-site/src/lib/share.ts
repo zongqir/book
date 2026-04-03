@@ -9,10 +9,10 @@ type SharePayload = {
 };
 
 type ShareResult = {
-  method: "native-share" | "web-share" | "clipboard";
+  method: "native-share" | "web-share" | "clipboard" | "download";
 };
 
-function getAbsoluteUrl(url?: string) {
+export function resolveShareUrl(url?: string) {
   if (!url) return "";
   try {
     if (/^(?:[a-z]+:)?\/\//i.test(url)) {
@@ -35,17 +35,17 @@ function getCapacitorRuntime() {
   return typeof window !== "undefined" ? (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor : null;
 }
 
-async function copyShareText(payload: Required<Pick<SharePayload, "title" | "text" | "url">>) {
-  const content = [payload.title, payload.text, payload.url].filter(Boolean).join("\n");
+export async function copyText(content: string) {
+  const normalized = String(content || "");
 
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(content);
+    await navigator.clipboard.writeText(normalized);
     return;
   }
 
   if (typeof document !== "undefined") {
     const textarea = document.createElement("textarea");
-    textarea.value = content;
+    textarea.value = normalized;
     textarea.setAttribute("readonly", "");
     textarea.style.position = "fixed";
     textarea.style.opacity = "0";
@@ -62,10 +62,15 @@ async function copyShareText(payload: Required<Pick<SharePayload, "title" | "tex
   throw new Error("copy-unavailable");
 }
 
+async function copyShareText(payload: Required<Pick<SharePayload, "title" | "text" | "url">>) {
+  const content = [payload.title, payload.text, payload.url].filter(Boolean).join("\n");
+  await copyText(content);
+}
+
 export async function shareContent(payload: SharePayload): Promise<ShareResult> {
   const title = (payload.title || "").trim();
   const text = (payload.text || "").trim();
-  const url = getAbsoluteUrl(payload.url);
+  const url = resolveShareUrl(payload.url);
   const sharePayload = {
     title,
     text,
@@ -93,4 +98,60 @@ export async function shareContent(payload: SharePayload): Promise<ShareResult> 
 
   await copyShareText({ title, text, url });
   return { method: "clipboard" };
+}
+
+export async function shareImageCard(payload: SharePayload & { imageUrl?: string; filename?: string }): Promise<ShareResult> {
+  const title = (payload.title || "").trim();
+  const text = (payload.text || "").trim();
+  const imageUrl = resolveShareUrl(payload.imageUrl);
+  const fallbackUrl = resolveShareUrl(payload.url || payload.imageUrl);
+
+  if (!imageUrl) {
+    throw new Error("missing-image-url");
+  }
+
+  const response = await fetch(imageUrl, { cache: "force-cache" });
+  if (!response.ok) {
+    throw new Error(`image-fetch-failed:${response.status}`);
+  }
+
+  const blob = await response.blob();
+  const fileType = blob.type || "image/svg+xml";
+  const extension = fileType.includes("png") ? "png" : fileType.includes("jpeg") ? "jpg" : "svg";
+  const filename = payload.filename || `book-share-card.${extension}`;
+
+  if (typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof File !== "undefined") {
+    const file = new File([blob], filename, { type: fileType });
+    const sharePayload = { title, text, files: [file] };
+    const canShareFiles =
+      typeof navigator.canShare === "function"
+        ? navigator.canShare({ files: [file] })
+        : false;
+
+    if (canShareFiles) {
+      await navigator.share(sharePayload);
+      return { method: "web-share" };
+    }
+  }
+
+  if (typeof document !== "undefined") {
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = objectUrl;
+    anchor.download = filename;
+    anchor.target = "_blank";
+    anchor.rel = "noopener";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 2_000);
+    return { method: "download" };
+  }
+
+  if (fallbackUrl && typeof window !== "undefined") {
+    window.open(fallbackUrl, "_blank", "noopener");
+    return { method: "download" };
+  }
+
+  throw new Error("image-share-unavailable");
 }

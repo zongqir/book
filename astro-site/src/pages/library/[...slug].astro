@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getAllLibrarySlugs, getNodeBySlug } from "../../lib/content";
 import { toInternalHref } from "../../lib/internal-links";
+import { buildLibraryOgImagePath, describeNodeForOg } from "../../lib/og-image";
 
 export async function getStaticPaths() {
   return getAllLibrarySlugs().map((slugParts) => ({
@@ -27,10 +28,21 @@ const metaDescription =
       : (node.page.summary || node.page.intent || `${node.book?.title || "这本书"}中的一篇文稿。`);
 const canonicalPath = node.url;
 const ogType = node.kind === "page" ? "article" : "website";
+const ogImage = buildLibraryOgImagePath(parts);
+const ogImageAlt = describeNodeForOg(node);
 const libraryHref = toInternalHref("/library/");
 ---
 
-<BaseLayout title={node.title} description={metaDescription} canonicalPath={canonicalPath} ogDescription={metaDescription} ogType={ogType} isLibrary={true}>
+<BaseLayout
+  title={node.title}
+  description={metaDescription}
+  canonicalPath={canonicalPath}
+  ogDescription={metaDescription}
+  ogType={ogType}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  isLibrary={true}
+>
   {node.kind === "section" && (
     <div class="page-stack">
       <section class="library-panel">
@@ -92,14 +104,21 @@ const libraryHref = toInternalHref("/library/");
             <span class="meta-chip">{node.pages.length} 个入口</span>
             <span class="meta-chip">{node.book.section_title}</span>
             {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
-            <div class="share-inline" data-share-area>
+            <div
+              class="share-inline"
+              data-share-area
+              data-share-title={node.title}
+              data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
+              data-share-url={node.book.url}
+              data-share-image={ogImage}
+              data-share-filename={`${node.book.title}-share-card.svg`}
+            >
               <button
                 class="share-icon-button"
                 type="button"
-                data-share-trigger
-                data-share-title={node.title}
-                data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
-                data-share-url={node.book.url}
+                data-share-toggle
+                aria-haspopup="menu"
+                aria-expanded="false"
                 aria-label={`分享《${node.title}》`}
                 title="分享这本书"
               >
@@ -109,6 +128,11 @@ const libraryHref = toInternalHref("/library/");
                   <path d="M15.5 10v4.25A1.25 1.25 0 0 1 14.25 15.5h-8.5A1.25 1.25 0 0 1 4.5 14.25v-8.5A1.25 1.25 0 0 1 5.75 4.5H10"></path>
                 </svg>
               </button>
+              <div class="share-menu" data-share-menu hidden role="menu" aria-label="分享选项">
+                <button class="share-menu-action" type="button" data-share-action="link" role="menuitem">分享链接</button>
+                <button class="share-menu-action" type="button" data-share-action="image" role="menuitem">分享卡片</button>
+                <button class="share-menu-action" type="button" data-share-action="copy" role="menuitem">复制链接</button>
+              </div>
               <span class="share-inline-feedback" data-share-feedback aria-live="polite"></span>
             </div>
           </div>
@@ -200,14 +224,21 @@ const libraryHref = toInternalHref("/library/");
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
           <div class="doc-hero-actions">
-            <div class="share-inline" data-share-area>
+            <div
+              class="share-inline"
+              data-share-area
+              data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
+              data-share-text={node.page.summary || node.page.intent || node.page.title}
+              data-share-url={node.page.url}
+              data-share-image={ogImage}
+              data-share-filename={`${node.page.title}-share-card.svg`}
+            >
               <button
                 class="share-icon-button"
                 type="button"
-                data-share-trigger
-                data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
-                data-share-text={node.page.summary || node.page.intent || node.page.title}
-                data-share-url={node.page.url}
+                data-share-toggle
+                aria-haspopup="menu"
+                aria-expanded="false"
                 aria-label={`分享《${node.page.title}》`}
                 title="分享这一页"
               >
@@ -217,6 +248,11 @@ const libraryHref = toInternalHref("/library/");
                   <path d="M15.5 10v4.25A1.25 1.25 0 0 1 14.25 15.5h-8.5A1.25 1.25 0 0 1 4.5 14.25v-8.5A1.25 1.25 0 0 1 5.75 4.5H10"></path>
                 </svg>
               </button>
+              <div class="share-menu" data-share-menu hidden role="menu" aria-label="分享选项">
+                <button class="share-menu-action" type="button" data-share-action="link" role="menuitem">分享链接</button>
+                <button class="share-menu-action" type="button" data-share-action="image" role="menuitem">分享卡片</button>
+                <button class="share-menu-action" type="button" data-share-action="copy" role="menuitem">复制链接</button>
+              </div>
               <span class="share-inline-feedback" data-share-feedback aria-live="polite"></span>
             </div>
           </div>

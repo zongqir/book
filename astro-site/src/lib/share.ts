@@ -12,6 +12,8 @@ type ShareResult = {
   method: "native-share" | "web-share" | "clipboard" | "download";
 };
 
+const CAPACITOR_SHARE_TIMEOUT_MS = 1400;
+
 export function resolveShareUrl(url?: string) {
   if (!url) return "";
   try {
@@ -33,6 +35,21 @@ export function resolveShareUrl(url?: string) {
 
 function getCapacitorRuntime() {
   return typeof window !== "undefined" ? (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor : null;
+}
+
+async function tryCapacitorShare(payload: SharePayload) {
+  const timeoutError = new Error("capacitor-share-timeout");
+
+  try {
+    await Promise.race([
+      Share.share(payload),
+      new Promise((_, reject) => window.setTimeout(() => reject(timeoutError), CAPACITOR_SHARE_TIMEOUT_MS)),
+    ]);
+    return true;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    return false;
+  }
 }
 
 export async function copyText(content: string) {
@@ -79,11 +96,8 @@ export async function shareContent(payload: SharePayload): Promise<ShareResult> 
 
   const capacitor = getCapacitorRuntime();
   if (capacitor?.isNativePlatform?.()) {
-    try {
-      await Share.share(sharePayload);
+    if (await tryCapacitorShare(sharePayload)) {
       return { method: "native-share" };
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") throw error;
     }
   }
 
@@ -111,39 +125,25 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
 
   const capacitor = getCapacitorRuntime();
   if (capacitor?.isNativePlatform?.()) {
+    if (await tryCapacitorShare({
+        title,
+        text,
+        url: imageUrl,
+      })) {
+      return { method: "native-share" };
+    }
+  }
+
+  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
     try {
-      await Share.share({
+      await navigator.share({
         title,
         text,
         url: imageUrl,
       });
-      return { method: "native-share" };
+      return { method: "web-share" };
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") throw error;
-    }
-  }
-
-  const response = await fetch(imageUrl, { cache: "force-cache" });
-  if (!response.ok) {
-    throw new Error(`image-fetch-failed:${response.status}`);
-  }
-
-  const blob = await response.blob();
-  const fileType = blob.type || "image/svg+xml";
-  const extension = fileType.includes("png") ? "png" : fileType.includes("jpeg") ? "jpg" : "svg";
-  const filename = payload.filename || `book-share-card.${extension}`;
-
-  if (typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof File !== "undefined") {
-    const file = new File([blob], filename, { type: fileType });
-    const sharePayload = { title, text, files: [file] };
-    const canShareFiles =
-      typeof navigator.canShare === "function"
-        ? navigator.canShare({ files: [file] })
-        : false;
-
-    if (canShareFiles) {
-      await navigator.share(sharePayload);
-      return { method: "web-share" };
     }
   }
 

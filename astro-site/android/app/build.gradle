@@ -1,8 +1,26 @@
 apply plugin: 'com.android.application'
 
+def releaseKeystorePath = System.getenv("ANDROID_SIGNING_KEYSTORE_PATH")
+def releaseStorePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD")
+def releaseKeyAlias = System.getenv("ANDROID_SIGNING_KEY_ALIAS")
+def releaseKeyPassword = System.getenv("ANDROID_SIGNING_KEY_PASSWORD")
+def releaseStoreType = System.getenv("ANDROID_SIGNING_STORE_TYPE") ?: "PKCS12"
+def hasReleaseSigning = releaseKeystorePath && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace = "com.zongqir.book"
     compileSdk = rootProject.ext.compileSdkVersion
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile file(releaseKeystorePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+                storeType releaseStoreType
+            }
+        }
+    }
     defaultConfig {
         applicationId "com.zongqir.book"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -17,9 +35,17 @@ android {
         }
     }
     buildTypes {
+        debug {
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

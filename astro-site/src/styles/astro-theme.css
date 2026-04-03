@@ -556,6 +556,11 @@ img { display: block; max-width: 100%; }
   display: grid;
   gap: 20px;
 }
+.page-share-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .page-intro--section,
 .page-intro--book {
   display: grid;
@@ -2301,6 +2306,9 @@ body.reader-notes-editor-open .reader-notes-shell {
     font-size: clamp(2rem, 9.6vw, 2.8rem);
     line-height: 1.02;
     letter-spacing: -0.05em;
+  }
+  .page-share-row .tool-switch {
+    width: auto;
   }
   .doc-hero--page .doc-summary {
     margin-top: 0;

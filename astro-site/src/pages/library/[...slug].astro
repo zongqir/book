@@ -88,6 +88,18 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1>{node.title}</h1>
           {node.book.summary && <p>{node.book.summary}</p>}
+          <div class="page-share-row">
+            <button
+              class="tool-switch tool-switch--compact"
+              type="button"
+              data-share-trigger
+              data-share-title={node.title}
+              data-share-text={node.book.summary || `${node.book.section_title}里的《${node.book.title}》`}
+              data-share-url={node.book.url}
+            >
+              分享这本书
+            </button>
+          </div>
           <div class="detail-line">
             <span class="meta-chip">{node.pages.length} 个入口</span>
             <span class="meta-chip">{node.book.section_title}</span>
@@ -180,6 +192,18 @@ const libraryHref = toInternalHref("/library/");
           </nav>
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
+          <div class="page-share-row">
+            <button
+              class="tool-switch tool-switch--compact"
+              type="button"
+              data-share-trigger
+              data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
+              data-share-text={node.page.summary || node.page.intent || node.page.title}
+              data-share-url={node.page.url}
+            >
+              分享这一页
+            </button>
+          </div>
         </div>
       </section>
 
@@ -396,5 +420,40 @@ const libraryHref = toInternalHref("/library/");
 
     setupReaderParagraphNotes();
   </script>
-)}
+  )}
+
+  <script>
+    import { shareContent } from "../../lib/share";
+
+    const shareButtons = Array.from(document.querySelectorAll("[data-share-trigger]"));
+
+    shareButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", async function () {
+        const payload = {
+          title: button.dataset.shareTitle || document.title,
+          text: button.dataset.shareText || "",
+          url: button.dataset.shareUrl || window.location.href,
+        };
+        const originalText = button.textContent || "分享";
+
+        try {
+          const result = await shareContent(payload);
+          if (result.method === "clipboard") {
+            button.textContent = "已复制链接";
+            window.setTimeout(() => {
+              button.textContent = originalText;
+            }, 1800);
+          }
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+          console.error("Failed to share page", error);
+          button.textContent = "分享失败";
+          window.setTimeout(() => {
+            button.textContent = originalText;
+          }, 1800);
+        }
+      });
+    });
+  </script>
 </BaseLayout>

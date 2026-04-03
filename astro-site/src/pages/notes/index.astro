@@ -98,6 +98,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       listAllReaderNotes,
       removeReaderNote,
     } from "../../lib/reader-storage";
+    import { shareContent } from "../../lib/share";
 
     const searchInput = document.getElementById("notes-search");
     const sortToggleButton = document.getElementById("notes-sort-toggle");
@@ -329,6 +330,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   <p class="notes-note-copy${noteCopy ? "" : " notes-note-copy--muted"}">${escapeHtml(noteCopy || "只划线，没写备注。")}</p>
                   <div class="notes-note-actions">
                     <a class="tool-switch tool-switch--compact" href="${escapeHtml(meta.pageUrl)}">打开原文</a>
+                    <button class="tool-switch tool-switch--compact" type="button" data-note-share="${escapeHtml(note.id)}">分享</button>
                     <button class="tool-switch tool-switch--compact" type="button" data-note-delete="${escapeHtml(note.id)}">删除</button>
                   </div>
                 </article>
@@ -498,21 +500,54 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
         const button = target.closest("[data-note-delete]");
-        if (!(button instanceof HTMLElement)) return;
-        const noteId = button.getAttribute("data-note-delete");
-        if (!noteId) return;
-        if (!window.confirm("要删掉这条本地笔记吗？")) return;
-        setBusy(true);
-        try {
-          await removeReaderNote(noteId);
-          state.notes = state.notes.filter((note) => note.id !== noteId);
-          render();
-          setStatus("这条笔记已经删掉。", "success");
-        } catch (error) {
-          console.error("Failed to delete reader note", error);
-          setStatus("删除失败了。稍后再试一次。", "danger");
-        } finally {
-          setBusy(false);
+        if (button instanceof HTMLElement) {
+          const noteId = button.getAttribute("data-note-delete");
+          if (!noteId) return;
+          if (!window.confirm("要删掉这条本地笔记吗？")) return;
+          setBusy(true);
+          try {
+            await removeReaderNote(noteId);
+            state.notes = state.notes.filter((note) => note.id !== noteId);
+            render();
+            setStatus("这条笔记已经删掉。", "success");
+          } catch (error) {
+            console.error("Failed to delete reader note", error);
+            setStatus("删除失败了。稍后再试一次。", "danger");
+          } finally {
+            setBusy(false);
+          }
+          return;
+        }
+
+        const shareButton = target.closest("[data-note-share]");
+        if (shareButton instanceof HTMLElement) {
+          const noteId = shareButton.getAttribute("data-note-share");
+          if (!noteId) return;
+          const note = state.notes.find((item) => item.id === noteId);
+          if (!note) return;
+          const meta = toNoteMeta(note);
+          const noteCopy = String(note.note || "").trim();
+          const shareText = [
+            note.quote,
+            noteCopy ? "笔记：" + noteCopy : "",
+            meta.bookTitle,
+            meta.pageTitle,
+          ]
+            .filter(Boolean)
+            .join("\n");
+
+          try {
+            const result = await shareContent({
+              title: meta.bookTitle + " · " + meta.pageTitle,
+              text: shareText,
+              url: meta.pageUrl && meta.pageUrl !== "#" ? meta.pageUrl : window.location.href,
+            });
+            setStatus(result.method === "clipboard" ? "已复制这条笔记的分享内容。" : "已打开分享面板。", "success");
+          } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") return;
+            console.error("Failed to share reader note", error);
+            setStatus("分享失败了。稍后再试一次。", "danger");
+          }
         }
       });
     }

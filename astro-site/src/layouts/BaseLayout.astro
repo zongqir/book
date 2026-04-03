@@ -82,6 +82,13 @@ const appHref = toInternalHref("/app/");
         document.addEventListener("DOMContentLoaded", applyNativeAppClass, { once: true });
       })();
     </script>
+    {isLibrary && (
+      <script>
+        import { initShareActions } from "../lib/share-actions";
+
+        initShareActions();
+      </script>
+    )}
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />

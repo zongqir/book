@@ -149,6 +149,6 @@ jobs:
           }
           EOF
 
-          npx wrangler r2 object put "${R2_BUCKET}/${VERSIONED_KEY}" --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
-          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_KEY}" --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
-          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_JSON_KEY}" --file="${METADATA_PATH}" --content-type="application/json"
+          npx wrangler r2 object put "${R2_BUCKET}/${VERSIONED_KEY}" --remote --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
+          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_KEY}" --remote --file="${ASSET_PATH}" --content-type="application/vnd.android.package-archive"
+          npx wrangler r2 object put "${R2_BUCKET}/${LATEST_JSON_KEY}" --remote --file="${METADATA_PATH}" --content-type="application/json"

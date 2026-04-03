@@ -137,6 +137,11 @@ function closeMenu(elements: ShareElements) {
   elements.menu.hidden = true;
   elements.menu.style.left = "";
   elements.menu.style.top = "";
+  elements.menu.style.right = "";
+  elements.menu.style.bottom = "";
+  elements.menu.style.width = "";
+  elements.menu.style.maxHeight = "";
+  elements.menu.style.overflowY = "";
   elements.toggle.setAttribute("aria-expanded", "false");
 }
 
@@ -149,6 +154,28 @@ function positionMenu(elements: ShareElements) {
 
   elements.menu.style.visibility = "hidden";
   const menuRect = elements.menu.getBoundingClientRect();
+
+  if (window.innerWidth <= 760) {
+    const dock = document.querySelector(".mobile-app-dock");
+    const safeBottom = Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--safe-bottom") || "16",
+    ) || 16;
+    const dockTop = dock instanceof HTMLElement
+      ? dock.getBoundingClientRect().top
+      : window.innerHeight - (84 + safeBottom);
+    const bottomOffset = Math.max(viewportPadding + safeBottom, window.innerHeight - dockTop + gap);
+    const maxHeight = Math.max(140, window.innerHeight - viewportPadding - bottomOffset);
+
+    elements.menu.style.left = `${viewportPadding}px`;
+    elements.menu.style.right = `${viewportPadding}px`;
+    elements.menu.style.top = "";
+    elements.menu.style.bottom = `${Math.round(bottomOffset)}px`;
+    elements.menu.style.width = `calc(100vw - ${viewportPadding * 2}px)`;
+    elements.menu.style.maxHeight = `${Math.round(maxHeight)}px`;
+    elements.menu.style.overflowY = "auto";
+    elements.menu.style.visibility = "";
+    return;
+  }
 
   let left = toggleRect.right - menuRect.width;
   if (left < viewportPadding) left = viewportPadding;
@@ -164,6 +191,11 @@ function positionMenu(elements: ShareElements) {
 
   elements.menu.style.left = `${Math.round(left)}px`;
   elements.menu.style.top = `${Math.round(top)}px`;
+  elements.menu.style.right = "";
+  elements.menu.style.bottom = "";
+  elements.menu.style.width = "";
+  elements.menu.style.maxHeight = "";
+  elements.menu.style.overflowY = "";
   elements.menu.style.visibility = "";
 }
 

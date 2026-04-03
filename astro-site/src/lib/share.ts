@@ -12,8 +12,6 @@ type ShareResult = {
   method: "native-share" | "web-share" | "clipboard" | "download";
 };
 
-const CAPACITOR_SHARE_TIMEOUT_MS = 1400;
-
 export function resolveShareUrl(url?: string) {
   if (!url) return "";
   try {
@@ -37,19 +35,16 @@ function getCapacitorRuntime() {
   return typeof window !== "undefined" ? (window as typeof window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor : null;
 }
 
-async function tryCapacitorShare(payload: SharePayload) {
-  const timeoutError = new Error("capacitor-share-timeout");
+export function isNativeShareRuntime() {
+  const capacitor = getCapacitorRuntime();
+  return Boolean(capacitor?.isNativePlatform?.());
+}
 
-  try {
-    await Promise.race([
-      Share.share(payload),
-      new Promise((_, reject) => window.setTimeout(() => reject(timeoutError), CAPACITOR_SHARE_TIMEOUT_MS)),
-    ]);
-    return true;
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") throw error;
-    return false;
-  }
+function triggerNativeShare(payload: SharePayload) {
+  void Share.share(payload).catch((error) => {
+    if (error instanceof DOMException && error.name === "AbortError") return;
+    console.error("Native share failed", error);
+  });
 }
 
 export async function copyText(content: string) {
@@ -94,20 +89,9 @@ export async function shareContent(payload: SharePayload): Promise<ShareResult> 
     url,
   };
 
-  const capacitor = getCapacitorRuntime();
-  if (capacitor?.isNativePlatform?.()) {
-    if (await tryCapacitorShare(sharePayload)) {
-      return { method: "native-share" };
-    }
-  }
-
-  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-    try {
-      await navigator.share(sharePayload);
-      return { method: "web-share" };
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") throw error;
-    }
+  if (isNativeShareRuntime()) {
+    triggerNativeShare(sharePayload);
+    return { method: "native-share" };
   }
 
   await copyShareText({ title, text, url });
@@ -131,20 +115,9 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
     url: url || imageUrl,
   };
 
-  const capacitor = getCapacitorRuntime();
-  if (capacitor?.isNativePlatform?.()) {
-    if (await tryCapacitorShare(sharePayload)) {
-      return { method: "native-share" };
-    }
-  }
-
-  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-    try {
-      await navigator.share(sharePayload);
-      return { method: "web-share" };
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") throw error;
-    }
+  if (isNativeShareRuntime()) {
+    triggerNativeShare(sharePayload);
+    return { method: "native-share" };
   }
 
   await copyShareText({

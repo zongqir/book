@@ -1,4 +1,4 @@
-import { resolveShareUrl, shareContent, shareImageCard } from "./share";
+import { isNativeShareRuntime, resolveShareUrl, shareContent, shareImageCard } from "./share";
 
 type ShareElements = {
   area: HTMLElement;
@@ -6,28 +6,8 @@ type ShareElements = {
   menu: HTMLElement | null;
 };
 
-type SharePayload = {
-  title: string;
-  text: string;
-  url: string;
-  imageUrl: string;
-  filename: string;
-};
-
-type ShareCardPreviewElements = {
-  root: HTMLElement;
-  image: HTMLImageElement;
-  title: HTMLElement;
-  status: HTMLElement;
-  shareButton: HTMLButtonElement;
-};
-
-let shareCardPreview: ShareCardPreviewElements | null = null;
-let activePreviewPayload: SharePayload | null = null;
-let activePreviewArea: HTMLElement | null = null;
-
 export function initShareActions() {
-  ensureShareCardPreview();
+  const nativeShare = isNativeShareRuntime();
 
   const shareAreas = Array.from(document.querySelectorAll("[data-share-area]"))
     .filter((node): node is HTMLElement => node instanceof HTMLElement);
@@ -39,6 +19,7 @@ export function initShareActions() {
       menu: area.querySelector("[data-share-menu]"),
     };
 
+    tuneMenuForRuntime(area, nativeShare);
     bindShareArea(elements);
     return elements;
   });
@@ -56,7 +37,6 @@ export function initShareActions() {
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     registeredAreas.forEach(closeMenu);
-    closeShareCardPreview();
   });
 
   window.addEventListener("scroll", () => {
@@ -102,23 +82,25 @@ async function runShareAction(elements: ShareElements, action: string) {
   if (!payload.url) return;
 
   try {
-    if (action === "image") {
-      closeMenu(elements);
-      openShareCardPreview(payload, elements.area);
-      return;
-    }
-
     if (elements.toggle) {
       elements.toggle.disabled = true;
     }
     setShareFeedback(elements.area, "正在处理…", "neutral");
 
-    const result = await shareContent({
-      title: payload.title,
-      text: payload.text,
-      url: payload.url,
-    });
-    setShareFeedback(elements.area, result.method === "clipboard" ? "已复制链接" : "已打开分享", "success");
+    const result = action === "image"
+      ? await shareImageCard({
+        title: payload.title,
+        text: payload.text,
+        url: payload.url,
+        imageUrl: payload.imageUrl,
+        filename: payload.filename,
+      })
+      : await shareContent({
+        title: payload.title,
+        text: payload.text,
+        url: payload.url,
+      });
+    setShareFeedback(elements.area, feedbackMessage(action, result.method), "success");
     closeMenu(elements);
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
@@ -218,122 +200,25 @@ function readPayload(area: HTMLElement) {
   };
 }
 
-function ensureShareCardPreview() {
-  if (shareCardPreview) return shareCardPreview;
-  if (typeof document === "undefined") return null;
+function tuneMenuForRuntime(area: HTMLElement, nativeShare: boolean) {
+  const imageAction = area.querySelector('[data-share-action="image"]');
+  const linkAction = area.querySelector('[data-share-action="link"]');
 
-  const root = document.createElement("section");
-  root.className = "share-card-preview";
-  root.hidden = true;
-  root.setAttribute("aria-hidden", "true");
-  root.innerHTML = `
-    <div class="share-card-preview-backdrop" data-share-card-close></div>
-    <div class="share-card-preview-sheet" role="dialog" aria-modal="true" aria-label="分享卡片预览">
-      <div class="share-card-preview-head">
-        <strong>分享卡片</strong>
-        <button class="share-card-preview-close" type="button" data-share-card-close aria-label="关闭分享卡片预览">关闭</button>
-      </div>
-      <div class="share-card-preview-frame">
-        <img class="share-card-preview-image" data-share-card-image alt="" loading="lazy" />
-      </div>
-      <p class="share-card-preview-title" data-share-card-title></p>
-      <p class="share-card-preview-status" data-share-card-status aria-live="polite"></p>
-      <div class="share-card-preview-actions">
-        <button class="btn" type="button" data-share-card-share>立即分享</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(root);
-
-  const image = root.querySelector("[data-share-card-image]");
-  const title = root.querySelector("[data-share-card-title]");
-  const status = root.querySelector("[data-share-card-status]");
-  const shareButton = root.querySelector("[data-share-card-share]");
-  if (
-    !(image instanceof HTMLImageElement) ||
-    !(title instanceof HTMLElement) ||
-    !(status instanceof HTMLElement) ||
-    !(shareButton instanceof HTMLButtonElement)
-  ) {
-    root.remove();
-    return null;
+  if (linkAction instanceof HTMLButtonElement && !nativeShare) {
+    linkAction.textContent = "复制链接";
   }
 
-  root.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-
-    if (target.closest("[data-share-card-close]")) {
-      closeShareCardPreview();
-      return;
-    }
-
-    if (target.closest("[data-share-card-share]")) {
-      event.preventDefault();
-      event.stopPropagation();
-      void submitShareCardPreview();
-    }
-  });
-
-  shareCardPreview = {
-    root,
-    image,
-    title,
-    status,
-    shareButton,
-  };
-  return shareCardPreview;
-}
-
-function openShareCardPreview(payload: SharePayload, area: HTMLElement) {
-  const preview = ensureShareCardPreview();
-  if (!preview) return;
-
-  activePreviewPayload = payload;
-  activePreviewArea = area;
-  preview.image.src = payload.imageUrl;
-  preview.image.alt = payload.title;
-  preview.title.textContent = payload.title;
-  preview.status.textContent = "";
-  preview.root.hidden = false;
-  preview.root.setAttribute("aria-hidden", "false");
-  preview.shareButton.disabled = false;
-  document.body.classList.add("share-card-preview-open");
-}
-
-function closeShareCardPreview() {
-  if (!shareCardPreview) return;
-  shareCardPreview.root.hidden = true;
-  shareCardPreview.root.setAttribute("aria-hidden", "true");
-  shareCardPreview.status.textContent = "";
-  shareCardPreview.shareButton.disabled = false;
-  document.body.classList.remove("share-card-preview-open");
-  activePreviewPayload = null;
-  activePreviewArea = null;
-}
-
-async function submitShareCardPreview() {
-  if (!shareCardPreview || !activePreviewPayload) return;
-
-  try {
-    shareCardPreview.shareButton.disabled = true;
-    shareCardPreview.status.textContent = "正在打开系统分享…";
-
-    const result = await shareImageCard(activePreviewPayload);
-    if (activePreviewArea) {
-      setShareFeedback(activePreviewArea, result.method === "clipboard" ? "已复制卡片链接" : "已打开分享", "success");
-    }
-    closeShareCardPreview();
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      closeShareCardPreview();
-      return;
-    }
-    console.error("Failed to share card preview", error);
-    shareCardPreview.status.textContent = "分享失败，请重试";
-    shareCardPreview.shareButton.disabled = false;
+  if (imageAction instanceof HTMLButtonElement && !nativeShare) {
+    imageAction.remove();
   }
+}
+
+function feedbackMessage(action: string, method: string) {
+  if (action === "image") {
+    return method === "clipboard" ? "已复制卡片链接" : "已打开分享";
+  }
+
+  return method === "clipboard" ? "已复制链接" : "已打开分享";
 }
 
 function sanitizeFilename(value: string) {

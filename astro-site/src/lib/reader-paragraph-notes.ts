@@ -663,6 +663,18 @@ export function setupReaderParagraphNotes() {
     });
   });
 
+  window.visualViewport?.addEventListener("resize", () => {
+    void syncLayoutMode(false).catch((error) => {
+      reportError("悬浮笔位置暂时没跟上当前视口。", error);
+    });
+  });
+
+  window.visualViewport?.addEventListener("scroll", () => {
+    void syncLayoutMode(false).catch((error) => {
+      reportError("悬浮笔位置暂时没跟上当前视口。", error);
+    });
+  });
+
   window.addEventListener(
     "pagehide",
     () => {

@@ -1,4 +1,4 @@
-import { copyText, resolveShareUrl, shareContent, shareImageCard } from "./share";
+import { resolveShareUrl, shareContent, shareImageCard } from "./share";
 
 type ShareElements = {
   area: HTMLElement;
@@ -84,13 +84,6 @@ async function runShareAction(elements: ShareElements, action: string) {
     }
     setShareFeedback(elements.area, "正在处理…", "neutral");
 
-    if (action === "copy") {
-      await copyText(payload.url);
-      setShareFeedback(elements.area, "已复制链接", "success");
-      closeMenu(elements);
-      return;
-    }
-
     if (action === "image") {
       const result = await shareImageCard({
         title: payload.title,
@@ -99,7 +92,7 @@ async function runShareAction(elements: ShareElements, action: string) {
         imageUrl: payload.imageUrl,
         filename: payload.filename,
       });
-      setShareFeedback(elements.area, result.method === "download" ? "已打开卡片" : "已分享卡片", "success");
+      setShareFeedback(elements.area, result.method === "download" ? "已打开卡片" : "已打开分享", "success");
       closeMenu(elements);
       return;
     }

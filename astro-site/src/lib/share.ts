@@ -109,6 +109,20 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
     throw new Error("missing-image-url");
   }
 
+  const capacitor = getCapacitorRuntime();
+  if (capacitor?.isNativePlatform?.()) {
+    try {
+      await Share.share({
+        title,
+        text,
+        url: imageUrl,
+      });
+      return { method: "native-share" };
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") throw error;
+    }
+  }
+
   const response = await fetch(imageUrl, { cache: "force-cache" });
   if (!response.ok) {
     throw new Error(`image-fetch-failed:${response.status}`);

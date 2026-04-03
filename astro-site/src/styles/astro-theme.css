@@ -557,12 +557,13 @@ img { display: block; max-width: 100%; }
   gap: 20px;
 }
 .share-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px) auto;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 16px 18px;
-  border-radius: 22px;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 24px;
   border: 1px solid rgba(23, 48, 67, 0.08);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 247, 238, 0.84)),
@@ -578,6 +579,57 @@ img { display: block; max-width: 100%; }
   display: grid;
   gap: 6px;
   min-width: 0;
+}
+.share-card-preview {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 248, 241, 0.78)),
+    radial-gradient(circle at top right, rgba(164, 91, 42, 0.08), transparent 48%);
+  box-shadow: 0 12px 28px rgba(23, 48, 67, 0.08);
+}
+.share-card-preview--page {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(241, 248, 250, 0.8)),
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.08), transparent 48%);
+}
+.share-card-kicker,
+.share-card-preview h2,
+.share-card-preview-text {
+  margin: 0;
+}
+.share-card-kicker {
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.share-card-preview--page .share-card-kicker {
+  color: var(--teal);
+}
+.share-card-preview h2 {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+.share-card-preview-text {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.share-card-preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .share-card-note {
   margin: 0;
@@ -2386,11 +2438,16 @@ html.is-capacitor-app .tool-switch--share {
   }
   .share-card {
     flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: stretch;
     gap: 12px;
   }
+  .share-card-preview {
+    order: 2;
+  }
   .share-card-actions {
     width: 100%;
+    order: 3;
   }
   .share-button {
     width: 100%;

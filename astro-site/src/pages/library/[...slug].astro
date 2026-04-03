@@ -93,6 +93,17 @@ const libraryHref = toInternalHref("/library/");
               <p class="eyebrow">带走这本书</p>
               <p class="share-card-note">发给朋友，或者先留给自己，下次继续读就能直接回来。</p>
             </div>
+            <div class="share-card-preview share-card-preview--book" aria-hidden="true">
+              <p class="share-card-kicker">{node.book.section_title}</p>
+              <h2>{node.title}</h2>
+              <p class="share-card-preview-text">
+                {node.book.summary || `${node.pages.length} 个入口，适合从书页直接往里读。`}
+              </p>
+              <div class="share-card-preview-tags">
+                <span class="preview-pill">{node.pages.length} 个入口</span>
+                {node.book.tags.slice(0, 3).map((tag) => <span class="preview-pill">{tag}</span>)}
+              </div>
+            </div>
             <div class="share-card-actions">
               <button
                 class="share-button"
@@ -203,6 +214,17 @@ const libraryHref = toInternalHref("/library/");
             <div class="share-card-copy">
               <p class="eyebrow">带走这一页</p>
               <p class="share-card-note">适合直接发给别人，也适合发回给自己，稍后接着读。</p>
+            </div>
+            <div class="share-card-preview share-card-preview--page" aria-hidden="true">
+              <p class="share-card-kicker">{node.book?.title || "读书库"}</p>
+              <h2>{node.page.title}</h2>
+              <p class="share-card-preview-text">
+                {node.page.summary || node.page.intent || "这一页里最核心的判断，适合直接分享出去。"}
+              </p>
+              <div class="share-card-preview-tags">
+                {node.section && <span class="preview-pill">{node.section.title}</span>}
+                {node.page.tags.slice(0, 2).map((tag) => <span class="preview-pill">{tag}</span>)}
+              </div>
             </div>
             <div class="share-card-actions">
               <button

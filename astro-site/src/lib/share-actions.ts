@@ -215,7 +215,7 @@ function tuneMenuForRuntime(area: HTMLElement, nativeShare: boolean) {
 
 function feedbackMessage(action: string, method: string) {
   if (action === "image") {
-    return method === "clipboard" ? "已复制卡片链接" : "已打开分享";
+    return method === "clipboard" ? "已复制卡片链接" : "已打开图片分享";
   }
 
   return method === "clipboard" ? "已复制链接" : "已打开分享";

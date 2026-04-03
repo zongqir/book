@@ -505,7 +505,73 @@ const appHref = toInternalHref("/app/");
         }
       })();
     </script>
+    <script is:inline>
+      (function () {
+        var settingsSheet = document.getElementById("site-settings-sheet");
+        var settingsToggles = Array.prototype.slice.call(document.querySelectorAll("[data-settings-toggle]"));
+        var settingsCloseNodes = Array.prototype.slice.call(document.querySelectorAll("[data-settings-close]"));
+
+        function syncToggleState(expanded) {
+          settingsToggles.forEach(function (node) {
+            if (node instanceof HTMLElement) {
+              node.setAttribute("aria-expanded", expanded ? "true" : "false");
+            }
+          });
+        }
+
+        function openSettingsSheet() {
+          if (!(settingsSheet instanceof HTMLElement)) return;
+          settingsSheet.hidden = false;
+          settingsSheet.setAttribute("aria-hidden", "false");
+          document.body.classList.add("site-settings-open");
+          syncToggleState(true);
+          document.dispatchEvent(new CustomEvent("site-settings:opened"));
+        }
+
+        function closeSettingsSheet() {
+          if (!(settingsSheet instanceof HTMLElement)) return;
+          settingsSheet.hidden = true;
+          settingsSheet.setAttribute("aria-hidden", "true");
+          document.body.classList.remove("site-settings-open");
+          syncToggleState(false);
+        }
+
+        settingsToggles.forEach(function (node) {
+          if (!(node instanceof HTMLButtonElement)) return;
+          node.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (settingsSheet instanceof HTMLElement && !settingsSheet.hidden) {
+              closeSettingsSheet();
+              return;
+            }
+            openSettingsSheet();
+          });
+        });
+
+        settingsCloseNodes.forEach(function (node) {
+          if (!(node instanceof HTMLElement)) return;
+          node.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeSettingsSheet();
+          });
+        });
+
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") {
+            closeSettingsSheet();
+          }
+        });
+
+        window.__bookSettingsSheet = {
+          open: openSettingsSheet,
+          close: closeSettingsSheet,
+        };
+      })();
+    </script>
     <script>
+      import { StatusBar, Style } from "@capacitor/status-bar";
       import {
         clearReaderNotebook,
         exportReaderNotebook,
@@ -521,7 +587,6 @@ const appHref = toInternalHref("/app/");
       const settingsImportTrigger = document.getElementById("site-settings-import-trigger");
       const settingsImportInput = document.getElementById("site-settings-import-input");
       const settingsClear = document.getElementById("site-settings-clear");
-      const settingsCloseNodes = Array.from(document.querySelectorAll("[data-settings-close]"));
 
       function setSettingsBusy(next) {
         [...settingsToggles, settingsExport, settingsImportTrigger, settingsClear].forEach((node) => {
@@ -562,50 +627,30 @@ const appHref = toInternalHref("/app/");
         }
       }
 
-      function openSettingsSheet() {
-        if (!(settingsSheet instanceof HTMLElement)) return;
-        settingsSheet.hidden = false;
-        settingsSheet.setAttribute("aria-hidden", "false");
-        document.body.classList.add("site-settings-open");
-        settingsToggles.forEach((node) => node.setAttribute("aria-expanded", "true"));
-        void refreshSettingsSummary();
-      }
-
-      function closeSettingsSheet() {
-        if (!(settingsSheet instanceof HTMLElement)) return;
-        settingsSheet.hidden = true;
-        settingsSheet.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("site-settings-open");
-        settingsToggles.forEach((node) => node.setAttribute("aria-expanded", "false"));
-      }
-
       async function readImportFile(file) {
         const text = await file.text();
         return JSON.parse(text);
       }
 
-      settingsToggles.forEach((node) => {
-        if (!(node instanceof HTMLButtonElement)) return;
-        node.addEventListener("click", () => {
-          if (settingsSheet instanceof HTMLElement && !settingsSheet.hidden) {
-            closeSettingsSheet();
-            return;
-          }
-          openSettingsSheet();
-        });
-      });
-
-      settingsCloseNodes.forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-        node.addEventListener("click", () => {
-          closeSettingsSheet();
-        });
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-          closeSettingsSheet();
+      async function syncNativeStatusBar() {
+        const capacitor = window.Capacitor;
+        if (!(capacitor && typeof capacitor.isNativePlatform === "function" && capacitor.isNativePlatform())) {
+          return;
         }
+
+        try {
+          await StatusBar.setOverlaysWebView({ overlay: false });
+          await StatusBar.setStyle({ style: Style.Dark });
+          await StatusBar.setBackgroundColor({ color: "#f4ede1" });
+          document.documentElement.style.setProperty("--safe-top", "0px");
+        } catch (error) {
+          console.error("Failed to sync native status bar", error);
+        }
+      }
+
+      void syncNativeStatusBar();
+      document.addEventListener("site-settings:opened", () => {
+        void refreshSettingsSummary();
       });
 
       if (settingsExport instanceof HTMLButtonElement) {

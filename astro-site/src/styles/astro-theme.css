@@ -156,6 +156,8 @@ img { display: block; max-width: 100%; }
   display: none;
   align-items: center;
   justify-content: center;
+  appearance: none;
+  -webkit-appearance: none;
   width: 42px;
   height: 42px;
   padding: 0;
@@ -1462,10 +1464,13 @@ body.reader-notes-editor-open .reader-notes-shell {
   font-size: 0.78rem;
 }
 .mobile-dock-action {
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
   background: transparent;
   font: inherit;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .mobile-dock-action:disabled {
   cursor: wait;

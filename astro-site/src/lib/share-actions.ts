@@ -35,6 +35,14 @@ export function initShareActions() {
     if (event.key !== "Escape") return;
     registeredAreas.forEach(closeMenu);
   });
+
+  window.addEventListener("scroll", () => {
+    registeredAreas.forEach(closeMenu);
+  }, { passive: true });
+
+  window.addEventListener("resize", () => {
+    registeredAreas.forEach(closeMenu);
+  });
 }
 
 function bindShareArea(elements: ShareElements) {
@@ -120,13 +128,43 @@ async function runShareAction(elements: ShareElements, action: string) {
 function openMenu(elements: ShareElements) {
   if (!(elements.menu instanceof HTMLElement) || !(elements.toggle instanceof HTMLButtonElement)) return;
   elements.menu.hidden = false;
+  positionMenu(elements);
   elements.toggle.setAttribute("aria-expanded", "true");
 }
 
 function closeMenu(elements: ShareElements) {
   if (!(elements.menu instanceof HTMLElement) || !(elements.toggle instanceof HTMLButtonElement)) return;
   elements.menu.hidden = true;
+  elements.menu.style.left = "";
+  elements.menu.style.top = "";
   elements.toggle.setAttribute("aria-expanded", "false");
+}
+
+function positionMenu(elements: ShareElements) {
+  if (!(elements.menu instanceof HTMLElement) || !(elements.toggle instanceof HTMLButtonElement)) return;
+
+  const viewportPadding = 12;
+  const gap = 10;
+  const toggleRect = elements.toggle.getBoundingClientRect();
+
+  elements.menu.style.visibility = "hidden";
+  const menuRect = elements.menu.getBoundingClientRect();
+
+  let left = toggleRect.right - menuRect.width;
+  if (left < viewportPadding) left = viewportPadding;
+  if (left + menuRect.width > window.innerWidth - viewportPadding) {
+    left = window.innerWidth - viewportPadding - menuRect.width;
+  }
+
+  let top = toggleRect.bottom + gap;
+  if (top + menuRect.height > window.innerHeight - viewportPadding) {
+    top = toggleRect.top - gap - menuRect.height;
+  }
+  if (top < viewportPadding) top = viewportPadding;
+
+  elements.menu.style.left = `${Math.round(left)}px`;
+  elements.menu.style.top = `${Math.round(top)}px`;
+  elements.menu.style.visibility = "";
 }
 
 function readPayload(area: HTMLElement) {

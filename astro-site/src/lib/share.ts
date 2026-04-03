@@ -104,7 +104,6 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
   const title = (payload.title || "").trim();
   const text = (payload.text || "").trim();
   const imageUrl = resolveShareUrl(payload.imageUrl);
-  const fallbackUrl = resolveShareUrl(payload.url || payload.imageUrl);
 
   if (!imageUrl) {
     throw new Error("missing-image-url");
@@ -134,22 +133,8 @@ export async function shareImageCard(payload: SharePayload & { imageUrl?: string
     }
   }
 
-  if (typeof document !== "undefined") {
-    const objectUrl = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = objectUrl;
-    anchor.download = filename;
-    anchor.target = "_blank";
-    anchor.rel = "noopener";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 2_000);
-    return { method: "download" };
-  }
-
-  if (fallbackUrl && typeof window !== "undefined") {
-    window.open(fallbackUrl, "_blank", "noopener");
+  if (typeof window !== "undefined") {
+    window.open(imageUrl, "_blank", "noopener");
     return { method: "download" };
   }
 

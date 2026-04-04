@@ -148,36 +148,33 @@ function setupBookStatusControl(root: HTMLElement) {
     return "normal";
   }
 
-  root.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-
-    const cycleTrigger = target.closest("[data-book-status-cycle]");
-    if (cycleTrigger instanceof HTMLButtonElement) {
+  if (readChip instanceof HTMLButtonElement) {
+    readChip.addEventListener("click", () => {
       const currentStatus = getBookStatus(bookId, fallback);
-      const cycleKind = cycleTrigger.dataset.bookStatusCycle;
-      if (cycleKind === "read") {
-        render(setBookStatus(bookId, { read_state: getNextReadState(currentStatus.read_state) }, fallback));
-        return;
-      }
-      if (cycleKind === "curation") {
-        render(setBookStatus(bookId, { curation_state: getNextCurationState(currentStatus.curation_state) }, fallback));
-        return;
-      }
-    }
+      render(setBookStatus(bookId, { read_state: getNextReadState(currentStatus.read_state) }, fallback));
+    });
+  }
 
-    const button = target.closest("[data-book-status-kind][data-book-status-value]");
+  if (curationChip instanceof HTMLButtonElement) {
+    curationChip.addEventListener("click", () => {
+      const currentStatus = getBookStatus(bookId, fallback);
+      render(setBookStatus(bookId, { curation_state: getNextCurationState(currentStatus.curation_state) }, fallback));
+    });
+  }
+
+  buttons.forEach((button) => {
     if (!(button instanceof HTMLButtonElement)) return;
-
-    const kind = button.dataset.bookStatusKind;
-    const value = button.dataset.bookStatusValue;
-    if (kind === "read" && isBookReadState(value)) {
-      render(setBookStatus(bookId, { read_state: value }, fallback));
-      return;
-    }
-    if (kind === "curation" && isBookCurationState(value)) {
-      render(setBookStatus(bookId, { curation_state: value }, fallback));
-    }
+    button.addEventListener("click", () => {
+      const kind = button.dataset.bookStatusKind;
+      const value = button.dataset.bookStatusValue;
+      if (kind === "read" && isBookReadState(value)) {
+        render(setBookStatus(bookId, { read_state: value }, fallback));
+        return;
+      }
+      if (kind === "curation" && isBookCurationState(value)) {
+        render(setBookStatus(bookId, { curation_state: value }, fallback));
+      }
+    });
   });
 
   window.addEventListener("book-status:changed", (event) => {

@@ -542,6 +542,7 @@ img { display: block; max-width: 100%; }
   color: var(--text);
   font: inherit;
   cursor: pointer;
+  touch-action: manipulation;
   box-shadow: none;
 }
 .tool-switch:hover,
@@ -771,6 +772,7 @@ html.is-capacitor-app .share-inline {
   -webkit-appearance: none;
   cursor: pointer;
   font: inherit;
+  touch-action: manipulation;
   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 .book-status-current-trigger:hover,
@@ -3217,30 +3219,26 @@ html.is-capacitor-app .tool-switch--share {
   }
   .page-intro--book .book-status-group {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 8px;
+    gap: 6px;
+    align-items: stretch;
   }
   .page-intro--book .book-status-label {
     font-size: 0.76rem;
     white-space: nowrap;
   }
   .page-intro--book .book-status-options {
-    flex-wrap: nowrap;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-  .page-intro--book .book-status-options::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding-bottom: 0;
   }
   .page-intro--book .book-status-options .tool-switch {
-    flex: 0 0 auto;
     min-height: 30px;
-    padding: 0 10px;
+    width: 100%;
+    padding: 0 8px;
     font-size: 0.82rem;
-    white-space: nowrap;
+    white-space: normal;
   }
   .notes-toolbar-row,
   .notes-book-list {

@@ -17,6 +17,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             <strong class="stat-value" id="notes-total-count">0</strong>
           </div>
           <div class="stat-block">
+            <span class="stat-label">在读书籍</span>
+            <strong class="stat-value" id="reading-books-count">0</strong>
+          </div>
+          <div class="stat-block">
             <span class="stat-label">收藏书籍</span>
             <strong class="stat-value" id="favorite-books-count">0</strong>
           </div>
@@ -30,6 +34,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     <nav class="personal-mobile-nav" aria-label="个人分段">
       <button class="personal-mobile-tab" type="button" data-personal-panel-tab="preferences">偏好</button>
+      <button class="personal-mobile-tab" type="button" data-personal-panel-tab="reading">在读</button>
       <button class="personal-mobile-tab" type="button" data-personal-panel-tab="favorites">收藏</button>
       <button class="personal-mobile-tab" type="button" data-personal-panel-tab="notes">笔记</button>
     </nav>
@@ -90,6 +95,32 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <div class="notes-empty personal-empty" id="personal-last-visit-empty" hidden>
             <h2>还没有最近阅读</h2>
             <p>去目录里点开一本书，或者进入任意文章，这里就会留下你上次停下来的位置。</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="content-card notes-results-card personal-collections-card" data-personal-panel="reading">
+      <div class="section-head personal-collections-head">
+        <div>
+          <p class="eyebrow">在读</p>
+          <h2>现在还在推进的书</h2>
+        </div>
+      </div>
+
+      <div class="personal-collections-grid personal-collections-grid--single">
+        <section class="personal-collection">
+          <div class="personal-collection-head">
+            <div>
+              <p class="eyebrow">书</p>
+              <h3>在读的书</h3>
+            </div>
+            <span class="meta-chip" id="reading-books-inline-count">0 本</span>
+          </div>
+          <div class="personal-collection-list" id="reading-books-results"></div>
+          <div class="notes-empty personal-empty" id="reading-books-empty" hidden>
+            <h2>还没有标记在读的书</h2>
+            <p>在书页把阅读进度切到“在读”，这里就会出现。</p>
           </div>
         </section>
       </div>
@@ -262,12 +293,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const emptyNode = document.getElementById("notes-empty");
     const emptyTitleNode = document.getElementById("notes-empty-title");
     const totalCountNode = document.getElementById("notes-total-count");
+    const readingBooksCountNode = document.getElementById("reading-books-count");
+    const readingBooksInlineCountNode = document.getElementById("reading-books-inline-count");
     const favoriteBooksCountNode = document.getElementById("favorite-books-count");
     const favoriteBooksInlineCountNode = document.getElementById("favorite-books-inline-count");
     const favoritePagesCountNode = document.getElementById("favorite-pages-count");
     const favoritePagesInlineCountNode = document.getElementById("favorite-pages-inline-count");
+    const readingBooksResultsNode = document.getElementById("reading-books-results");
     const favoriteBooksResultsNode = document.getElementById("favorite-books-results");
     const favoritePagesResultsNode = document.getElementById("favorite-pages-results");
+    const readingBooksEmptyNode = document.getElementById("reading-books-empty");
     const favoriteBooksEmptyNode = document.getElementById("favorite-books-empty");
     const favoritePagesEmptyNode = document.getElementById("favorite-pages-empty");
     const themeButtons = Array.from(document.querySelectorAll("[data-theme-option]"));
@@ -295,6 +330,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     const state = {
       notes: [],
+      readingBooks: [],
       favoriteBooks: [],
       favoritePages: [],
       query: "",
@@ -311,7 +347,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     function readMobilePanelPreference() {
       try {
         const raw = window.localStorage.getItem(PERSONAL_PANEL_STORAGE_KEY);
-        return raw === "preferences" || raw === "favorites" || raw === "notes" ? raw : "notes";
+        return raw === "preferences" || raw === "reading" || raw === "favorites" || raw === "notes" ? raw : "notes";
       } catch (error) {
         return "notes";
       }
@@ -382,15 +418,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       return String(right.updated_at || "").localeCompare(String(left.updated_at || "")) || String(left.title || left.page_title || "").localeCompare(String(right.title || right.page_title || ""));
     }
 
-    function refreshFavorites() {
+    function refreshCollections() {
       const bookStatuses = readBookStatuses();
-      state.favoriteBooks = Array.from(state.booksById.values())
+      const booksWithStatus = Array.from(state.booksById.values())
         .map((book) => ({
           ...book,
           ...(bookStatuses[book.id] || {}),
         }))
-        .filter((book) => book.curation_state === "favorite")
         .sort(compareByUpdatedAtDesc);
+
+      state.readingBooks = booksWithStatus
+        .filter((book) => book.read_state === "reading");
+
+      state.favoriteBooks = booksWithStatus
+        .filter((book) => book.curation_state === "favorite")
 
       state.favoritePages = Object.values(readFavoritePages())
         .map((favorite) => {
@@ -442,6 +483,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     function renderStats() {
       if (totalCountNode) totalCountNode.textContent = String(state.notes.length);
+      if (readingBooksCountNode) readingBooksCountNode.textContent = String(state.readingBooks.length);
+      if (readingBooksInlineCountNode) {
+        readingBooksInlineCountNode.textContent = state.readingBooks.length + " 本";
+      }
       if (favoriteBooksCountNode) favoriteBooksCountNode.textContent = String(state.favoriteBooks.length);
       if (favoriteBooksInlineCountNode) {
         favoriteBooksInlineCountNode.textContent = state.favoriteBooks.length + " 本";
@@ -501,6 +546,34 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (lastVisitLinkNode instanceof HTMLAnchorElement) {
         lastVisitLinkNode.href = state.lastVisit.url || "/library/";
       }
+    }
+
+    function renderReadingCollection() {
+      if (!(readingBooksResultsNode instanceof HTMLElement)) return;
+
+      if (!state.readingBooks.length) {
+        readingBooksResultsNode.innerHTML = "";
+        if (readingBooksEmptyNode instanceof HTMLElement) readingBooksEmptyNode.hidden = false;
+        return;
+      }
+
+      if (readingBooksEmptyNode instanceof HTMLElement) readingBooksEmptyNode.hidden = true;
+      readingBooksResultsNode.innerHTML = state.readingBooks
+        .map((book) => `
+          <article class="personal-card">
+            <div class="personal-card-topline">
+              <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
+              <span class="meta-chip">在读</span>
+              ${book.curation_state === "favorite" ? '<span class="meta-chip">已收藏</span>' : ""}
+            </div>
+            <h3>${escapeHtml(book.title)}</h3>
+            <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
+            <div class="personal-card-actions">
+              <a class="tool-switch tool-switch--compact" href="${escapeAttribute(book.url || "#")}">继续阅读</a>
+            </div>
+          </article>
+        `)
+        .join("");
     }
 
     function renderFavoriteCollections() {
@@ -640,6 +713,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     function render() {
       renderStats();
       renderPreferences();
+      renderReadingCollection();
       renderFavoriteCollections();
       renderMobilePanels();
       if (!(resultsNode instanceof HTMLElement)) return;
@@ -744,7 +818,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         console.error("Failed to load notes index", error);
         setStatus("笔记已加载，但原文标题和书名索引暂时没拿到。", "warning");
       } finally {
-        refreshFavorites();
+        refreshCollections();
       }
     }
 
@@ -836,7 +910,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (!(button instanceof HTMLButtonElement)) return;
       button.addEventListener("click", function () {
         const nextPanel = button.dataset.personalPanelTab;
-        if (nextPanel !== "preferences" && nextPanel !== "favorites" && nextPanel !== "notes") return;
+        if (nextPanel !== "preferences" && nextPanel !== "reading" && nextPanel !== "favorites" && nextPanel !== "notes") return;
         state.mobilePanel = nextPanel;
         writeMobilePanelPreference(nextPanel);
         renderMobilePanels();
@@ -981,7 +1055,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         const bookId = button.getAttribute("data-personal-book-unfavorite");
         if (!bookId) return;
         setBookStatus(bookId, { curation_state: "normal" });
-        refreshFavorites();
+        refreshCollections();
         render();
         setStatus("这本书已从收藏里移出。", "success");
       });
@@ -996,25 +1070,25 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         const pageId = button.getAttribute("data-personal-page-unfavorite");
         if (!pageId) return;
         removePageFavorite(pageId);
-        refreshFavorites();
+        refreshCollections();
         render();
         setStatus("这篇文章已从收藏里移出。", "success");
       });
     }
 
     window.addEventListener("book-status:changed", function () {
-      refreshFavorites();
+      refreshCollections();
       render();
     });
 
     window.addEventListener("page-favorite:changed", function () {
-      refreshFavorites();
+      refreshCollections();
       render();
     });
 
     window.addEventListener("storage", function (event) {
       if (event.key === getBookStatusStorageKey() || event.key === getFavoritePageStorageKey()) {
-        refreshFavorites();
+        refreshCollections();
         render();
         return;
       }
@@ -1026,7 +1100,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {
       state.mobilePanel = readMobilePanelPreference();
-      refreshFavorites();
+      refreshCollections();
       render();
     });
   </script>

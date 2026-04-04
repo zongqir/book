@@ -2135,7 +2135,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 }
 
 .notes-stage-strip {
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
 }
 
 .personal-collections-card {
@@ -2277,6 +2277,10 @@ body.reader-notes-editor-open .reader-notes-shell {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.personal-collections-grid--single {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .personal-collection {
@@ -3102,7 +3106,7 @@ html.is-capacitor-app .tool-switch--share {
     top: 12px;
     z-index: 8;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     padding: 4px;
     border: 1px solid rgba(23, 48, 67, 0.08);

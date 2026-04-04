@@ -476,7 +476,12 @@ const appHref = toInternalHref("/app/");
           await StatusBar.setOverlaysWebView({ overlay: false });
           await StatusBar.setStyle({ style: theme === "dark" ? Style.Light : Style.Dark });
           await StatusBar.setBackgroundColor({ color: theme === "dark" ? "#13212d" : "#f4ede1" });
-          document.documentElement.style.setProperty("--safe-top", "0px");
+          if (document.documentElement.classList.contains("is-capacitor-android")) {
+            document.documentElement.style.setProperty("--safe-top", "8px");
+            document.documentElement.style.setProperty("--safe-bottom", "0px");
+          } else {
+            document.documentElement.style.setProperty("--safe-top", "0px");
+          }
         } catch (error) {
           console.error("Failed to sync native status bar", error);
         }

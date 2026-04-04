@@ -148,9 +148,10 @@ function positionMenu(elements: ShareElements) {
 
   if (window.innerWidth <= 760) {
     const dock = document.querySelector(".mobile-app-dock");
-    const safeBottom = Number.parseFloat(
+    const safeBottomValue = Number.parseFloat(
       getComputedStyle(document.documentElement).getPropertyValue("--safe-bottom") || "16",
-    ) || 16;
+    );
+    const safeBottom = Number.isFinite(safeBottomValue) ? safeBottomValue : 16;
     const dockTop = dock instanceof HTMLElement
       ? dock.getBoundingClientRect().top
       : window.innerHeight - (84 + safeBottom);

@@ -29,8 +29,8 @@ html[data-reader-font-size="lg"] {
   --reader-font-size-mobile: 1.08rem;
 }
 html.is-capacitor-android {
-  --safe-top: env(safe-area-inset-top);
-  --safe-bottom: max(16px, env(safe-area-inset-bottom));
+  --safe-top: 8px;
+  --safe-bottom: 0px;
 }
 body {
   margin: 0;
@@ -2855,6 +2855,9 @@ html.is-capacitor-app .tool-switch--share {
   }
   .nav-pill--subtle { display: none; }
   .site-main { padding-top: 16px; padding-bottom: 108px; }
+  html.is-capacitor-android .site-main {
+    padding-top: 22px;
+  }
   .mobile-app-dock {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

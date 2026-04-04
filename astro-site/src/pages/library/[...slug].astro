@@ -135,6 +135,21 @@ function getBookStatusCopy(
             <span class="meta-chip">{node.pages.length} 个入口</span>
             <span class="meta-chip">{node.book.section_title}</span>
             {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
+            <button
+              class="favorite-icon-button"
+              type="button"
+              data-favorite-toggle
+              data-favorite-kind="book"
+              data-book-id={node.book.id}
+              data-default-curation-state={node.book.curation_state}
+              aria-pressed={node.book.curation_state === "favorite" ? "true" : "false"}
+              aria-label={`收藏《${node.book.title}》`}
+              title="收藏这本书"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 16.9 4.3 11.5a3.8 3.8 0 0 1 0-5.4 3.74 3.74 0 0 1 5.3 0L10 6.5l.4-.4a3.74 3.74 0 0 1 5.3 0 3.8 3.8 0 0 1 0 5.4z"></path>
+              </svg>
+            </button>
             <div
               class="share-inline"
               data-share-area
@@ -292,6 +307,28 @@ function getBookStatusCopy(
           <h1 class="page-title">{node.page.title}</h1>
           {node.page.summary && <p class="doc-summary">{node.page.summary}</p>}
           <div class="doc-hero-actions">
+            <button
+              class="favorite-icon-button"
+              type="button"
+              data-favorite-toggle
+              data-favorite-kind="page"
+              data-page-id={node.page.id}
+              data-page-title={node.page.title}
+              data-page-url={node.page.url}
+              data-page-summary={node.page.summary || node.page.intent || node.page.title}
+              data-book-id={node.book?.id || ""}
+              data-book-title={node.book?.title || ""}
+              data-book-url={node.book?.url || ""}
+              data-section-title={node.page.section_title}
+              data-page-slot={node.page.slot}
+              aria-pressed="false"
+              aria-label={`收藏《${node.page.title}》`}
+              title="收藏这篇文章"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 16.9 4.3 11.5a3.8 3.8 0 0 1 0-5.4 3.74 3.74 0 0 1 5.3 0L10 6.5l.4-.4a3.74 3.74 0 0 1 5.3 0 3.8 3.8 0 0 1 0 5.4z"></path>
+              </svg>
+            </button>
             <div
               class="share-inline"
               data-share-area

@@ -37,7 +37,7 @@ const socialImage = new URL(ogImage, Astro.site);
 const socialImageAlt = ogImageAlt || socialTitle;
 const isNotes = pathname.startsWith("/notes");
 const isAppDownload = pathname.startsWith("/app");
-const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "笔记" : title;
+const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "个人" : title;
 const appDownload = getAndroidAppDownloadConfig();
 const showAppDownloadEntry = appDownload.available;
 const homeHref = toInternalHref("/");
@@ -88,8 +88,10 @@ const appHref = toInternalHref("/app/");
     {isLibrary && (
       <script>
         import { initShareActions } from "../lib/share-actions";
+        import { initFavoriteButtons } from "../lib/personal-library";
 
         initShareActions();
+        initFavoriteButtons();
       </script>
     )}
     <title>{pageTitle}</title>
@@ -147,7 +149,7 @@ const appHref = toInternalHref("/app/");
             <nav class="top-nav" aria-label="主导航">
               <a class:list={["nav-pill", isHome && "is-active"]} href={homeHref}>首页</a>
               <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>目录</a>
-              <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>笔记</a>
+              <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
             </nav>
             <button
               class="site-settings-toggle"
@@ -203,7 +205,7 @@ const appHref = toInternalHref("/app/");
       </a>
       <a class:list={["mobile-dock-item", isNotes && "is-active"]} href={notesHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
-        <span>笔记</span>
+        <span>个人</span>
       </a>
       <button
         class="mobile-dock-item mobile-dock-action"

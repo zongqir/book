@@ -2,8 +2,73 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="本地笔记" description="回看你留在这个浏览器里的高亮与笔记。">
+<BaseLayout title="个人" description="回看你留在这个浏览器里的笔记、收藏的书和收藏的文章。">
   <div class="page-stack notes-dashboard">
+    <section class="library-panel notes-stage">
+      <div class="notes-hero">
+        <div>
+          <p class="hero-kicker">个人</p>
+          <h1>个人</h1>
+        </div>
+        <p>这里放你留在这个浏览器里的笔记、收藏的书，以及反复想回来的文章。</p>
+        <div class="stats-strip notes-stage-strip">
+          <div class="stat-block">
+            <span class="stat-label">本地笔记</span>
+            <strong class="stat-value" id="notes-total-count">0</strong>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">收藏书籍</span>
+            <strong class="stat-value" id="favorite-books-count">0</strong>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">收藏文章</span>
+            <strong class="stat-value" id="favorite-pages-count">0</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card notes-results-card personal-collections-card">
+      <div class="section-head personal-collections-head">
+        <div>
+          <p class="eyebrow">收藏</p>
+          <h2>你想反复回来的内容</h2>
+        </div>
+      </div>
+
+      <div class="personal-collections-grid">
+        <section class="personal-collection">
+          <div class="personal-collection-head">
+            <div>
+              <p class="eyebrow">书</p>
+              <h3>收藏的书</h3>
+            </div>
+            <span class="meta-chip" id="favorite-books-inline-count">0 本</span>
+          </div>
+          <div class="personal-collection-list" id="favorite-books-results"></div>
+          <div class="notes-empty personal-empty" id="favorite-books-empty" hidden>
+            <h2>还没有收藏的书</h2>
+            <p>在书页点一下爱心，就会留在这里。</p>
+          </div>
+        </section>
+
+        <section class="personal-collection">
+          <div class="personal-collection-head">
+            <div>
+              <p class="eyebrow">文章</p>
+              <h3>收藏的文章</h3>
+            </div>
+            <span class="meta-chip" id="favorite-pages-inline-count">0 篇</span>
+          </div>
+          <div class="personal-collection-list" id="favorite-pages-results"></div>
+          <div class="notes-empty personal-empty" id="favorite-pages-empty" hidden>
+            <h2>还没有收藏的文章</h2>
+            <p>在任意章节页点一下爱心，就会留在这里。</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <section class="content-card notes-toolbar-card">
       <details class="notes-filters" open>
         <summary class="notes-filters-summary">
@@ -91,6 +156,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   </div>
 
   <script>
+    import { getBookStatusStorageKey, readBookStatuses, setBookStatus } from "../../lib/book-status-storage";
+    import {
+      getFavoritePageStorageKey,
+      readFavoritePages,
+      removePageFavorite,
+    } from "../../lib/personal-library";
     import {
       clearReaderNotebook,
       exportReaderNotebook,
@@ -114,7 +185,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const emptyNode = document.getElementById("notes-empty");
     const emptyTitleNode = document.getElementById("notes-empty-title");
     const totalCountNode = document.getElementById("notes-total-count");
-    const bookCountNode = document.getElementById("notes-book-count");
+    const favoriteBooksCountNode = document.getElementById("favorite-books-count");
+    const favoriteBooksInlineCountNode = document.getElementById("favorite-books-inline-count");
+    const favoritePagesCountNode = document.getElementById("favorite-pages-count");
+    const favoritePagesInlineCountNode = document.getElementById("favorite-pages-inline-count");
+    const favoriteBooksResultsNode = document.getElementById("favorite-books-results");
+    const favoritePagesResultsNode = document.getElementById("favorite-pages-results");
+    const favoriteBooksEmptyNode = document.getElementById("favorite-books-empty");
+    const favoritePagesEmptyNode = document.getElementById("favorite-pages-empty");
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
     const colorLabels = {
       all: "全部颜色",
@@ -126,6 +204,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     const state = {
       notes: [],
+      favoriteBooks: [],
+      favoritePages: [],
       query: "",
       sort: "updated-desc",
       color: "all",
@@ -182,6 +262,42 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         };
     }
 
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("\n", " ");
+    }
+
+    function compareByUpdatedAtDesc(left, right) {
+      return String(right.updated_at || "").localeCompare(String(left.updated_at || "")) || String(left.title || left.page_title || "").localeCompare(String(right.title || right.page_title || ""));
+    }
+
+    function refreshFavorites() {
+      const bookStatuses = readBookStatuses();
+      state.favoriteBooks = Array.from(state.booksById.values())
+        .map((book) => ({
+          ...book,
+          ...(bookStatuses[book.id] || {}),
+        }))
+        .filter((book) => book.curation_state === "favorite")
+        .sort(compareByUpdatedAtDesc);
+
+      state.favoritePages = Object.values(readFavoritePages())
+        .map((favorite) => {
+          const page = state.pagesById.get(favorite.page_id);
+          const book = favorite.book_id ? state.booksById.get(favorite.book_id) : null;
+          return {
+            ...favorite,
+            page_title: page?.title || favorite.page_title,
+            page_url: page?.url || favorite.page_url,
+            page_summary: page?.summary || page?.intent || favorite.page_summary,
+            book_title: page?.book_title || book?.title || favorite.book_title,
+            book_url: book?.url || favorite.book_url,
+            section_title: page?.section_title || book?.section_title || favorite.section_title,
+            slot: page?.slot || favorite.slot,
+          };
+        })
+        .sort(compareByUpdatedAtDesc);
+    }
+
     function buildSearchText(note, meta) {
       return [
         note.quote,
@@ -214,13 +330,67 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     function renderStats() {
       if (totalCountNode) totalCountNode.textContent = String(state.notes.length);
-      const bookIds = new Set(
-        state.notes.map((note) => {
-          const page = state.pagesById.get(note.pageId);
-          return page?.book_id || note.pageId;
-        }),
-      );
-      if (bookCountNode) bookCountNode.textContent = String(bookIds.size);
+      if (favoriteBooksCountNode) favoriteBooksCountNode.textContent = String(state.favoriteBooks.length);
+      if (favoriteBooksInlineCountNode) {
+        favoriteBooksInlineCountNode.textContent = state.favoriteBooks.length + " 本";
+      }
+      if (favoritePagesCountNode) favoritePagesCountNode.textContent = String(state.favoritePages.length);
+      if (favoritePagesInlineCountNode) {
+        favoritePagesInlineCountNode.textContent = state.favoritePages.length + " 篇";
+      }
+    }
+
+    function renderFavoriteCollections() {
+      if (favoriteBooksResultsNode instanceof HTMLElement) {
+        if (!state.favoriteBooks.length) {
+          favoriteBooksResultsNode.innerHTML = "";
+          if (favoriteBooksEmptyNode instanceof HTMLElement) favoriteBooksEmptyNode.hidden = false;
+        } else {
+          if (favoriteBooksEmptyNode instanceof HTMLElement) favoriteBooksEmptyNode.hidden = true;
+          favoriteBooksResultsNode.innerHTML = state.favoriteBooks
+            .map((book) => `
+              <article class="personal-card">
+                <div class="personal-card-topline">
+                  <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
+                  <span class="meta-chip">书</span>
+                </div>
+                <h3>${escapeHtml(book.title)}</h3>
+                <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
+                <div class="personal-card-actions">
+                  <a class="tool-switch tool-switch--compact" href="${escapeAttribute(book.url || "#")}">打开这本书</a>
+                  <button class="tool-switch tool-switch--compact" type="button" data-personal-book-unfavorite="${escapeAttribute(book.id)}">取消收藏</button>
+                </div>
+              </article>
+            `)
+            .join("");
+        }
+      }
+
+      if (favoritePagesResultsNode instanceof HTMLElement) {
+        if (!state.favoritePages.length) {
+          favoritePagesResultsNode.innerHTML = "";
+          if (favoritePagesEmptyNode instanceof HTMLElement) favoritePagesEmptyNode.hidden = false;
+        } else {
+          if (favoritePagesEmptyNode instanceof HTMLElement) favoritePagesEmptyNode.hidden = true;
+          favoritePagesResultsNode.innerHTML = state.favoritePages
+            .map((page) => `
+              <article class="personal-card personal-card--page">
+                <div class="personal-card-topline">
+                  <span class="meta-chip">${escapeHtml(page.slot || "--")}</span>
+                  <span class="meta-chip">${escapeHtml(page.book_title || "未归档书目")}</span>
+                </div>
+                <h3>${escapeHtml(page.page_title)}</h3>
+                <p>${escapeHtml(page.page_summary || "这篇文章目前还没有摘要。")}</p>
+                <div class="personal-card-actions">
+                  <a class="tool-switch tool-switch--compact" href="${escapeAttribute(page.page_url || "#")}">打开文章</a>
+                  ${page.book_url ? `<a class="tool-switch tool-switch--compact" href="${escapeAttribute(page.book_url)}">回到这本书</a>` : ""}
+                  <button class="tool-switch tool-switch--compact" type="button" data-personal-page-unfavorite="${escapeAttribute(page.page_id)}">取消收藏</button>
+                </div>
+              </article>
+            `)
+            .join("");
+        }
+      }
     }
 
     function renderFilterState(visibleCount) {
@@ -276,6 +446,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     function render() {
       renderStats();
+      renderFavoriteCollections();
       if (!(resultsNode instanceof HTMLElement)) return;
 
       const visible = getFilteredNotes();
@@ -377,6 +548,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       } catch (error) {
         console.error("Failed to load notes index", error);
         setStatus("笔记已加载，但原文标题和书名索引暂时没拿到。", "warning");
+      } finally {
+        refreshFavorites();
       }
     }
 
@@ -551,11 +724,60 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             console.error("Failed to share reader note", error);
             setStatus("分享失败了。稍后再试一次。", "danger");
           }
+          return;
         }
+
       });
     }
 
+    if (favoriteBooksResultsNode instanceof HTMLElement) {
+      favoriteBooksResultsNode.addEventListener("click", function (event) {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest("[data-personal-book-unfavorite]");
+        if (!(button instanceof HTMLElement)) return;
+        const bookId = button.getAttribute("data-personal-book-unfavorite");
+        if (!bookId) return;
+        setBookStatus(bookId, { curation_state: "normal" });
+        refreshFavorites();
+        render();
+        setStatus("这本书已从收藏里移出。", "success");
+      });
+    }
+
+    if (favoritePagesResultsNode instanceof HTMLElement) {
+      favoritePagesResultsNode.addEventListener("click", function (event) {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest("[data-personal-page-unfavorite]");
+        if (!(button instanceof HTMLElement)) return;
+        const pageId = button.getAttribute("data-personal-page-unfavorite");
+        if (!pageId) return;
+        removePageFavorite(pageId);
+        refreshFavorites();
+        render();
+        setStatus("这篇文章已从收藏里移出。", "success");
+      });
+    }
+
+    window.addEventListener("book-status:changed", function () {
+      refreshFavorites();
+      render();
+    });
+
+    window.addEventListener("page-favorite:changed", function () {
+      refreshFavorites();
+      render();
+    });
+
+    window.addEventListener("storage", function (event) {
+      if (event.key !== getBookStatusStorageKey() && event.key !== getFavoritePageStorageKey()) return;
+      refreshFavorites();
+      render();
+    });
+
     Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {
+      refreshFavorites();
       render();
     });
   </script>

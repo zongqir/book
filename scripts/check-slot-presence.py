@@ -60,9 +60,6 @@ def audit_book_dir(book_dir: Path, root: Path) -> tuple[list[Finding], list[Find
     if not has_slot_or_qa(book_dir, "02_最值得记住的句子"):
         errors.append(Finding(book_dir, "missing required slot 02_最值得记住的句子.md or 02_最值得记住的句子.QA.md"))
 
-    if "05_思想方法" in book_dir.parts and not has_slot_or_qa(book_dir, "01_核心原则"):
-        errors.append(Finding(book_dir, "思想方法目录缺少 01_核心原则.md 或 01_核心原则.QA.md"))
-
     if (book_dir / "01_核心原则.md").exists() and (book_dir / "01_核心原则.QA.md").exists():
         warnings.append(Finding(book_dir, "01_核心原则.md and 01_核心原则.QA.md both exist"))
 

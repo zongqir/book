@@ -167,7 +167,7 @@ function getBookStatusCopy(
             </div>
           </div>
           <section
-            class="meta-card book-status-card"
+            class="book-status-toolbar"
             data-book-status-root
             data-book-id={node.book.id}
             data-default-read-state={node.book.read_state}
@@ -175,19 +175,18 @@ function getBookStatusCopy(
             data-read-state={node.book.read_state}
             data-curation-state={node.book.curation_state}
           >
-              <div class="book-status-head">
-                <div>
-                  <p class="eyebrow">阅读筛选</p>
-                  <h3>这本书怎么处理</h3>
-                </div>
-                <div class="book-status-current">
-                  <span class="meta-chip" data-book-status-read-chip>进度 · {getReadStateLabel(node.book.read_state)}</span>
-                  <span class="meta-chip" data-book-status-curation-chip>筛选 · {getCurationStateLabel(node.book.curation_state)}</span>
-                </div>
+            <div class="book-status-toolbar-head">
+              <div>
+                <p class="eyebrow">阅读状态</p>
+                <p class="book-status-toolbar-copy" data-book-status-copy>{getBookStatusCopy(node.book.read_state, node.book.curation_state)}</p>
               </div>
-            <p class="book-status-copy" data-book-status-copy>{getBookStatusCopy(node.book.read_state, node.book.curation_state)}</p>
-            <div class="book-status-groups">
-              <div class="book-status-group">
+              <div class="book-status-current">
+                <span class="meta-chip" data-book-status-read-chip>进度 · {getReadStateLabel(node.book.read_state)}</span>
+                <span class="meta-chip" data-book-status-curation-chip>筛选 · {getCurationStateLabel(node.book.curation_state)}</span>
+              </div>
+            </div>
+            <div class="book-status-toolbar-groups">
+              <div class="book-status-group book-status-group--compact">
                 <span class="book-status-label">进度</span>
                 <div class="book-status-options">
                   <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="read" data-book-status-value="unread">未读</button>
@@ -195,7 +194,7 @@ function getBookStatusCopy(
                   <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="read" data-book-status-value="read">已读</button>
                 </div>
               </div>
-              <div class="book-status-group">
+              <div class="book-status-group book-status-group--compact">
                 <span class="book-status-label">筛选</span>
                 <div class="book-status-options">
                   <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="curation" data-book-status-value="normal">普通</button>
@@ -541,11 +540,208 @@ function getBookStatusCopy(
     setupReaderParagraphNotes();
   </script>
   )}
-{node.kind === "book" && (
-  <script>
-    import { setupBookStatusControls } from "../../lib/book-status-storage";
+  <script is:inline>
+    (function () {
+      var roots = Array.from(document.querySelectorAll("[data-book-status-root]"));
+      if (!roots.length) return;
 
-    setupBookStatusControls();
+      var STORAGE_KEY = "book:statuses:v1";
+      var READ_STATES = ["unread", "reading", "read"];
+      var CURATION_STATES = ["normal", "favorite", "uninterested"];
+
+      function isReadState(value) {
+        return typeof value === "string" && READ_STATES.includes(value);
+      }
+
+      function isCurationState(value) {
+        return typeof value === "string" && CURATION_STATES.includes(value);
+      }
+
+      function isValidTimestamp(value) {
+        return typeof value === "string" && !Number.isNaN(new Date(value).getTime());
+      }
+
+      function normalizeStatus(value, fallback) {
+        var candidate = value && typeof value === "object" ? value : {};
+        var base = fallback && typeof fallback === "object" ? fallback : {};
+        return {
+          read_state: isReadState(candidate.read_state)
+            ? candidate.read_state
+            : isReadState(base.read_state)
+              ? base.read_state
+              : "unread",
+          curation_state: isCurationState(candidate.curation_state)
+            ? candidate.curation_state
+            : isCurationState(base.curation_state)
+              ? base.curation_state
+              : "normal",
+          updated_at: isValidTimestamp(candidate.updated_at)
+            ? candidate.updated_at
+            : isValidTimestamp(base.updated_at)
+              ? base.updated_at
+              : "",
+        };
+      }
+
+      function readStatuses() {
+        try {
+          var raw = window.localStorage.getItem(STORAGE_KEY);
+          if (!raw) return {};
+          var parsed = JSON.parse(raw);
+          var books = parsed && parsed.books && typeof parsed.books === "object" ? parsed.books : {};
+          var next = {};
+          Object.entries(books).forEach(function (entry) {
+            var bookId = entry[0];
+            var status = entry[1];
+            if (typeof bookId !== "string") return;
+            next[bookId] = normalizeStatus(status);
+          });
+          return next;
+        } catch (error) {
+          console.warn("Failed to read local book status", error);
+          return {};
+        }
+      }
+
+      function writeStatuses(books) {
+        try {
+          window.localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              schema_version: 1,
+              updated_at: new Date().toISOString(),
+              books: books,
+            }),
+          );
+        } catch (error) {
+          console.warn("Failed to persist local book status", error);
+        }
+      }
+
+      function getReadLabel(value) {
+        if (value === "reading") return "在读";
+        if (value === "read") return "已读";
+        return "未读";
+      }
+
+      function getCurationLabel(value) {
+        if (value === "favorite") return "收藏";
+        if (value === "uninterested") return "不感兴趣";
+        return "普通";
+      }
+
+      function buildCopy(status) {
+        var progress =
+          status.read_state === "reading"
+            ? "现在正在读。"
+            : status.read_state === "read"
+              ? "这本已经读过。"
+              : "这本还没开始。";
+        var curation =
+          status.curation_state === "favorite"
+            ? "它会继续参与随机，而且更常出现。"
+            : status.curation_state === "uninterested"
+              ? "它会从首页随机里排除，但目录里还保留。"
+              : "它会按普通权重参与随机。";
+        return progress + curation + " 只保存在当前浏览器。";
+      }
+
+      function getBookStatus(bookId, fallback) {
+        var all = readStatuses();
+        if (!all[bookId]) return normalizeStatus(fallback);
+        return normalizeStatus(all[bookId], fallback);
+      }
+
+      function setBookStatus(bookId, next, fallback) {
+        var current = getBookStatus(bookId, fallback);
+        var resolved = normalizeStatus(
+          {
+            read_state: typeof next.read_state === "string" ? next.read_state : current.read_state,
+            curation_state: typeof next.curation_state === "string" ? next.curation_state : current.curation_state,
+            updated_at: new Date().toISOString(),
+          },
+          current,
+        );
+
+        var all = readStatuses();
+        all[bookId] = resolved;
+        writeStatuses(all);
+        window.dispatchEvent(
+          new CustomEvent("book-status:changed", {
+            detail: {
+              bookId: bookId,
+              status: resolved,
+            },
+          }),
+        );
+        return resolved;
+      }
+
+      roots.forEach(function (root) {
+        if (!(root instanceof HTMLElement)) return;
+        var bookId = String(root.dataset.bookId || "").trim();
+        if (!bookId) return;
+
+        var fallback = normalizeStatus({
+          read_state: root.dataset.defaultReadState,
+          curation_state: root.dataset.defaultCurationState,
+        });
+        var readChip = root.querySelector("[data-book-status-read-chip]");
+        var curationChip = root.querySelector("[data-book-status-curation-chip]");
+        var copyNode = root.querySelector("[data-book-status-copy]");
+        var buttons = Array.from(root.querySelectorAll("[data-book-status-kind][data-book-status-value]"));
+
+        function render(status) {
+          root.dataset.readState = status.read_state;
+          root.dataset.curationState = status.curation_state;
+
+          if (readChip instanceof HTMLElement) {
+            readChip.textContent = "进度 · " + getReadLabel(status.read_state);
+          }
+          if (curationChip instanceof HTMLElement) {
+            curationChip.textContent = "筛选 · " + getCurationLabel(status.curation_state);
+          }
+          if (copyNode instanceof HTMLElement) {
+            copyNode.textContent = buildCopy(status);
+          }
+
+          buttons.forEach(function (button) {
+            if (!(button instanceof HTMLButtonElement)) return;
+            var kind = button.dataset.bookStatusKind;
+            var value = button.dataset.bookStatusValue;
+            var selected =
+              (kind === "read" && status.read_state === value) ||
+              (kind === "curation" && status.curation_state === value);
+            button.dataset.selected = selected ? "true" : "false";
+            button.setAttribute("aria-pressed", selected ? "true" : "false");
+          });
+        }
+
+        root.addEventListener("click", function (event) {
+          var target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          var button = target.closest("[data-book-status-kind][data-book-status-value]");
+          if (!(button instanceof HTMLButtonElement)) return;
+
+          var kind = button.dataset.bookStatusKind;
+          var value = button.dataset.bookStatusValue;
+          if (kind === "read" && isReadState(value)) {
+            render(setBookStatus(bookId, { read_state: value }, fallback));
+            return;
+          }
+          if (kind === "curation" && isCurationState(value)) {
+            render(setBookStatus(bookId, { curation_state: value }, fallback));
+          }
+        });
+
+        window.addEventListener("book-status:changed", function (event) {
+          var detail = event.detail;
+          if (!detail || detail.bookId !== bookId || !detail.status) return;
+          render(normalizeStatus(detail.status, fallback));
+        });
+
+        render(getBookStatus(bookId, fallback));
+      });
+    })();
   </script>
-)}
 </BaseLayout>

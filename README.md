@@ -23,8 +23,6 @@ book/
 - `scripts/`：内容校验、导出、构建和辅助脚本
 - `.codex/skills/`：项目级写作和研究 skills
 
-`app/` 目前仍在仓库里，但不是当前主展示链路。当前站点和发布主线以 `astro-site/` 为准。
-
 ## 当前实际一级分类
 
 截至现在，`site/content/library/` 下实际在跑的是 17 个一级分类：

@@ -114,9 +114,11 @@ function setupBookStatusControl(root: HTMLElement) {
 
     if (readChip instanceof HTMLElement) {
       readChip.textContent = "阅读 · " + getReadStateLabel(status.read_state);
+      readChip.setAttribute("aria-label", "切换阅读进度，当前" + getReadStateLabel(status.read_state));
     }
     if (curationChip instanceof HTMLElement) {
       curationChip.textContent = "书单 · " + getCurationStateLabel(status.curation_state);
+      curationChip.setAttribute("aria-label", "切换书单状态，当前" + getCurationStateLabel(status.curation_state));
     }
     if (copyNode instanceof HTMLElement) {
       copyNode.textContent = buildStatusCopy(status);
@@ -134,9 +136,36 @@ function setupBookStatusControl(root: HTMLElement) {
     });
   }
 
+  function getNextReadState(value: BookReadState): BookReadState {
+    if (value === "unread") return "reading";
+    if (value === "reading") return "read";
+    return "unread";
+  }
+
+  function getNextCurationState(value: BookCurationState): BookCurationState {
+    if (value === "normal") return "favorite";
+    if (value === "favorite") return "uninterested";
+    return "normal";
+  }
+
   root.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+
+    const cycleTrigger = target.closest("[data-book-status-cycle]");
+    if (cycleTrigger instanceof HTMLButtonElement) {
+      const currentStatus = getBookStatus(bookId, fallback);
+      const cycleKind = cycleTrigger.dataset.bookStatusCycle;
+      if (cycleKind === "read") {
+        render(setBookStatus(bookId, { read_state: getNextReadState(currentStatus.read_state) }, fallback));
+        return;
+      }
+      if (cycleKind === "curation") {
+        render(setBookStatus(bookId, { curation_state: getNextCurationState(currentStatus.curation_state) }, fallback));
+        return;
+      }
+    }
+
     const button = target.closest("[data-book-status-kind][data-book-status-value]");
     if (!(button instanceof HTMLButtonElement)) return;
 

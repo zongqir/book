@@ -196,8 +196,26 @@ function getBookStatusCopy(
                 <p class="book-status-toolbar-copy" data-book-status-copy>{getBookStatusCopy(node.book.read_state, node.book.curation_state)}</p>
               </div>
               <div class="book-status-current">
-                <span class="meta-chip" data-book-status-read-chip>阅读 · {getReadStateLabel(node.book.read_state)}</span>
-                <span class="meta-chip" data-book-status-curation-chip>书单 · {getCurationStateLabel(node.book.curation_state)}</span>
+                <button
+                  class="meta-chip book-status-current-trigger"
+                  type="button"
+                  data-book-status-read-chip
+                  data-book-status-cycle="read"
+                  aria-label={`切换阅读进度，当前${getReadStateLabel(node.book.read_state)}`}
+                  title="点一下切换阅读进度"
+                >
+                  阅读 · {getReadStateLabel(node.book.read_state)}
+                </button>
+                <button
+                  class="meta-chip book-status-current-trigger"
+                  type="button"
+                  data-book-status-curation-chip
+                  data-book-status-cycle="curation"
+                  aria-label={`切换书单状态，当前${getCurationStateLabel(node.book.curation_state)}`}
+                  title="点一下切换书单状态"
+                >
+                  书单 · {getCurationStateLabel(node.book.curation_state)}
+                </button>
               </div>
             </div>
             <div class="book-status-toolbar-groups">
@@ -714,6 +732,18 @@ function getBookStatusCopy(
         return resolved;
       }
 
+      function getNextReadState(value) {
+        if (value === "unread") return "reading";
+        if (value === "reading") return "read";
+        return "unread";
+      }
+
+      function getNextCurationState(value) {
+        if (value === "normal") return "favorite";
+        if (value === "favorite") return "uninterested";
+        return "normal";
+      }
+
       roots.forEach(function (root) {
         if (!(root instanceof HTMLElement)) return;
         var bookId = String(root.dataset.bookId || "").trim();
@@ -734,9 +764,11 @@ function getBookStatusCopy(
 
           if (readChip instanceof HTMLElement) {
             readChip.textContent = "阅读 · " + getReadLabel(status.read_state);
+            readChip.setAttribute("aria-label", "切换阅读进度，当前" + getReadLabel(status.read_state));
           }
           if (curationChip instanceof HTMLElement) {
             curationChip.textContent = "书单 · " + getCurationLabel(status.curation_state);
+            curationChip.setAttribute("aria-label", "切换书单状态，当前" + getCurationLabel(status.curation_state));
           }
           if (copyNode instanceof HTMLElement) {
             copyNode.textContent = buildCopy(status);
@@ -757,6 +789,21 @@ function getBookStatusCopy(
         root.addEventListener("click", function (event) {
           var target = event.target;
           if (!(target instanceof HTMLElement)) return;
+
+          var cycleTrigger = target.closest("[data-book-status-cycle]");
+          if (cycleTrigger instanceof HTMLButtonElement) {
+            var currentStatus = getBookStatus(bookId, fallback);
+            var cycleKind = cycleTrigger.dataset.bookStatusCycle;
+            if (cycleKind === "read") {
+              render(setBookStatus(bookId, { read_state: getNextReadState(currentStatus.read_state) }, fallback));
+              return;
+            }
+            if (cycleKind === "curation") {
+              render(setBookStatus(bookId, { curation_state: getNextCurationState(currentStatus.curation_state) }, fallback));
+              return;
+            }
+          }
+
           var button = target.closest("[data-book-status-kind][data-book-status-value]");
           if (!(button instanceof HTMLButtonElement)) return;
 

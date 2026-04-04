@@ -225,8 +225,11 @@ const sectionPreviewMap = Object.fromEntries(
   <script is:inline>
     (function () {
       var LAST_VISIT_KEY = "book:last-visit:v1";
+      var BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
       var contentSource = "/data/site-content.json";
       var FAVORITE_CURATION_STATE = "favorite";
+      var DEFAULT_READ_STATE = "unread";
+      var DEFAULT_CURATION_STATE = "normal";
       var books = [];
       var quotes = [];
       var currentBook = 0;
@@ -288,6 +291,38 @@ const sectionPreviewMap = Object.fromEntries(
           el.textContent = tag;
           container.appendChild(el);
         });
+      }
+
+      function readBookStatusOverrides() {
+        try {
+          var raw = window.localStorage.getItem(BOOK_STATUS_STORAGE_KEY);
+          if (!raw) return {};
+          var parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object" || !parsed.books || typeof parsed.books !== "object") {
+            return {};
+          }
+          return parsed.books;
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function normalizeReadState(value) {
+        return value === "reading" || value === "read" ? value : DEFAULT_READ_STATE;
+      }
+
+      function normalizeCurationState(value) {
+        return value === "favorite" || value === "uninterested" ? value : DEFAULT_CURATION_STATE;
+      }
+
+      function resolveBookStates(item, overrides) {
+        var override = overrides && item && item.id ? overrides[item.id] : null;
+        return {
+          readState: normalizeReadState(override && override.read_state ? override.read_state : item.read_state),
+          curationState: normalizeCurationState(
+            override && override.curation_state ? override.curation_state : item.curation_state,
+          ),
+        };
       }
 
       function renderResume(item) {
@@ -460,6 +495,7 @@ const sectionPreviewMap = Object.fromEntries(
         })
         .then(function (payload) {
           var pageGroups = {};
+          var statusOverrides = readBookStatusOverrides();
           if (Array.isArray(payload.pages)) {
             payload.pages.forEach(function (page) {
               if (!page || page.section_key === "02_专业技术") return;
@@ -472,23 +508,33 @@ const sectionPreviewMap = Object.fromEntries(
 
           books = Array.isArray(payload.books)
             ? payload.books
+                .map(function (item) {
+                  var states = resolveBookStates(item, statusOverrides);
+                  return {
+                    item: item,
+                    readState: states.readState,
+                    curationState: states.curationState,
+                  };
+                })
                 .filter(function (item) {
-                  return item.section_key !== "02_专业技术" && item.curation_state !== "uninterested";
+                  return item.item.section_key !== "02_专业技术" && item.curationState !== "uninterested";
                 })
                 .map(function (item) {
-                  var pages = pageGroups[item.id] || [];
+                  var source = item.item;
+                  var pages = pageGroups[source.id] || [];
                   var whyReadPage = pages.find(function (page) {
                     return String(page.slot || "").indexOf("00") === 0;
                   });
                   return {
-                    title: item.title || "未命名",
-                    url: item.url || "#",
-                    entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (item.url || "#"),
+                    title: source.title || "未命名",
+                    url: source.url || "#",
+                    entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
                     entryLabel: whyReadPage ? "打开导图" : "进入书页",
-                    summary: item.summary || "",
-                    category: item.section_title || "未分类",
-                    tags: Array.isArray(item.tags) ? item.tags : [],
-                    curationState: item.curation_state || "normal",
+                    summary: source.summary || "",
+                    category: source.section_title || "未分类",
+                    tags: Array.isArray(source.tags) ? source.tags : [],
+                    readState: item.readState,
+                    curationState: item.curationState,
                   };
                 })
             : [];

@@ -3587,6 +3587,8 @@ html.is-capacitor-app .tool-switch--share {
   .reader-notes-toggle {
     width: 52px;
     height: 52px;
+    cursor: pointer;
+    touch-action: manipulation;
   }
   .reader-notes-panel {
     position: fixed;

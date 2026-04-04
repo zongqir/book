@@ -556,8 +556,9 @@ function getBookStatusCopy(
       )}
     </div>
   )}
-{node.kind === "section" && (
   <script>
+    import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";
+
     const sectionSearchInput = document.getElementById("section-library-search");
     const sectionBookItems = Array.from(document.querySelectorAll("[data-section-book-item]"));
     const sectionEmpty = document.getElementById("section-library-empty");
@@ -586,15 +587,11 @@ function getBookStatusCopy(
     if (sectionSearchInput instanceof HTMLInputElement) {
       sectionSearchInput.addEventListener("input", updateSectionFilter);
     }
-  </script>
-)}
-{node.kind === "page" && (
-  <script>
-    import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";
 
-    setupReaderParagraphNotes();
+    if (document.querySelector("[data-reader-notes-root]")) {
+      setupReaderParagraphNotes();
+    }
   </script>
-  )}
   <script is:inline>
     (function () {
       var roots = Array.from(document.querySelectorAll("[data-book-status-root]"));

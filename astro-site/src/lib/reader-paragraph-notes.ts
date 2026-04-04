@@ -451,6 +451,7 @@ export function setupReaderParagraphNotes() {
   }
 
   toggleButton.addEventListener("pointerdown", (event) => {
+    if (currentMode() === "mobile") return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     dragState = {
       pointerId: event.pointerId,
@@ -466,6 +467,7 @@ export function setupReaderParagraphNotes() {
   });
 
   toggleButton.addEventListener("pointermove", (event) => {
+    if (currentMode() === "mobile") return;
     if (!dragState || dragState.pointerId !== event.pointerId) return;
     const deltaX = event.clientX - dragState.startX;
     const deltaY = event.clientY - dragState.startY;
@@ -479,16 +481,29 @@ export function setupReaderParagraphNotes() {
   });
 
   toggleButton.addEventListener("pointerup", (event) => {
+    if (currentMode() === "mobile") return;
     finishDrag(event.pointerId);
   });
 
   toggleButton.addEventListener("pointercancel", (event) => {
+    if (currentMode() === "mobile") return;
     finishDrag(event.pointerId);
   });
 
   toggleButton.addEventListener("click", () => {
     if (suppressToggleClick) {
       suppressToggleClick = false;
+      return;
+    }
+    if (currentMode() === "mobile") {
+      if (pickMode) {
+        setPickMode(false);
+        panelOpen = true;
+        syncPanel();
+        return;
+      }
+      panelOpen = !panelOpen;
+      syncPanel();
       return;
     }
     if (pickMode) {

@@ -81,6 +81,8 @@ export type PageNode =
       title: string;
       url: string;
       book: BookSummary;
+      ancestorBooks: BookSummary[];
+      childBooks: BookSummary[];
       pages: PageSummary[];
       relatedBooks: RelatedBook[];
     }
@@ -92,6 +94,7 @@ export type PageNode =
       html: string;
       headings: HeadingLink[];
       book: BookSummary | undefined;
+      ancestorBooks: BookSummary[];
       section: SectionSummary | undefined;
       siblingPages: PageSummary[];
       previousPage: PageSummary | null;
@@ -110,8 +113,14 @@ export function loadSiteIndex(): SiteIndex {
 
 export function getHomeData() {
   const index = loadSiteIndex();
-  const sections = index.sections.filter((item) => !HIDDEN_SECTION_KEYS.has(item.key));
-  const visibleBooks = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const topLevelBooks = getTopLevelBooks(index);
+  const sections = index.sections
+    .filter((item) => !HIDDEN_SECTION_KEYS.has(item.key))
+    .map((section) => ({
+      ...section,
+      book_count: topLevelBooks.filter((book) => book.section_key === section.key).length,
+    }));
+  const visibleBooks = topLevelBooks.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
   const books = visibleBooks
     .filter((item) => item.curation_state !== UNINTERESTED_CURATION_STATE)
     .sort(
@@ -142,11 +151,14 @@ export function getLibraryIndex() {
   const index = loadSiteIndex();
   const sections = index.sections.map((section) => ({
     ...section,
-    books: index.books
+    books: getTopLevelBooks(index)
       .filter((book) => book.section_key === section.key)
       .sort((a, b) => a.title.localeCompare(b.title, "zh-CN")),
   }));
-  return sections;
+  return sections.map((section) => ({
+    ...section,
+    book_count: section.books.length,
+  }));
 }
 
 export function getAllLibrarySlugs(): string[][] {
@@ -168,7 +180,7 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
       title: section.title,
       url: section.url,
       section,
-      books: index.books
+      books: getTopLevelBooks(index)
         .filter((book) => book.section_key === section.key)
         .sort((a, b) => a.title.localeCompare(b.title, "zh-CN")),
     };
@@ -176,6 +188,8 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
 
   const book = index.books.find((item) => item.id === joined);
   if (book) {
+    const ancestorBooks = getAncestorBooks(index, book);
+    const childBooks = getChildBooks(index, book);
     const pages = index.pages
       .filter((page) => page.book_id === book.id)
       .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
@@ -184,6 +198,8 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
       title: book.title,
       url: book.url,
       book,
+      ancestorBooks,
+      childBooks,
       pages,
       relatedBooks: getRelatedBooks(index, book, 4),
     };
@@ -203,6 +219,7 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     .sort((a, b) => a.url.localeCompare(b.url, "zh-CN"));
   const pageIndex = siblingPages.findIndex((item) => item.id === page.id);
   const parentBook = index.books.find((item) => item.id === page.book_id);
+  const ancestorBooks = parentBook ? getAncestorBooks(index, parentBook) : [];
   const sectionForPage = index.sections.find((item) => item.key === page.section_key);
   return {
     kind: "page",
@@ -212,6 +229,7 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     html,
     headings,
     book: parentBook,
+    ancestorBooks,
     section: sectionForPage,
     siblingPages,
     previousPage: pageIndex > 0 ? siblingPages[pageIndex - 1] : null,
@@ -221,7 +239,12 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
 }
 
 function getRelatedBooks(index: SiteIndex, currentBook: BookSummary, limit: number): RelatedBook[] {
-  return index.books
+  const parentId = getNearestParentBookId(currentBook.id, index.books);
+  const candidatePool = parentId
+    ? index.books.filter((item) => getNearestParentBookId(item.id, index.books) === parentId)
+    : getTopLevelBooks(index);
+
+  return candidatePool
     .filter((item) => item.id !== currentBook.id && item.section_key === currentBook.section_key)
     .map((book) => {
       const sharedTags = getSharedTags(currentBook.tags, book.tags);
@@ -248,6 +271,46 @@ function getSharedTags(left: string[], right: string[]): string[] {
 
 function uniqueTags(tags: string[]): string[] {
   return [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))];
+}
+
+function getTopLevelBooks(index: SiteIndex): BookSummary[] {
+  return index.books.filter((book) => !getNearestParentBookId(book.id, index.books));
+}
+
+function getChildBooks(index: SiteIndex, parentBook: BookSummary): BookSummary[] {
+  return index.books
+    .filter((book) => getNearestParentBookId(book.id, index.books) === parentBook.id)
+    .sort((a, b) => a.title.localeCompare(b.title, "zh-CN"));
+}
+
+function getAncestorBooks(index: SiteIndex, book: BookSummary): BookSummary[] {
+  const byId = new Map(index.books.map((item) => [item.id, item]));
+  const ancestors: BookSummary[] = [];
+  let parentId = getNearestParentBookId(book.id, index.books);
+  while (parentId) {
+    const parent = byId.get(parentId);
+    if (!parent) break;
+    ancestors.unshift(parent);
+    parentId = getNearestParentBookId(parent.id, index.books);
+  }
+  return ancestors;
+}
+
+function getNearestParentBookId(bookId: string, books: BookSummary[]): string | null {
+  const bookIds = new Set(books.map((item) => item.id));
+  let current = getParentPath(bookId);
+  while (current) {
+    if (bookIds.has(current)) return current;
+    current = getParentPath(current);
+  }
+  return null;
+}
+
+function getParentPath(value: string): string | null {
+  const parts = value.split("/").filter(Boolean);
+  if (parts.length <= 1) return null;
+  parts.pop();
+  return parts.length ? parts.join("/") : null;
 }
 
 function renderMarkdown(markdown: string, knownInternalPaths: Set<string>): string {

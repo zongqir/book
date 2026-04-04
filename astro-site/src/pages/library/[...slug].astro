@@ -126,6 +126,12 @@ function getBookStatusCopy(
             <a href={libraryHref}>目录</a>
             <span>/</span>
             <a href={toInternalHref(`/library/${node.book.section_key}/`)}>{node.book.section_title}</a>
+            {node.ancestorBooks.map((ancestor) => (
+              <>
+                <span>/</span>
+                <a href={ancestor.url}>{ancestor.title}</a>
+              </>
+            ))}
             <span>/</span>
             <span>{node.title}</span>
           </nav>
@@ -133,6 +139,7 @@ function getBookStatusCopy(
           {node.book.summary && <p>{node.book.summary}</p>}
           <div class="detail-line">
             <span class="meta-chip">{node.pages.length} 个入口</span>
+            {node.childBooks.length > 0 && <span class="meta-chip">{node.childBooks.length} 个子目录</span>}
             <span class="meta-chip">{node.book.section_title}</span>
             {node.book.tags.slice(0, 4).map((tag) => <span class="meta-chip">{tag}</span>)}
             <button
@@ -248,6 +255,36 @@ function getBookStatusCopy(
         </div>
       </section>
 
+      {node.childBooks.length > 0 && (
+        <section class="page-stack compact-stack">
+          <div class="section-head">
+            <div>
+              <h2>书内目录</h2>
+            </div>
+          </div>
+          <div class="book-shelf">
+            {node.childBooks.map((child) => (
+              <article class="doc-card">
+                <a href={child.url}>
+                  <div class="card-topline">
+                    <span class="slot-badge">目录</span>
+                  </div>
+                  <h3>{child.title}</h3>
+                  {child.summary && <p>{child.summary}</p>}
+                  <div class="doc-card-footer">
+                    {child.tags.slice(0, 4).map((tag) => <span class="tag-pill">{tag}</span>)}
+                  </div>
+                  <div class="section-enter">
+                    <span>打开目录</span>
+                    <span>→</span>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section class="book-shelf">
         {node.pages.map((page) => (
           <article class="doc-card">
@@ -315,6 +352,12 @@ function getBookStatusCopy(
                 <a href={node.section.url}>{node.section.title}</a>
               </>
             )}
+            {node.ancestorBooks.map((ancestor) => (
+              <>
+                <span>/</span>
+                <a href={ancestor.url}>{ancestor.title}</a>
+              </>
+            ))}
             {node.book && (
               <>
                 <span>/</span>

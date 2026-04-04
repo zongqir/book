@@ -372,6 +372,16 @@ evidence_status: "llm-draft"
 
 第二阶段的第一轮问题优先从文章所属槽位 skill 的“NotebookLM 提问约束”里取——那些问题按槽位特性设计，比通用问法更精准。后续轮次用 notebooklm skill 的通用迭代流程。
 
+### NotebookLM EPUB 直传排错规则
+
+- EPUB 直传本身可用；当前关键不是“API 会不会传”，而是**本地 `notebooklm-py` 版本是否已经包含 EPUB type code 17 的映射**
+- 截至 `2026-04-04`，PyPI 最新版仍是 `notebooklm-py 0.3.4`；如果要稳定使用 EPUB 直传，优先安装已含修复的上游 commit：
+  - `python -m pip install --user --upgrade --force-reinstall "git+https://github.com/teng-lin/notebooklm-py.git@e275f8fd3069c54cf5a84a47586c81126d7e18b6"`
+- 换环境后先做版本确认，不要默认 `pip install -U notebooklm-py` 就够：
+  - `notebooklm status`
+  - `notebooklm source list --json`
+- 如果 Windows 终端里 `source list --json` 只是中文编码报错，先设 `PYTHONIOENCODING=utf-8`，不要把编码问题误判成 EPUB 失败
+
 `llm-draft` 是一个诚实的状态，不是一个需要消除的缺陷。不是所有文稿都需要第二阶段。
 
 **dida-cli** 不是每次写单书文稿都必须接入，只在这些情况下优先考虑：

@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getLibraryIndex } from "../../lib/content";
 
-const sections = getLibraryIndex().filter((section) => section.key !== "02_专业技术");
+const sections = getLibraryIndex();
 const books = sections.flatMap((section) =>
   section.books.map((book) => ({
     ...book,

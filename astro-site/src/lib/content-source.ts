@@ -67,7 +67,7 @@ export type PageContentBundle = {
 
 export type ContentSource = {
   loadSiteIndex(): SiteIndex;
-  loadPageMarkdown(bookId: string, slot: string): string;
+  loadPageMarkdown(pageId: string): string;
 };
 
 export type ContentSourceFactory = () => ContentSource;
@@ -81,8 +81,8 @@ const sitePageContentPath = path.join(repoRoot, "site", "static", "data", "site-
 let overrideFactory: ContentSourceFactory | null = null;
 let activeContentSource: ContentSource | null = null;
 
-export function makePageContentKey(bookId: string, slot: string): string {
-  return `${bookId}::${slot}`;
+export function makePageContentKey(pageId: string): string {
+  return pageId;
 }
 
 export class FileSystemContentSource implements ContentSource {
@@ -95,23 +95,18 @@ export class FileSystemContentSource implements ContentSource {
     return this.cachedIndex;
   }
 
-  loadPageMarkdown(bookId: string, slot: string): string {
-    const filePath = this.resolvePageFile(bookId, slot);
+  loadPageMarkdown(pageId: string): string {
+    const filePath = this.resolvePageFile(pageId);
     const raw = fs.readFileSync(filePath, "utf-8");
     return matter(raw).content;
   }
 
-  private resolvePageFile(bookId: string, slot: string): string {
-    const bookDir = path.join(libraryRoot, bookId);
-    const files = fs
-      .readdirSync(bookDir)
-      .filter((name) => name.endsWith(".md") && name !== "_index.md" && !name.endsWith(".QA.md"))
-      .sort();
-    const matched = files.find((name) => name.startsWith(`${slot}_`));
-    if (!matched) {
-      throw new Error(`Cannot resolve markdown file for ${bookId}/${slot}`);
+  private resolvePageFile(pageId: string): string {
+    const filePath = path.join(libraryRoot, `${pageId}.md`);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Cannot resolve markdown file for ${pageId}`);
     }
-    return path.join(bookDir, matched);
+    return filePath;
   }
 }
 
@@ -127,11 +122,11 @@ export class BundledContentSource implements ContentSource {
     return this.indexSource.loadSiteIndex();
   }
 
-  loadPageMarkdown(bookId: string, slot: string): string {
+  loadPageMarkdown(pageId: string): string {
     const bundle = this.loadBundle();
-    const entry = bundle.pages[makePageContentKey(bookId, slot)];
+    const entry = bundle.pages[makePageContentKey(pageId)];
     if (!entry) {
-      throw new Error(`Missing bundled page markdown for ${bookId}/${slot}`);
+      throw new Error(`Missing bundled page markdown for ${pageId}`);
     }
     return entry.markdown;
   }

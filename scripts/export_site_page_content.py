@@ -31,7 +31,7 @@ def build_bundle() -> dict[str, Any]:
         for page in site_export.collect_book_pages(book):
             file_path = resolve_page_file(book.path, page["slot"])
             body = site_export.read_body(file_path)
-            key = make_page_content_key(page["book_id"], page["slot"])
+            key = make_page_content_key(page["id"])
             pages[key] = {
                 "page_id": page["id"],
                 "book_id": page["book_id"],
@@ -42,14 +42,14 @@ def build_bundle() -> dict[str, Any]:
             generated_at = max(generated_at, str(page["updated_at"] or ""))
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": generated_at,
         "pages": pages,
     }
 
 
-def make_page_content_key(book_id: str, slot: str) -> str:
-    return f"{book_id}::{slot}"
+def make_page_content_key(page_id: str) -> str:
+    return page_id
 
 
 def resolve_page_file(book_dir: Path, slot: str) -> Path:

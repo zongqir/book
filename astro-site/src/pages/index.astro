@@ -498,7 +498,7 @@ const sectionPreviewMap = Object.fromEntries(
           var statusOverrides = readBookStatusOverrides();
           if (Array.isArray(payload.pages)) {
             payload.pages.forEach(function (page) {
-              if (!page || page.section_key === "02_专业技术") return;
+              if (!page) return;
               var key = page.book_id;
               if (!key) return;
               if (!pageGroups[key]) pageGroups[key] = [];
@@ -517,7 +517,7 @@ const sectionPreviewMap = Object.fromEntries(
                   };
                 })
                 .filter(function (item) {
-                  return item.item.section_key !== "02_专业技术" && item.curationState !== "uninterested";
+                  return item.curationState !== "uninterested";
                 })
                 .map(function (item) {
                   var source = item.item;

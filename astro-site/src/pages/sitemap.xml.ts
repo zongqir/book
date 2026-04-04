@@ -16,15 +16,9 @@ export function GET({ site }: { site: URL }) {
     { path: "/", updatedAt: "" },
     { path: "/library/", updatedAt: "" },
     { path: "/notes/", updatedAt: "" },
-    ...index.sections
-      .filter((item) => item.key !== "02_专业技术")
-      .map((item) => ({ path: item.url, updatedAt: "" })),
-    ...index.books
-      .filter((item) => item.section_key !== "02_专业技术")
-      .map((item) => ({ path: item.url, updatedAt: item.updated_at || "" })),
-    ...index.pages
-      .filter((item) => item.section_key !== "02_专业技术")
-      .map((item) => ({ path: item.url, updatedAt: item.updated_at || "" })),
+    ...index.sections.map((item) => ({ path: item.url, updatedAt: "" })),
+    ...index.books.map((item) => ({ path: item.url, updatedAt: item.updated_at || "" })),
+    ...index.pages.map((item) => ({ path: item.url, updatedAt: item.updated_at || "" })),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

@@ -12,7 +12,6 @@ function escapeXml(value: string) {
 export function GET({ site }: { site: URL }) {
   const index = loadSiteIndex();
   const items = index.pages
-    .filter((page) => page.section_key !== "02_专业技术")
     .slice()
     .sort((a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")))
     .slice(0, 80);

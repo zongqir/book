@@ -102,7 +102,6 @@ export type PageNode =
       relatedBooks: RelatedBook[];
     };
 
-const HIDDEN_SECTION_KEYS = new Set(["02_专业技术"]);
 const FAVORITE_CURATION_STATE = "favorite";
 const UNINTERESTED_CURATION_STATE = "uninterested";
 const contentSource = getContentSource();
@@ -114,13 +113,11 @@ export function loadSiteIndex(): SiteIndex {
 export function getHomeData() {
   const index = loadSiteIndex();
   const topLevelBooks = getTopLevelBooks(index);
-  const sections = index.sections
-    .filter((item) => !HIDDEN_SECTION_KEYS.has(item.key))
-    .map((section) => ({
-      ...section,
-      book_count: topLevelBooks.filter((book) => book.section_key === section.key).length,
-    }));
-  const visibleBooks = topLevelBooks.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const sections = index.sections.map((section) => ({
+    ...section,
+    book_count: topLevelBooks.filter((book) => book.section_key === section.key).length,
+  }));
+  const visibleBooks = topLevelBooks;
   const books = visibleBooks
     .filter((item) => item.curation_state !== UNINTERESTED_CURATION_STATE)
     .sort(
@@ -134,7 +131,7 @@ export function getHomeData() {
     counts: {
       sections: sections.length,
       books: visibleBooks.length,
-      pages: index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key)).length,
+      pages: index.pages.length,
       quotes: quotes.length,
     },
     sections,
@@ -212,7 +209,7 @@ export function getNodeBySlug(parts: string[]): PageNode | null {
     ...item,
     id: `section-${index + 1}`,
   }));
-  const markdown = contentSource.loadPageMarkdown(page.book_id, page.slot);
+  const markdown = contentSource.loadPageMarkdown(page.id);
   const html = addHeadingIds(renderMarkdown(markdown, getKnownInternalPaths(index)), headings);
   const siblingPages = index.pages
     .filter((item) => item.book_id === page.book_id)

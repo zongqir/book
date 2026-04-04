@@ -16,8 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 LIBRARY_ROOT = ROOT / "site" / "content" / "library"
 OUTPUT_DIR = ROOT / "site" / "static" / "data"
 OUTPUT_PATH = OUTPUT_DIR / "site-content.json"
+BOOK_STATUS_PATH = OUTPUT_DIR / "book-status.json"
 BUILD_TIMEZONE = timezone(timedelta(hours=8))
 INTERNAL_LINK_MODE = "html" if str(os.environ.get("BOOK_INTERNAL_LINK_MODE", "")).lower() == "html" else "directory"
+DEFAULT_READ_STATE = "unread"
+DEFAULT_CURATION_STATE = "normal"
+VALID_READ_STATES = {DEFAULT_READ_STATE, "reading", "read"}
+VALID_CURATION_STATES = {DEFAULT_CURATION_STATE, "favorite", "uninterested"}
 
 FRONTMATTER_PATTERN = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n?", re.DOTALL)
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
@@ -50,6 +55,7 @@ def main() -> None:
 def build_bundle() -> dict[str, Any]:
     books = collect_book_dirs()
     section_lookup = collect_section_lookup()
+    book_status_lookup = load_book_status_lookup()
 
     pages: list[dict[str, Any]] = []
     books_payload: list[dict[str, Any]] = []
@@ -87,6 +93,7 @@ def build_bundle() -> dict[str, Any]:
                 "tags": tags,
                 "page_count": len(page_entries),
                 "updated_at": first_updated,
+                **resolve_book_status(book.relative_dir, book_status_lookup),
                 "url": to_site_url(book.relative_dir),
             }
         )
@@ -117,7 +124,7 @@ def build_bundle() -> dict[str, Any]:
     )
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": generated_at,
         "counts": {
             "sections": len(sections),
@@ -130,6 +137,66 @@ def build_bundle() -> dict[str, Any]:
         "pages": sorted(pages, key=lambda item: item["url"]),
         "quotes": quotes,
     }
+
+
+def load_book_status_lookup() -> dict[str, dict[str, str]]:
+    if not BOOK_STATUS_PATH.exists():
+        return {}
+
+    try:
+        raw = json.loads(BOOK_STATUS_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+    entries = raw.get("books")
+    if not isinstance(entries, dict):
+        return {}
+
+    lookup: dict[str, dict[str, str]] = {}
+    for book_id, payload in entries.items():
+        if not isinstance(book_id, str) or not isinstance(payload, dict):
+            continue
+        lookup[book_id] = {
+            "read_state": normalize_state(
+                payload.get("read_state"),
+                valid_states=VALID_READ_STATES,
+                default=DEFAULT_READ_STATE,
+            ),
+            "curation_state": normalize_state(
+                payload.get("curation_state"),
+                valid_states=VALID_CURATION_STATES,
+                default=DEFAULT_CURATION_STATE,
+            ),
+        }
+    return lookup
+
+
+def resolve_book_status(
+    book_id: str,
+    status_lookup: dict[str, dict[str, str]],
+) -> dict[str, str]:
+    status = status_lookup.get(book_id, {})
+    return {
+        "read_state": normalize_state(
+            status.get("read_state"),
+            valid_states=VALID_READ_STATES,
+            default=DEFAULT_READ_STATE,
+        ),
+        "curation_state": normalize_state(
+            status.get("curation_state"),
+            valid_states=VALID_CURATION_STATES,
+            default=DEFAULT_CURATION_STATE,
+        ),
+    }
+
+
+def normalize_state(value: Any, *, valid_states: set[str], default: str) -> str:
+    if not isinstance(value, str):
+        return default
+    normalized = value.strip().lower()
+    if normalized not in valid_states:
+        return default
+    return normalized
 
 
 def collect_section_lookup() -> dict[str, str]:

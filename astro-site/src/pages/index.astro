@@ -226,6 +226,7 @@ const sectionPreviewMap = Object.fromEntries(
     (function () {
       var LAST_VISIT_KEY = "book:last-visit:v1";
       var contentSource = "/data/site-content.json";
+      var FAVORITE_CURATION_STATE = "favorite";
       var books = [];
       var quotes = [];
       var currentBook = 0;
@@ -380,12 +381,18 @@ const sectionPreviewMap = Object.fromEntries(
       function randomBook(excludeCurrent) {
         if (!books.length) return 0;
         if (books.length === 1) return 0;
-        if (!excludeCurrent) return Math.floor(Math.random() * books.length);
-        var next = currentBook;
-        while (next === currentBook) {
-          next = Math.floor(Math.random() * books.length);
-        }
-        return next;
+
+        var pool = [];
+        books.forEach(function (book, index) {
+          if (excludeCurrent && index === currentBook) return;
+          pool.push(index);
+          if (book && book.curationState === FAVORITE_CURATION_STATE) {
+            pool.push(index);
+          }
+        });
+
+        if (!pool.length) return currentBook;
+        return pool[Math.floor(Math.random() * pool.length)];
       }
 
       function renderQuote(index) {
@@ -465,7 +472,9 @@ const sectionPreviewMap = Object.fromEntries(
 
           books = Array.isArray(payload.books)
             ? payload.books
-                .filter(function (item) { return item.section_key !== "02_专业技术"; })
+                .filter(function (item) {
+                  return item.section_key !== "02_专业技术" && item.curation_state !== "uninterested";
+                })
                 .map(function (item) {
                   var pages = pageGroups[item.id] || [];
                   var whyReadPage = pages.find(function (page) {
@@ -479,6 +488,7 @@ const sectionPreviewMap = Object.fromEntries(
                     summary: item.summary || "",
                     category: item.section_title || "未分类",
                     tags: Array.isArray(item.tags) ? item.tags : [],
+                    curationState: item.curation_state || "normal",
                   };
                 })
             : [];

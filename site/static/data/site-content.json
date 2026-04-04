@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_at": "2026-04-02T10:00:00+08:00",
   "counts": {
     "sections": 8,
@@ -79,6 +79,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/Make It Stick/"
     },
     {
@@ -95,6 +97,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/你的灯亮着吗？/"
     },
     {
@@ -108,6 +112,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/如何学习/"
     },
     {
@@ -124,6 +130,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/如何提问/"
     },
     {
@@ -137,6 +145,8 @@
       ],
       "page_count": 8,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/如何阅读一本书/"
     },
     {
@@ -148,6 +158,8 @@
       "tags": [],
       "page_count": 1,
       "updated_at": "2026-03-25",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/如何阅读一本书/13_逐章拆解/"
     },
     {
@@ -164,6 +176,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/学习的本质/"
     },
     {
@@ -179,6 +193,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/学会提问/"
     },
     {
@@ -195,6 +211,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/搞定/"
     },
     {
@@ -211,6 +229,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/简捷启发式/"
     },
     {
@@ -227,6 +247,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/问题解决心理学/"
     },
     {
@@ -243,6 +265,8 @@
       ],
       "page_count": 8,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/高效能人士的七个习惯/"
     },
     {
@@ -259,6 +283,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/01_关键技能/麦肯锡教我的思考武器/"
     },
     {
@@ -275,6 +301,8 @@
       ],
       "page_count": 11,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/02_专业技术/05_DevOps与基础设施/性能之巅：系统、企业与云可观测性（第2版）/"
     },
     {
@@ -286,6 +314,8 @@
       "tags": [],
       "page_count": 17,
       "updated_at": "2026-03-27",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/02_专业技术/05_DevOps与基础设施/性能之巅：系统、企业与云可观测性（第2版）/13_逐章拆解/"
     },
     {
@@ -302,6 +332,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/人际沟通技巧/"
     },
     {
@@ -317,6 +349,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/共情的力量/"
     },
     {
@@ -333,6 +367,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/关键对话/"
     },
     {
@@ -349,6 +385,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/哈佛经典谈判术/"
     },
     {
@@ -365,6 +403,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/基本人际关系技巧/"
     },
     {
@@ -381,6 +421,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/对答如流/"
     },
     {
@@ -399,6 +441,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/掌控谈话/"
     },
     {
@@ -416,6 +460,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/提问的艺术/"
     },
     {
@@ -432,6 +478,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/日常生活中的人际沟通/"
     },
     {
@@ -447,6 +495,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/沟通的方法/"
     },
     {
@@ -463,6 +513,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/演讲的力量/"
     },
     {
@@ -478,6 +530,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/演讲红宝书/"
     },
     {
@@ -489,6 +543,8 @@
       "tags": [],
       "page_count": 3,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/演讲红宝书/03_最有价值的案例/"
     },
     {
@@ -505,6 +561,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/结构思考力/"
     },
     {
@@ -520,6 +578,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/说话的力量/"
     },
     {
@@ -536,6 +596,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/责任病毒/"
     },
     {
@@ -551,6 +613,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/金字塔原理/"
     },
     {
@@ -566,6 +630,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/高难度对话/"
     },
     {
@@ -582,6 +648,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/03_沟通人际/高难度谈话Ⅱ/"
     },
     {
@@ -597,6 +665,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/一本书读懂财报/"
     },
     {
@@ -613,6 +683,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/一课经济学/"
     },
     {
@@ -629,6 +701,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/中国是部金融史/"
     },
     {
@@ -646,6 +720,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/中国的经济制度/"
     },
     {
@@ -662,6 +738,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/中国经济：转型与增长/"
     },
     {
@@ -678,6 +756,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/伟大的博弈/"
     },
     {
@@ -693,6 +773,8 @@
       ],
       "page_count": 10,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/卢瑟经济学/"
     },
     {
@@ -710,6 +792,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/卧底经济学/"
     },
     {
@@ -725,6 +809,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/巴菲特致股东的信/"
     },
     {
@@ -741,6 +827,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/当代中国经济改革/"
     },
     {
@@ -756,6 +844,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/彼得林奇的成功投资/"
     },
     {
@@ -771,6 +861,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/怎样选择成长股/"
     },
     {
@@ -786,6 +878,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/战胜华尔街/"
     },
     {
@@ -801,6 +895,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/投资最重要的事/"
     },
     {
@@ -816,6 +912,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/漫步华尔街/"
     },
     {
@@ -832,6 +930,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/疯狂、惊恐和崩溃/"
     },
     {
@@ -848,6 +948,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/百年中国经济史笔记/"
     },
     {
@@ -863,6 +965,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/穷查理宝典/"
     },
     {
@@ -879,6 +983,8 @@
       ],
       "page_count": 8,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/经济为什么会崩溃/"
     },
     {
@@ -894,6 +1000,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/经济学的思维方式/"
     },
     {
@@ -905,6 +1013,8 @@
       "tags": [],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/美国大萧条/"
     },
     {
@@ -920,6 +1030,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/聪明的投资者/"
     },
     {
@@ -935,6 +1047,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/股市真规则/"
     },
     {
@@ -952,6 +1066,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/萧条经济学的回归和2008年经济危机/"
     },
     {
@@ -967,6 +1083,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/证券分析/"
     },
     {
@@ -982,6 +1100,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/04_理财/金融炼金术/"
     },
     {
@@ -998,6 +1118,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/Attacking Faulty Reasoning/"
     },
     {
@@ -1015,6 +1137,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/GEB/"
     },
     {
@@ -1032,6 +1156,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/厚黑学/"
     },
     {
@@ -1048,6 +1174,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/原则/"
     },
     {
@@ -1066,6 +1194,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/反脆弱/"
     },
     {
@@ -1082,6 +1212,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/君主论/"
     },
     {
@@ -1093,6 +1225,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/天幕红尘/"
     },
     {
@@ -1109,6 +1243,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/底层逻辑/"
     },
     {
@@ -1124,6 +1260,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/思考的艺术/"
     },
     {
@@ -1140,6 +1278,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/思辨与立场/"
     },
     {
@@ -1155,6 +1295,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/批判性思维工具/"
     },
     {
@@ -1172,6 +1314,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/控制论与科学方法论/"
     },
     {
@@ -1189,6 +1333,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/权力与特权/"
     },
     {
@@ -1205,6 +1351,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/毛泽东选集（第一卷）/"
     },
     {
@@ -1221,6 +1369,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/毛泽东选集（第二卷）/"
     },
     {
@@ -1238,6 +1388,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/社会学的邀请/"
     },
     {
@@ -1254,6 +1406,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/纯粹理性批判/"
     },
     {
@@ -1265,6 +1419,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/罗织经/"
     },
     {
@@ -1281,6 +1437,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/送你一颗子弹/"
     },
     {
@@ -1296,6 +1454,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/通往奴役之路/"
     },
     {
@@ -1312,6 +1472,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/遥远的救世主/"
     },
     {
@@ -1329,6 +1491,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/集体行动的逻辑/"
     },
     {
@@ -1345,6 +1509,8 @@
       ],
       "page_count": 5,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/05_思想方法/零售的哲学/"
     },
     {
@@ -1363,6 +1529,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/The Willpower Instinct/"
     },
     {
@@ -1379,6 +1547,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/个人形成论/"
     },
     {
@@ -1394,6 +1564,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/化解内心的冲突/"
     },
     {
@@ -1410,6 +1582,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/幸福的方法/"
     },
     {
@@ -1425,6 +1599,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/当情绪遇见心智/"
     },
     {
@@ -1436,6 +1612,8 @@
       "tags": [],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/心理医生为什么没有告诉我/"
     },
     {
@@ -1453,6 +1631,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/态度改变与社会影响/"
     },
     {
@@ -1469,6 +1649,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/怪诞行为学/"
     },
     {
@@ -1486,6 +1668,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/我们内心的冲突/"
     },
     {
@@ -1503,6 +1687,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/我们时代的神经症人格/"
     },
     {
@@ -1520,6 +1706,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/改善情绪的正念疗法/"
     },
     {
@@ -1537,6 +1725,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/活出意义来/"
     },
     {
@@ -1553,6 +1743,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/福格行为模型/"
     },
     {
@@ -1572,6 +1764,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/穿西装的蛇/"
     },
     {
@@ -1590,6 +1784,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/06_心理学/谣言心理学/"
     },
     {
@@ -1606,6 +1802,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/10人以下小团队管理手册/"
     },
     {
@@ -1622,6 +1820,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/How to Measure Anything/"
     },
     {
@@ -1633,6 +1833,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/二号首长/"
     },
     {
@@ -1649,6 +1851,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/创新者的窘境/"
     },
     {
@@ -1665,6 +1869,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/卓有成效的管理者/"
     },
     {
@@ -1681,6 +1887,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/向上管理/"
     },
     {
@@ -1697,6 +1905,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/成为技术领导者/"
     },
     {
@@ -1714,6 +1924,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/我们是泡沫入行组/"
     },
     {
@@ -1730,6 +1942,8 @@
       ],
       "page_count": 6,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/把信送给加西亚/"
     },
     {
@@ -1741,6 +1955,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/教父/"
     },
     {
@@ -1752,6 +1968,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/权力/"
     },
     {
@@ -1763,6 +1981,8 @@
       "tags": [],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/权力与影响力/"
     },
     {
@@ -1780,6 +2000,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/权力的48条法则/"
     },
     {
@@ -1797,6 +2019,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/沧浪之水/"
     },
     {
@@ -1813,6 +2037,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/照着做，你就能带好团队/"
     },
     {
@@ -1829,6 +2055,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/独裁者手册/"
     },
     {
@@ -1840,6 +2068,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/硬球/"
     },
     {
@@ -1856,6 +2086,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-29T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/科学的广告/"
     },
     {
@@ -1867,6 +2099,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/秘密握手/"
     },
     {
@@ -1878,6 +2112,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/管理的实践/"
     },
     {
@@ -1895,6 +2131,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/精益创业/"
     },
     {
@@ -1906,6 +2144,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/组织行为学/"
     },
     {
@@ -1922,6 +2162,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/职场动物进化手册/"
     },
     {
@@ -1938,6 +2180,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/请给我结果/"
     },
     {
@@ -1949,6 +2193,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/长袖善舞/"
     },
     {
@@ -1960,6 +2206,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/门口的野蛮人/"
     },
     {
@@ -1976,6 +2224,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/闭环思维/"
     },
     {
@@ -1992,6 +2242,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-02T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/靠谱/"
     },
     {
@@ -2003,6 +2255,8 @@
       "tags": [],
       "page_count": 7,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/项目管理艺术/"
     },
     {
@@ -2014,6 +2268,8 @@
       "tags": [],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/07_商业管理/黑手党经理人/"
     },
     {
@@ -2029,6 +2285,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/20年危机/"
     },
     {
@@ -2046,6 +2304,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/万历十五年/"
     },
     {
@@ -2061,6 +2321,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/万古江河/"
     },
     {
@@ -2078,6 +2340,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/东晋门阀政治/"
     },
     {
@@ -2094,6 +2358,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/中国历代政治得失/"
     },
     {
@@ -2109,6 +2375,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/中国国家治理的制度逻辑/"
     },
     {
@@ -2124,6 +2392,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/中国政治思想史/"
     },
     {
@@ -2139,6 +2409,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/中国法律与中国社会/"
     },
     {
@@ -2157,6 +2429,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/中国现代国家的起源/"
     },
     {
@@ -2172,6 +2446,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/义和团运动的起源/"
     },
     {
@@ -2188,6 +2464,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/传统十论/"
     },
     {
@@ -2205,6 +2483,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/再造病人/"
     },
     {
@@ -2222,6 +2502,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/十六世纪明代中国之财政与税收/"
     },
     {
@@ -2240,6 +2522,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/南明史/"
     },
     {
@@ -2257,6 +2541,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/历代经济变革得失/"
     },
     {
@@ -2274,6 +2560,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/叫魂/"
     },
     {
@@ -2290,6 +2578,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/君主与大臣/"
     },
     {
@@ -2307,6 +2597,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/在国家与社会之间/"
     },
     {
@@ -2322,6 +2614,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/士大夫政治演生史稿/"
     },
     {
@@ -2337,6 +2631,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/大分流/"
     },
     {
@@ -2353,6 +2649,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/大国政治的悲剧/"
     },
     {
@@ -2370,6 +2668,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/大国的兴衰/"
     },
     {
@@ -2387,6 +2687,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/大明王朝1566/"
     },
     {
@@ -2405,6 +2707,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/大门口的陌生人/"
     },
     {
@@ -2422,6 +2726,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/天朝的崩溃/"
     },
     {
@@ -2438,6 +2744,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/小历史与大历史/"
     },
     {
@@ -2456,6 +2764,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/州县官的银两/"
     },
     {
@@ -2472,6 +2782,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/康熙/"
     },
     {
@@ -2483,6 +2795,8 @@
       "tags": [],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/战国歧途/"
     },
     {
@@ -2498,6 +2812,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/文化权力与国家/"
     },
     {
@@ -2515,6 +2831,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/施善与教化/"
     },
     {
@@ -2533,6 +2851,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/明清福建家族组织与社会变迁/"
     },
     {
@@ -2550,6 +2870,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/晚清七十年/"
     },
     {
@@ -2568,6 +2890,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/梦醒子/"
     },
     {
@@ -2585,6 +2909,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/汉代农业/"
     },
     {
@@ -2600,6 +2926,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/波峰与波谷/"
     },
     {
@@ -2615,6 +2943,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/洪业/"
     },
     {
@@ -2630,6 +2960,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/清代地方政府/"
     },
     {
@@ -2647,6 +2979,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/潜规则/"
     },
     {
@@ -2662,6 +2996,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-03-30T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/理解国际冲突/"
     },
     {
@@ -2678,6 +3014,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/统一与分裂/"
     },
     {
@@ -2694,6 +3032,8 @@
       ],
       "page_count": 9,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/胡雪岩/"
     },
     {
@@ -2709,6 +3049,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/茶馆/"
     },
     {
@@ -2726,6 +3068,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/血酬定律/"
     },
     {
@@ -2743,6 +3087,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/袍哥/"
     },
     {
@@ -2758,6 +3104,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/西周史/"
     },
     {
@@ -2775,6 +3123,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-03-31T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/转变的中国/"
     },
     {
@@ -2792,6 +3142,8 @@
       ],
       "page_count": 7,
       "updated_at": "2026-04-01T10:00:00+08:00",
+      "read_state": "unread",
+      "curation_state": "normal",
       "url": "/library/08_历史传记/魏晋之际的政治权力与家族网络/"
     }
   ],

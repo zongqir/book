@@ -25,6 +25,8 @@ export type BookSummary = {
   tags: string[];
   page_count: number;
   updated_at: string;
+  read_state: "unread" | "reading" | "read";
+  curation_state: "normal" | "favorite" | "uninterested";
   url: string;
 };
 
@@ -98,6 +100,8 @@ export type PageNode =
     };
 
 const HIDDEN_SECTION_KEYS = new Set(["02_专业技术"]);
+const FAVORITE_CURATION_STATE = "favorite";
+const UNINTERESTED_CURATION_STATE = "uninterested";
 const contentSource = getContentSource();
 
 export function loadSiteIndex(): SiteIndex {
@@ -107,12 +111,20 @@ export function loadSiteIndex(): SiteIndex {
 export function getHomeData() {
   const index = loadSiteIndex();
   const sections = index.sections.filter((item) => !HIDDEN_SECTION_KEYS.has(item.key));
-  const books = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const visibleBooks = index.books.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key));
+  const books = visibleBooks
+    .filter((item) => item.curation_state !== UNINTERESTED_CURATION_STATE)
+    .sort(
+      (a, b) =>
+        getHomePriority(b) - getHomePriority(a) ||
+        b.page_count - a.page_count ||
+        a.title.localeCompare(b.title, "zh-CN"),
+    );
   const quotes = index.quotes;
   return {
     counts: {
       sections: sections.length,
-      books: books.length,
+      books: visibleBooks.length,
       pages: index.pages.filter((item) => !HIDDEN_SECTION_KEYS.has(item.section_key)).length,
       quotes: quotes.length,
     },
@@ -120,6 +132,10 @@ export function getHomeData() {
     books,
     quotes,
   };
+}
+
+function getHomePriority(book: Pick<BookSummary, "curation_state">): number {
+  return book.curation_state === FAVORITE_CURATION_STATE ? 1 : 0;
 }
 
 export function getLibraryIndex() {

@@ -19,6 +19,8 @@ export type SiteIndex = {
     tags: string[];
     page_count: number;
     updated_at: string;
+    read_state: "unread" | "reading" | "read";
+    curation_state: "normal" | "favorite" | "uninterested";
     url: string;
   }[];
   pages: {

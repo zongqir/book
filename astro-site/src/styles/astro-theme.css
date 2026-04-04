@@ -1625,6 +1625,12 @@ body.reader-notes-editor-open .mobile-app-dock {
   transform: translateX(-50%) translateY(18px);
 }
 
+body.reader-notes-panel-open .mobile-app-dock {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(18px);
+}
+
 body.reader-notes-editor-open {
   overflow: hidden;
 }
@@ -3568,7 +3574,15 @@ html.is-capacitor-app .tool-switch--share {
   }
   .doc-grid { gap: 14px; }
   .reader-notes-shell {
-    z-index: 38;
+    right: 12px;
+    left: auto;
+    top: auto;
+    bottom: calc(108px + var(--safe-bottom));
+    z-index: 47;
+  }
+  .reader-notes-shell.is-panel-open,
+  .reader-notes-shell.is-pick-mode {
+    z-index: 52;
   }
   .reader-notes-toggle {
     width: 52px;

@@ -113,10 +113,10 @@ function setupBookStatusControl(root: HTMLElement) {
     root.dataset.curationState = status.curation_state;
 
     if (readChip instanceof HTMLElement) {
-      readChip.textContent = "进度 · " + getReadStateLabel(status.read_state);
+      readChip.textContent = "阅读 · " + getReadStateLabel(status.read_state);
     }
     if (curationChip instanceof HTMLElement) {
-      curationChip.textContent = "筛选 · " + getCurationStateLabel(status.curation_state);
+      curationChip.textContent = "书单 · " + getCurationStateLabel(status.curation_state);
     }
     if (copyNode instanceof HTMLElement) {
       copyNode.textContent = buildStatusCopy(status);
@@ -211,8 +211,8 @@ function getReadStateLabel(value: BookReadState) {
 
 function getCurationStateLabel(value: BookCurationState) {
   if (value === "favorite") return "收藏";
-  if (value === "uninterested") return "不感兴趣";
-  return "普通";
+  if (value === "uninterested") return "排除随机";
+  return "保留";
 }
 
 function buildStatusCopy(status: BookStatusRecord) {

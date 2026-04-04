@@ -1,4 +1,4 @@
-const VERSION = "book-site-v6";
+const VERSION = "book-site-v7";
 const APP_CACHE = `${VERSION}:app`;
 const PAGE_CACHE = `${VERSION}:pages`;
 const DATA_CACHE = `${VERSION}:data`;

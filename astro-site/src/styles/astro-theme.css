@@ -5275,6 +5275,65 @@ html[data-theme="dark"] .section-enter {
   color: var(--accent-strong);
 }
 
+html[data-theme="dark"] .home-mobile-focus,
+html[data-theme="dark"] .home-mobile-quote-panel,
+html[data-theme="dark"] .home-mobile-shelves,
+html[data-theme="dark"] .home-mobile-drawer,
+html[data-theme="dark"] .home-mobile-section-link,
+html[data-theme="dark"] .home-mobile-quote-card {
+  border-color: rgba(236, 223, 203, 0.12);
+  background: linear-gradient(180deg, rgba(23, 35, 46, 0.96), rgba(15, 24, 34, 0.92));
+  box-shadow: 0 20px 42px rgba(4, 10, 16, 0.2);
+}
+
+html[data-theme="dark"] .home-mobile-focus,
+html[data-theme="dark"] .home-mobile-quote-panel,
+html[data-theme="dark"] .home-mobile-shelves {
+  background:
+    linear-gradient(180deg, rgba(23, 35, 46, 0.96), rgba(15, 24, 34, 0.92));
+}
+
+html[data-theme="dark"] .home-mobile-focus {
+  background:
+    radial-gradient(circle at top right, rgba(123, 200, 192, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(23, 35, 46, 0.98), rgba(15, 24, 34, 0.94));
+}
+
+html[data-theme="dark"] .home-mobile-quote-panel {
+  background:
+    radial-gradient(circle at top left, rgba(209, 138, 88, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(23, 35, 46, 0.98), rgba(15, 24, 34, 0.94));
+}
+
+html[data-theme="dark"] .home-mobile-shelves {
+  background:
+    radial-gradient(circle at top right, rgba(123, 200, 192, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(23, 35, 46, 0.98), rgba(15, 24, 34, 0.94));
+}
+
+html[data-theme="dark"] .home-mobile-focus h2,
+html[data-theme="dark"] .home-mobile-quote-panel-head h2,
+html[data-theme="dark"] .home-mobile-shelves-head h2,
+html[data-theme="dark"] .home-mobile-section-link strong,
+html[data-theme="dark"] .home-mobile-quote-text {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .home-mobile-focus-copy,
+html[data-theme="dark"] .home-mobile-focus-topline,
+html[data-theme="dark"] .home-mobile-quote-meta,
+html[data-theme="dark"] .home-mobile-shelf-top span,
+html[data-theme="dark"] .home-mobile-shelf-card p,
+html[data-theme="dark"] .home-mobile-section-link span,
+html[data-theme="dark"] .home-mobile-drawer > summary em {
+  color: rgba(236, 223, 203, 0.7);
+}
+
+html[data-theme="dark"] .home-mobile-drawer > summary,
+html[data-theme="dark"] .home-mobile-drawer > summary::after {
+  color: var(--text);
+}
+
 html[data-theme="dark"] .slot-link {
   border-color: rgba(236, 223, 203, 0.1);
   background: linear-gradient(180deg, rgba(23, 35, 46, 0.96), rgba(15, 24, 34, 0.9));

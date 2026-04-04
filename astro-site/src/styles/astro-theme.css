@@ -3178,6 +3178,57 @@ html.is-capacitor-app .tool-switch--share {
   .doc-card--reading-strip .section-enter {
     font-size: 0.94rem;
   }
+  .page-intro--book .book-status-toolbar {
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+  .page-intro--book .book-status-toolbar-head {
+    display: grid;
+    gap: 8px;
+  }
+  .page-intro--book .book-status-toolbar-head .eyebrow,
+  .page-intro--book .book-status-toolbar-copy {
+    display: none;
+  }
+  .page-intro--book .book-status-current {
+    gap: 6px;
+  }
+  .page-intro--book .book-status-current .meta-chip {
+    min-height: 26px;
+    padding: 0 10px;
+    font-size: 0.72rem;
+  }
+  .page-intro--book .book-status-toolbar-groups {
+    gap: 8px;
+  }
+  .page-intro--book .book-status-group {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+  }
+  .page-intro--book .book-status-label {
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+  .page-intro--book .book-status-options {
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .page-intro--book .book-status-options::-webkit-scrollbar {
+    display: none;
+  }
+  .page-intro--book .book-status-options .tool-switch {
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
   .notes-toolbar-row,
   .notes-book-list {
     grid-template-columns: 1fr;

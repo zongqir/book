@@ -716,9 +716,6 @@ html.is-capacitor-app .share-inline {
   display: grid;
   gap: 14px;
 }
-.book-status-card--reading {
-  margin-bottom: 2px;
-}
 .book-status-head {
   display: flex;
   flex-wrap: wrap;

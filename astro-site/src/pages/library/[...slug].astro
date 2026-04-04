@@ -329,48 +329,6 @@ function getBookStatusCopy(
 
       <div class="doc-grid doc-grid--reading">
         <article class="content-card content-card--reading">
-          {node.book && (
-            <section
-              class="meta-card book-status-card book-status-card--reading"
-              data-book-status-root
-              data-book-id={node.book.id}
-              data-default-read-state={node.book.read_state}
-              data-default-curation-state={node.book.curation_state}
-              data-read-state={node.book.read_state}
-              data-curation-state={node.book.curation_state}
-            >
-              <div class="book-status-head">
-                <div>
-                  <p class="eyebrow">阅读筛选</p>
-                  <h3>这本书怎么处理</h3>
-                </div>
-                <div class="book-status-current">
-                  <span class="meta-chip" data-book-status-read-chip>进度 · {getReadStateLabel(node.book.read_state)}</span>
-                  <span class="meta-chip" data-book-status-curation-chip>筛选 · {getCurationStateLabel(node.book.curation_state)}</span>
-                </div>
-              </div>
-              <p class="book-status-copy" data-book-status-copy>{getBookStatusCopy(node.book.read_state, node.book.curation_state)}</p>
-              <div class="book-status-groups">
-                <div class="book-status-group">
-                  <span class="book-status-label">进度</span>
-                  <div class="book-status-options">
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="read" data-book-status-value="unread">未读</button>
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="read" data-book-status-value="reading">在读</button>
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="read" data-book-status-value="read">已读</button>
-                  </div>
-                </div>
-                <div class="book-status-group">
-                  <span class="book-status-label">筛选</span>
-                  <div class="book-status-options">
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="curation" data-book-status-value="normal">普通</button>
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="curation" data-book-status-value="favorite">收藏</button>
-                    <button class="tool-switch tool-switch--compact" type="button" data-book-status-kind="curation" data-book-status-value="uninterested">不感兴趣</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
           {node.headings.length > 0 && (
             <details class="toc-card toc-card--mobile toc-card--mobile-reading">
               <summary class="toc-summary">本页目录</summary>
@@ -579,9 +537,7 @@ function getBookStatusCopy(
 {node.kind === "page" && (
   <script>
     import { setupReaderParagraphNotes } from "../../lib/reader-paragraph-notes";
-    import { setupBookStatusControls } from "../../lib/book-status-storage";
 
-    setupBookStatusControls();
     setupReaderParagraphNotes();
   </script>
   )}

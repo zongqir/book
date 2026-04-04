@@ -1374,13 +1374,26 @@ html.is-capacitor-app .share-inline {
   margin-top: 8px;
 }
 .page-nav-card {
+  position: relative;
+  overflow: hidden;
   min-height: 112px;
   padding: 18px 20px;
   border-radius: 22px;
   border: 1px solid rgba(23, 48, 67, 0.08);
   background: linear-gradient(160deg, rgba(255, 247, 238, 0.92), rgba(255, 255, 255, 0.72));
 }
+.page-nav-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.26), transparent 48%),
+    radial-gradient(circle at top right, rgba(29, 109, 116, 0.08), transparent 30%);
+  pointer-events: none;
+}
 .page-nav-card strong {
+  position: relative;
+  z-index: 1;
   display: block;
   margin-top: 10px;
   font-family: "Noto Serif SC", serif;
@@ -1393,6 +1406,8 @@ html.is-capacitor-app .share-inline {
   box-shadow: 0 16px 28px rgba(23, 48, 67, 0.12);
 }
 .page-nav-label {
+  position: relative;
+  z-index: 1;
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.76rem;
   letter-spacing: 0.08em;
@@ -1407,11 +1422,23 @@ html.is-capacitor-app .share-inline {
 .callout,
 .sentence-card,
 .memory-card {
+  position: relative;
+  overflow: hidden;
   margin: 1.4em 0;
   border-radius: 24px;
   border: 1px solid rgba(23, 48, 67, 0.08);
   background: rgba(255, 255, 255, 0.64);
   box-shadow: 0 18px 40px rgba(23, 48, 67, 0.06);
+}
+.sentence-card::before,
+.principle-card::before,
+.callout::before,
+.memory-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.32), transparent 46%);
 }
 .principle-card,
 .sentence-card,
@@ -1437,6 +1464,39 @@ html.is-capacitor-app .share-inline {
 }
 .principle-card-statement,
 .sentence-card-quote { font-family: "Noto Serif SC", serif; font-size: 1.25rem; line-height: 1.7; }
+.sentence-card {
+  padding: 22px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(164, 91, 42, 0.08), transparent 32%),
+    linear-gradient(160deg, rgba(255, 250, 245, 0.95), rgba(255, 255, 255, 0.78));
+}
+.sentence-card::after {
+  content: "“";
+  position: absolute;
+  top: 12px;
+  left: 18px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: rgba(164, 91, 42, 0.18);
+  pointer-events: none;
+}
+.sentence-card-quote {
+  position: relative;
+  z-index: 1;
+  padding-left: 14px;
+  border-left: 3px solid rgba(164, 91, 42, 0.24);
+}
+.sentence-card-quote p {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.16rem, 1.3vw, 1.34rem);
+  line-height: 1.78;
+  letter-spacing: 0.01em;
+}
+.doc-content > .sentence-card + p {
+  margin-top: 0.82em;
+}
 .callout-body,
 .principle-card-body,
 .sentence-card-body,
@@ -5076,6 +5136,86 @@ html[data-theme="dark"] .reader-note-block:hover,
 html[data-theme="dark"] .doc-content.reader-notes-pick-mode .reader-note-block:hover,
 html[data-theme="dark"] .doc-content.reader-notes-pick-mode .reader-note-block:active {
   background: rgba(209, 138, 88, 0.12);
+}
+
+html[data-theme="dark"] .hero-tool-card--primary {
+  background:
+    radial-gradient(circle at top right, rgba(123, 200, 192, 0.14), transparent 32%),
+    linear-gradient(165deg, rgba(27, 41, 54, 0.96), rgba(16, 26, 35, 0.94));
+}
+
+html[data-theme="dark"] .hero-tool-card--quote {
+  background:
+    radial-gradient(circle at top left, rgba(209, 138, 88, 0.14), transparent 30%),
+    linear-gradient(165deg, rgba(30, 39, 49, 0.96), rgba(16, 25, 34, 0.94));
+}
+
+html[data-theme="dark"] .book-dice-meta {
+  color: var(--accent-strong);
+}
+
+html[data-theme="dark"] .page-nav-card,
+html[data-theme="dark"] .sentence-card,
+html[data-theme="dark"] .principle-card,
+html[data-theme="dark"] .callout,
+html[data-theme="dark"] .memory-card {
+  border-color: rgba(236, 223, 203, 0.12);
+  background:
+    linear-gradient(180deg, rgba(23, 35, 46, 0.96), rgba(14, 23, 32, 0.92));
+  box-shadow: 0 22px 48px rgba(4, 10, 16, 0.24);
+}
+
+html[data-theme="dark"] .page-nav-card::before,
+html[data-theme="dark"] .sentence-card::before,
+html[data-theme="dark"] .principle-card::before,
+html[data-theme="dark"] .callout::before,
+html[data-theme="dark"] .memory-card::before {
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.06), transparent 44%),
+    radial-gradient(circle at top right, rgba(123, 200, 192, 0.08), transparent 28%);
+}
+
+html[data-theme="dark"] .page-nav-card strong {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .page-nav-label {
+  color: rgba(236, 223, 203, 0.68);
+}
+
+html[data-theme="dark"] .page-nav-card:hover,
+html[data-theme="dark"] .page-nav-card:focus-visible {
+  box-shadow: 0 26px 52px rgba(2, 8, 14, 0.36);
+  border-color: rgba(236, 223, 203, 0.16);
+}
+
+html[data-theme="dark"] .sentence-card {
+  background:
+    radial-gradient(circle at top left, rgba(209, 138, 88, 0.12), transparent 28%),
+    linear-gradient(160deg, rgba(28, 39, 51, 0.98), rgba(15, 24, 34, 0.94));
+}
+
+html[data-theme="dark"] .sentence-card::after {
+  color: rgba(239, 184, 137, 0.16);
+}
+
+html[data-theme="dark"] .sentence-card-quote {
+  border-left-color: rgba(239, 184, 137, 0.26);
+}
+
+html[data-theme="dark"] .sentence-card-quote p {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .memory-card-item,
+html[data-theme="dark"] .home-mobile-shelf-card {
+  border-color: rgba(236, 223, 203, 0.1);
+  background: linear-gradient(180deg, rgba(27, 39, 50, 0.9), rgba(17, 28, 37, 0.86));
+}
+
+html[data-theme="dark"] .home-mobile-shelf-card p,
+html[data-theme="dark"] .home-mobile-shelf-top span {
+  color: rgba(236, 223, 203, 0.64);
 }
 
 html[data-theme="dark"] .network-toast,

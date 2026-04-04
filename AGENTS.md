@@ -24,11 +24,11 @@
 
 当前资料库分类主要在：
 
-- `site/content/library/01_关键技能/`
-- `site/content/library/02_专业技术/`
-- `site/content/library/03_沟通人际/`
-- `site/content/library/04_理财/`
-- `site/content/library/05_思想方法/`
+- `site/content/library/02_技术工程/`
+- `site/content/library/03_沟通表达/`
+- `site/content/library/10_资产投资/`
+- `site/content/library/13_国家治理/`
+- `site/content/library/20_学习方法/`
 
 默认围绕 `site/content/library/` 工作，不要在根目录再维护一套平行正文树。
 

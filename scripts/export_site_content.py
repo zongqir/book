@@ -26,7 +26,12 @@ VALID_CURATION_STATES = {DEFAULT_CURATION_STATE, "favorite", "uninterested"}
 
 FRONTMATTER_PATTERN = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n?", re.DOTALL)
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
-SENTENCE_PATTERN = re.compile(r'\{\{<\s*sentence\b[^>]*quote="([^"]+)"[^>]*>\}\}')
+SENTENCE_PAIR_PATTERN = re.compile(
+    r"\{\{<\s*sentence\b([^>]*)>\}\}([\s\S]*?)\{\{<\s*/sentence\s*>\}\}",
+    re.MULTILINE,
+)
+SENTENCE_SELF_CLOSING_PATTERN = re.compile(r"\{\{<\s*sentence\b([^>]*)/?>\}\}")
+SHORTCODE_ATTR_PATTERN = re.compile(r'([A-Za-z_][A-Za-z0-9_-]*)=(?:"([^"]*)"|\'([^\']*)\'|`([^`]*)`)')
 
 
 @dataclass(frozen=True)
@@ -299,8 +304,7 @@ def collect_quotes(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
             continue
 
         body = read_body(file_path)
-        for index, match in enumerate(SENTENCE_PATTERN.findall(body), start=1):
-            quote = match.strip()
+        for index, quote in enumerate(extract_sentence_quotes(body), start=1):
             if not quote:
                 continue
             quotes.append(
@@ -314,6 +318,51 @@ def collect_quotes(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 }
             )
     return quotes
+
+
+def extract_sentence_quotes(body: str) -> list[str]:
+    quotes_with_order: list[tuple[int, str]] = []
+    pair_ranges: list[tuple[int, int]] = []
+
+    for match in SENTENCE_PAIR_PATTERN.finditer(body):
+        pair_ranges.append(match.span())
+        attrs = parse_shortcode_attrs(match.group(1) or "")
+        quote = normalize_sentence_text(attrs.get("quote") or match.group(2) or "")
+        if quote:
+            quotes_with_order.append((match.start(), quote))
+
+    for match in SENTENCE_SELF_CLOSING_PATTERN.finditer(body):
+        if is_inside_ranges(match.start(), pair_ranges):
+            continue
+        attrs = parse_shortcode_attrs(match.group(1) or "")
+        quote = normalize_sentence_text(attrs.get("quote") or "")
+        if quote:
+            quotes_with_order.append((match.start(), quote))
+
+    quotes_with_order.sort(key=lambda item: item[0])
+    return [quote for _, quote in quotes_with_order]
+
+
+def is_inside_ranges(position: int, ranges: list[tuple[int, int]]) -> bool:
+    return any(start <= position < end for start, end in ranges)
+
+
+def parse_shortcode_attrs(source: str) -> dict[str, str]:
+    attrs: dict[str, str] = {}
+    for match in SHORTCODE_ATTR_PATTERN.finditer(source):
+        attrs[match.group(1)] = match.group(2) or match.group(3) or match.group(4) or ""
+    return attrs
+
+
+def normalize_sentence_text(value: str) -> str:
+    text = value.strip()
+    if not text:
+        return ""
+    text = re.sub(r"^\s*>+\s?", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = text.replace("**", "").replace("__", "").replace("`", "")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 
 def read_frontmatter(path: Path) -> dict[str, Any]:

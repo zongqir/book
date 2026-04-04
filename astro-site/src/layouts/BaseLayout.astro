@@ -85,6 +85,21 @@ const appHref = toInternalHref("/app/");
         document.addEventListener("DOMContentLoaded", applyNativeAppClass, { once: true });
       })();
     </script>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+
+        try {
+          var theme = window.localStorage.getItem("book:theme:v1");
+          var fontSize = window.localStorage.getItem("book:reader-font-size:v1");
+          root.dataset.theme = theme === "dark" ? "dark" : "light";
+          root.dataset.readerFontSize = fontSize === "sm" || fontSize === "lg" ? fontSize : "md";
+        } catch (error) {
+          root.dataset.theme = "light";
+          root.dataset.readerFontSize = "md";
+        }
+      })();
+    </script>
     {isLibrary && (
       <script>
         import { initShareActions } from "../lib/share-actions";
@@ -121,7 +136,7 @@ const appHref = toInternalHref("/app/");
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="theme-color" content="#2f5b7c" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="msapplication-TileColor" content="#2f5b7c" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
@@ -151,27 +166,6 @@ const appHref = toInternalHref("/app/");
               <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>目录</a>
               <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
             </nav>
-            <button
-              class="site-settings-toggle"
-              type="button"
-              data-settings-toggle
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-controls="site-settings-sheet"
-              aria-label="打开设置与数据"
-            >
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <circle cx="10" cy="10" r="2.1"></circle>
-                <path d="M10 3.35v1.7"></path>
-                <path d="M10 14.95v1.7"></path>
-                <path d="m5.3 5.3 1.2 1.2"></path>
-                <path d="m13.5 13.5 1.2 1.2"></path>
-                <path d="M3.35 10h1.7"></path>
-                <path d="M14.95 10h1.7"></path>
-                <path d="m5.3 14.7 1.2-1.2"></path>
-                <path d="m13.5 6.5 1.2-1.2"></path>
-              </svg>
-            </button>
           </div>
         </div>
       </header>
@@ -207,18 +201,6 @@ const appHref = toInternalHref("/app/");
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>个人</span>
       </a>
-      <button
-        class="mobile-dock-item mobile-dock-action"
-        type="button"
-        data-settings-toggle
-        aria-haspopup="dialog"
-        aria-expanded="false"
-        aria-controls="site-settings-sheet"
-        aria-label="打开设置与数据"
-      >
-        <span class="mobile-dock-dot mobile-dock-dot--settings" aria-hidden="true"></span>
-        <span>设置</span>
-      </button>
     </nav>
 
     <div class="network-toast" id="network-toast" hidden>当前离线，优先使用已缓存页面。</div>
@@ -232,38 +214,6 @@ const appHref = toInternalHref("/app/");
       <div class="pwa-prompt-actions">
         <button class="btn" id="pwa-install-button" type="button">立即安装</button>
         <button class="tool-switch" id="pwa-dismiss-button" type="button">稍后</button>
-      </div>
-    </section>
-
-    <section class="site-settings-sheet" id="site-settings-sheet" hidden aria-hidden="true">
-      <div class="site-settings-sheet-backdrop" data-settings-close></div>
-      <div class="site-settings-panel" role="dialog" aria-modal="true" aria-labelledby="site-settings-title">
-        <div class="site-settings-head">
-          <div>
-            <p class="eyebrow">设置与数据</p>
-            <h2 id="site-settings-title">本地笔记</h2>
-          </div>
-          <button class="tool-switch tool-switch--compact" type="button" data-settings-close>收起</button>
-        </div>
-        <div class="site-settings-summary">
-          <p class="site-settings-note-count" id="site-settings-note-count">正在整理本地笔记…</p>
-          <p class="site-settings-status" id="site-settings-status">导入前先导出一次。</p>
-        </div>
-        <div class="site-settings-actions">
-          <button class="btn btn-ghost" id="site-settings-export" type="button">导出笔记</button>
-          <button class="btn btn-ghost" id="site-settings-import-trigger" type="button">导入笔记</button>
-          <button class="btn btn-ghost btn-ghost--danger" id="site-settings-clear" type="button">清空本地</button>
-          <input id="site-settings-import-input" type="file" accept="application/json,.json" hidden />
-        </div>
-        <div class="site-settings-links">
-          <a class="tool-switch" href={toInternalHref("/offline/")}>离线说明</a>
-          {showAppDownloadEntry && appDownload.latestApkUrl && (
-            <a class="tool-switch" href={appDownload.latestApkUrl} target="_blank" rel="noreferrer">Android 下载</a>
-          )}
-          {showAppDownloadEntry && !appDownload.latestApkUrl && appDownload.releasePageUrl && (
-            <a class="tool-switch" href={appDownload.releasePageUrl} target="_blank" rel="noreferrer">查看发布页</a>
-          )}
-        </div>
       </div>
     </section>
 
@@ -507,143 +457,22 @@ const appHref = toInternalHref("/app/");
         }
       })();
     </script>
-    <script is:inline>
-      (function () {
-        var settingsSheet = document.getElementById("site-settings-sheet");
-        var settingsToggles = Array.prototype.slice.call(document.querySelectorAll("[data-settings-toggle]"));
-        var settingsCloseNodes = Array.prototype.slice.call(document.querySelectorAll("[data-settings-close]"));
-
-        function syncToggleState(expanded) {
-          settingsToggles.forEach(function (node) {
-            if (node instanceof HTMLElement) {
-              node.setAttribute("aria-expanded", expanded ? "true" : "false");
-            }
-          });
-        }
-
-        function openSettingsSheet() {
-          if (!(settingsSheet instanceof HTMLElement)) return;
-          settingsSheet.hidden = false;
-          settingsSheet.setAttribute("aria-hidden", "false");
-          document.body.classList.add("site-settings-open");
-          syncToggleState(true);
-          document.dispatchEvent(new CustomEvent("site-settings:opened"));
-        }
-
-        function closeSettingsSheet() {
-          if (!(settingsSheet instanceof HTMLElement)) return;
-          settingsSheet.hidden = true;
-          settingsSheet.setAttribute("aria-hidden", "true");
-          document.body.classList.remove("site-settings-open");
-          syncToggleState(false);
-        }
-
-        settingsToggles.forEach(function (node) {
-          if (!(node instanceof HTMLButtonElement)) return;
-          node.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            if (settingsSheet instanceof HTMLElement && !settingsSheet.hidden) {
-              closeSettingsSheet();
-              return;
-            }
-            openSettingsSheet();
-          });
-        });
-
-        settingsCloseNodes.forEach(function (node) {
-          if (!(node instanceof HTMLElement)) return;
-          node.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            closeSettingsSheet();
-          });
-        });
-
-        document.addEventListener("keydown", function (event) {
-          if (event.key === "Escape") {
-            closeSettingsSheet();
-          }
-        });
-
-        window.__bookSettingsSheet = {
-          open: openSettingsSheet,
-          close: closeSettingsSheet,
-        };
-      })();
-    </script>
     <script>
       import { StatusBar, Style } from "@capacitor/status-bar";
-      import {
-        clearReaderNotebook,
-        exportReaderNotebook,
-        importReaderNotebook,
-        listAllReaderNotes,
-      } from "../lib/reader-storage";
+      import { readThemePreference } from "../lib/personal-preferences";
 
-      const settingsSheet = document.getElementById("site-settings-sheet");
-      const settingsToggles = Array.from(document.querySelectorAll("[data-settings-toggle]"));
-      const settingsCount = document.getElementById("site-settings-note-count");
-      const settingsStatus = document.getElementById("site-settings-status");
-      const settingsExport = document.getElementById("site-settings-export");
-      const settingsImportTrigger = document.getElementById("site-settings-import-trigger");
-      const settingsImportInput = document.getElementById("site-settings-import-input");
-      const settingsClear = document.getElementById("site-settings-clear");
-
-      function setSettingsBusy(next) {
-        [...settingsToggles, settingsExport, settingsImportTrigger, settingsClear].forEach((node) => {
-          if (node instanceof HTMLButtonElement) {
-            node.disabled = next;
-          }
-        });
-      }
-
-      function setSettingsStatus(message, tone) {
-        if (!(settingsStatus instanceof HTMLElement)) return;
-        settingsStatus.textContent = message;
-        settingsStatus.dataset.tone = tone || "neutral";
-      }
-
-      function downloadSettingsExport(payload) {
-        const filenameDate = new Date().toISOString().slice(0, 10);
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = "reader-notes-" + filenameDate + ".json";
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-      }
-
-      async function refreshSettingsSummary() {
-        if (!(settingsCount instanceof HTMLElement)) return;
-        try {
-          const notes = await listAllReaderNotes();
-          settingsCount.textContent = notes.length ? "当前有 " + notes.length + " 条本地笔记。" : "当前还没有本地笔记。";
-        } catch (error) {
-          console.error("Failed to read settings notes summary", error);
-          settingsCount.textContent = "本地笔记暂时读不到。";
-          setSettingsStatus("读取失败了，稍后再试。", "danger");
-        }
-      }
-
-      async function readImportFile(file) {
-        const text = await file.text();
-        return JSON.parse(text);
-      }
-
-      async function syncNativeStatusBar() {
+      async function syncNativeStatusBar(nextTheme) {
         const capacitor = window.Capacitor;
         if (!(capacitor && typeof capacitor.isNativePlatform === "function" && capacitor.isNativePlatform())) {
           return;
         }
 
+        const theme = nextTheme === "dark" ? "dark" : readThemePreference();
+
         try {
           await StatusBar.setOverlaysWebView({ overlay: false });
-          await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: "#f4ede1" });
+          await StatusBar.setStyle({ style: theme === "dark" ? Style.Light : Style.Dark });
+          await StatusBar.setBackgroundColor({ color: theme === "dark" ? "#13212d" : "#f4ede1" });
           document.documentElement.style.setProperty("--safe-top", "0px");
         } catch (error) {
           console.error("Failed to sync native status bar", error);
@@ -651,67 +480,10 @@ const appHref = toInternalHref("/app/");
       }
 
       void syncNativeStatusBar();
-      document.addEventListener("site-settings:opened", () => {
-        void refreshSettingsSummary();
+      window.addEventListener("personal-preferences:theme", (event) => {
+        const theme = event instanceof CustomEvent && event.detail?.theme === "dark" ? "dark" : "light";
+        void syncNativeStatusBar(theme);
       });
-
-      if (settingsExport instanceof HTMLButtonElement) {
-        settingsExport.addEventListener("click", async () => {
-          setSettingsBusy(true);
-          try {
-            const payload = await exportReaderNotebook();
-            downloadSettingsExport(payload);
-            setSettingsStatus("导出完成。", "success");
-          } catch (error) {
-            console.error("Failed to export reader notes from settings", error);
-            setSettingsStatus("导出失败了。", "danger");
-          } finally {
-            setSettingsBusy(false);
-            void refreshSettingsSummary();
-          }
-        });
-      }
-
-      if (settingsImportTrigger instanceof HTMLButtonElement && settingsImportInput instanceof HTMLInputElement) {
-        settingsImportTrigger.addEventListener("click", () => {
-          settingsImportInput.click();
-        });
-
-        settingsImportInput.addEventListener("change", async () => {
-          const file = settingsImportInput.files && settingsImportInput.files[0];
-          if (!file) return;
-          setSettingsBusy(true);
-          try {
-            const payload = await readImportFile(file);
-            await importReaderNotebook(payload);
-            setSettingsStatus("导入完成。", "success");
-          } catch (error) {
-            console.error("Failed to import reader notes from settings", error);
-            setSettingsStatus(error instanceof Error ? error.message : "导入失败了。", "danger");
-          } finally {
-            settingsImportInput.value = "";
-            setSettingsBusy(false);
-            void refreshSettingsSummary();
-          }
-        });
-      }
-
-      if (settingsClear instanceof HTMLButtonElement) {
-        settingsClear.addEventListener("click", async () => {
-          if (!window.confirm("要清空这个设备里的全部本地笔记吗？")) return;
-          setSettingsBusy(true);
-          try {
-            await clearReaderNotebook();
-            setSettingsStatus("本地笔记已经清空。", "success");
-          } catch (error) {
-            console.error("Failed to clear reader notes from settings", error);
-            setSettingsStatus("清空失败了。", "danger");
-          } finally {
-            setSettingsBusy(false);
-            void refreshSettingsSummary();
-          }
-        });
-      }
     </script>
   </body>
 </html>

@@ -28,6 +28,67 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </section>
 
+    <section class="content-card personal-preferences-card">
+      <div class="section-head personal-preferences-head">
+        <div>
+          <p class="eyebrow">偏好</p>
+          <h2>阅读设置</h2>
+        </div>
+        <p class="personal-preferences-intro">把常用设置留在这里。下次回来，界面明暗、正文大小和最近阅读都会接上。</p>
+      </div>
+
+      <div class="personal-preferences-grid">
+        <section class="personal-preference-block">
+          <div class="personal-preference-copy">
+            <p class="eyebrow">主题</p>
+            <h3>白天还是黑夜</h3>
+            <p>切的是整个站点，不只这一页。</p>
+          </div>
+          <div class="preference-segment" role="group" aria-label="主题切换">
+            <button class="preference-chip" type="button" data-theme-option="light">白天</button>
+            <button class="preference-chip" type="button" data-theme-option="dark">黑夜</button>
+          </div>
+        </section>
+
+        <section class="personal-preference-block">
+          <div class="personal-preference-copy">
+            <p class="eyebrow">字号</p>
+            <h3>正文看起来顺不顺</h3>
+            <p>只影响文章正文，不改导航和目录。</p>
+          </div>
+          <div class="preference-segment" role="group" aria-label="正文字号切换">
+            <button class="preference-chip" type="button" data-font-size-option="sm">小一点</button>
+            <button class="preference-chip" type="button" data-font-size-option="md">标准</button>
+            <button class="preference-chip" type="button" data-font-size-option="lg">大一点</button>
+          </div>
+        </section>
+
+        <section class="personal-preference-block personal-preference-block--recent">
+          <div class="personal-preference-copy">
+            <p class="eyebrow">最近阅读</p>
+            <h3>上次停下来的地方</h3>
+            <p>你离开目录、书页或章节页时，这里会自动记住。</p>
+          </div>
+          <div class="personal-last-visit" id="personal-last-visit" hidden>
+            <div class="personal-last-visit-topline">
+              <span class="meta-chip" id="personal-last-visit-label">继续阅读</span>
+              <time class="personal-last-visit-time" id="personal-last-visit-time"></time>
+            </div>
+            <h3 id="personal-last-visit-title">最近阅读</h3>
+            <p class="personal-last-visit-context" id="personal-last-visit-context"></p>
+            <p class="personal-last-visit-summary" id="personal-last-visit-summary"></p>
+            <div class="personal-last-visit-actions">
+              <a class="tool-switch" id="personal-last-visit-link" href="/library/">继续打开</a>
+            </div>
+          </div>
+          <div class="notes-empty personal-empty" id="personal-last-visit-empty" hidden>
+            <h2>还没有最近阅读</h2>
+            <p>去目录里点开一本书，或者进入任意文章，这里就会留下你上次停下来的位置。</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <section class="content-card notes-results-card personal-collections-card">
       <div class="section-head personal-collections-head">
         <div>
@@ -163,6 +224,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       removePageFavorite,
     } from "../../lib/personal-library";
     import {
+      LAST_VISIT_STORAGE_KEY,
+      READER_FONT_SIZE_STORAGE_KEY,
+      THEME_STORAGE_KEY,
+      readLastVisit,
+      readReaderFontSizePreference,
+      readThemePreference,
+      writeReaderFontSizePreference,
+      writeThemePreference,
+    } from "../../lib/personal-preferences";
+    import {
       clearReaderNotebook,
       exportReaderNotebook,
       importReaderNotebook,
@@ -193,6 +264,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const favoritePagesResultsNode = document.getElementById("favorite-pages-results");
     const favoriteBooksEmptyNode = document.getElementById("favorite-books-empty");
     const favoritePagesEmptyNode = document.getElementById("favorite-pages-empty");
+    const themeButtons = Array.from(document.querySelectorAll("[data-theme-option]"));
+    const fontSizeButtons = Array.from(document.querySelectorAll("[data-font-size-option]"));
+    const lastVisitNode = document.getElementById("personal-last-visit");
+    const lastVisitEmptyNode = document.getElementById("personal-last-visit-empty");
+    const lastVisitLabelNode = document.getElementById("personal-last-visit-label");
+    const lastVisitTimeNode = document.getElementById("personal-last-visit-time");
+    const lastVisitTitleNode = document.getElementById("personal-last-visit-title");
+    const lastVisitContextNode = document.getElementById("personal-last-visit-context");
+    const lastVisitSummaryNode = document.getElementById("personal-last-visit-summary");
+    const lastVisitLinkNode = document.getElementById("personal-last-visit-link");
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
     const colorLabels = {
       all: "全部颜色",
@@ -209,6 +290,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       query: "",
       sort: "updated-desc",
       color: "all",
+      theme: "light",
+      fontSize: "md",
+      lastVisit: null,
       booksById: new Map(),
       pagesById: new Map(),
     };
@@ -340,6 +424,57 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
 
+    function renderPreferences() {
+      state.theme = readThemePreference();
+      state.fontSize = readReaderFontSizePreference();
+      state.lastVisit = readLastVisit();
+
+      themeButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const isActive = button.dataset.themeOption === state.theme;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      fontSizeButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const isActive = button.dataset.fontSizeOption === state.fontSize;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      if (!(lastVisitNode instanceof HTMLElement) || !(lastVisitEmptyNode instanceof HTMLElement)) return;
+
+      if (!state.lastVisit) {
+        lastVisitNode.hidden = true;
+        lastVisitEmptyNode.hidden = false;
+        return;
+      }
+
+      lastVisitEmptyNode.hidden = true;
+      lastVisitNode.hidden = false;
+
+      if (lastVisitLabelNode instanceof HTMLElement) {
+        lastVisitLabelNode.textContent = state.lastVisit.label || "继续阅读";
+      }
+      if (lastVisitTimeNode instanceof HTMLElement) {
+        lastVisitTimeNode.textContent = formatTime(state.lastVisit.updatedAt);
+        lastVisitTimeNode.setAttribute("datetime", state.lastVisit.updatedAt);
+      }
+      if (lastVisitTitleNode instanceof HTMLElement) {
+        lastVisitTitleNode.textContent = state.lastVisit.title || "最近阅读";
+      }
+      if (lastVisitContextNode instanceof HTMLElement) {
+        lastVisitContextNode.textContent = state.lastVisit.context || "目录里最近打开的内容";
+      }
+      if (lastVisitSummaryNode instanceof HTMLElement) {
+        lastVisitSummaryNode.textContent = state.lastVisit.summary || "继续回到刚才看到的位置。";
+      }
+      if (lastVisitLinkNode instanceof HTMLAnchorElement) {
+        lastVisitLinkNode.href = state.lastVisit.url || "/library/";
+      }
+    }
+
     function renderFavoriteCollections() {
       if (favoriteBooksResultsNode instanceof HTMLElement) {
         if (!state.favoriteBooks.length) {
@@ -446,6 +581,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     function render() {
       renderStats();
+      renderPreferences();
       renderFavoriteCollections();
       if (!(resultsNode instanceof HTMLElement)) return;
 
@@ -603,6 +739,31 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         render();
       });
     }
+
+    themeButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        const nextTheme = button.dataset.themeOption === "dark" ? "dark" : "light";
+        writeThemePreference(nextTheme);
+        renderPreferences();
+        setStatus("界面主题已经切到" + (nextTheme === "dark" ? "黑夜" : "白天") + "。", "success");
+      });
+    });
+
+    fontSizeButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        const nextSize = button.dataset.fontSizeOption === "sm"
+          ? "sm"
+          : button.dataset.fontSizeOption === "lg"
+            ? "lg"
+            : "md";
+        writeReaderFontSizePreference(nextSize);
+        renderPreferences();
+        const label = nextSize === "sm" ? "小一点" : nextSize === "lg" ? "大一点" : "标准";
+        setStatus("正文字号已经切到" + label + "。", "success");
+      });
+    });
 
     colorButtons.forEach((button) => {
       if (!(button instanceof HTMLButtonElement)) return;
@@ -771,9 +932,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     });
 
     window.addEventListener("storage", function (event) {
-      if (event.key !== getBookStatusStorageKey() && event.key !== getFavoritePageStorageKey()) return;
-      refreshFavorites();
-      render();
+      if (event.key === getBookStatusStorageKey() || event.key === getFavoritePageStorageKey()) {
+        refreshFavorites();
+        render();
+        return;
+      }
+
+      if (event.key === THEME_STORAGE_KEY || event.key === READER_FONT_SIZE_STORAGE_KEY || event.key === LAST_VISIT_STORAGE_KEY) {
+        renderPreferences();
+      }
     });
 
     Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {

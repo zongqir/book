@@ -577,6 +577,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     }
 
+    function focusMobilePanel(panelName) {
+      if (!mobilePanelQuery.matches) return;
+      const targetPanel = mobilePanels.find((panel) => panel instanceof HTMLElement && panel.dataset.personalPanel === panelName);
+      if (!(targetPanel instanceof HTMLElement)) return;
+      window.requestAnimationFrame(function () {
+        targetPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
     function renderFilterState(visibleCount) {
       if (sortToggleButton instanceof HTMLButtonElement) {
         const isAscending = state.sort === "updated-asc";
@@ -831,6 +840,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         state.mobilePanel = nextPanel;
         writeMobilePanelPreference(nextPanel);
         renderMobilePanels();
+        focusMobilePanel(nextPanel);
       });
     });
 

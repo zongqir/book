@@ -650,6 +650,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     }
 
+    function restoreMobilePanel() {
+      state.mobilePanel = readMobilePanelPreference();
+      renderMobilePanels();
+    }
+
     function focusMobilePanel(panelName) {
       if (!mobilePanelQuery.matches) return;
       const targetPanel = mobilePanels.find((panel) => panel instanceof HTMLElement && panel.dataset.personalPanel === panelName);
@@ -928,6 +933,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     }
 
+    window.addEventListener("pageshow", function () {
+      restoreMobilePanel();
+    });
+
     if (exportButton instanceof HTMLButtonElement) {
       exportButton.addEventListener("click", async function () {
         setBusy(true);
@@ -1098,8 +1107,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     });
 
+    restoreMobilePanel();
+
     Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {
-      state.mobilePanel = readMobilePanelPreference();
+      restoreMobilePanel();
       refreshCollections();
       render();
     });

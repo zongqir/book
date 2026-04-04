@@ -28,7 +28,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </section>
 
-    <section class="content-card personal-preferences-card">
+    <nav class="personal-mobile-nav" aria-label="个人分段">
+      <button class="personal-mobile-tab" type="button" data-personal-panel-tab="preferences">偏好</button>
+      <button class="personal-mobile-tab" type="button" data-personal-panel-tab="favorites">收藏</button>
+      <button class="personal-mobile-tab" type="button" data-personal-panel-tab="notes">笔记</button>
+    </nav>
+
+    <section class="content-card personal-preferences-card" data-personal-panel="preferences">
       <div class="section-head personal-preferences-head">
         <div>
           <p class="eyebrow">偏好</p>
@@ -89,7 +95,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </section>
 
-    <section class="content-card notes-results-card personal-collections-card">
+    <section class="content-card notes-results-card personal-collections-card" data-personal-panel="favorites">
       <div class="section-head personal-collections-head">
         <div>
           <p class="eyebrow">收藏</p>
@@ -130,7 +136,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </section>
 
-    <section class="content-card notes-toolbar-card">
+    <section class="content-card notes-toolbar-card" data-personal-panel="notes">
       <details class="notes-filters" open>
         <summary class="notes-filters-summary">
           <span>搜索与筛选</span>
@@ -207,7 +213,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </details>
     </section>
 
-    <section class="content-card notes-results-card">
+    <section class="content-card notes-results-card" data-personal-panel="notes">
       <div class="notes-empty" id="notes-empty" hidden>
         <h2 id="notes-empty-title">还没有本地笔记</h2>
         <p>去任意一篇正文里划一段，或者导入你之前备份过的笔记。</p>
@@ -274,6 +280,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const lastVisitContextNode = document.getElementById("personal-last-visit-context");
     const lastVisitSummaryNode = document.getElementById("personal-last-visit-summary");
     const lastVisitLinkNode = document.getElementById("personal-last-visit-link");
+    const mobilePanelButtons = Array.from(document.querySelectorAll("[data-personal-panel-tab]"));
+    const mobilePanels = Array.from(document.querySelectorAll("[data-personal-panel]"));
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
     const colorLabels = {
       all: "全部颜色",
@@ -282,6 +290,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       rose: "红色",
       violet: "紫色",
     };
+    const PERSONAL_PANEL_STORAGE_KEY = "book:personal-mobile-panel:v1";
+    const mobilePanelQuery = window.matchMedia("(max-width: 760px)");
 
     const state = {
       notes: [],
@@ -293,9 +303,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       theme: "light",
       fontSize: "md",
       lastVisit: null,
+      mobilePanel: "notes",
       booksById: new Map(),
       pagesById: new Map(),
     };
+
+    function readMobilePanelPreference() {
+      try {
+        const raw = window.localStorage.getItem(PERSONAL_PANEL_STORAGE_KEY);
+        return raw === "preferences" || raw === "favorites" || raw === "notes" ? raw : "notes";
+      } catch (error) {
+        return "notes";
+      }
+    }
+
+    function writeMobilePanelPreference(value) {
+      try {
+        window.localStorage.setItem(PERSONAL_PANEL_STORAGE_KEY, value);
+      } catch (error) {
+        console.warn("Failed to persist personal mobile panel", error);
+      }
+    }
 
     function escapeHtml(value) {
       return String(value || "")
@@ -528,6 +556,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
 
+    function renderMobilePanels() {
+      state.mobilePanel = readMobilePanelPreference();
+
+      mobilePanelButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const isActive = button.dataset.personalPanelTab === state.mobilePanel;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      const isMobile = mobilePanelQuery.matches;
+      mobilePanels.forEach((panel) => {
+        if (!(panel instanceof HTMLElement)) return;
+        if (!isMobile) {
+          panel.hidden = false;
+          return;
+        }
+        panel.hidden = panel.dataset.personalPanel !== state.mobilePanel;
+      });
+    }
+
     function renderFilterState(visibleCount) {
       if (sortToggleButton instanceof HTMLButtonElement) {
         const isAscending = state.sort === "updated-asc";
@@ -583,6 +632,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       renderStats();
       renderPreferences();
       renderFavoriteCollections();
+      renderMobilePanels();
       if (!(resultsNode instanceof HTMLElement)) return;
 
       const visible = getFilteredNotes();
@@ -773,6 +823,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       });
     });
 
+    mobilePanelButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.addEventListener("click", function () {
+        const nextPanel = button.dataset.personalPanelTab;
+        if (nextPanel !== "preferences" && nextPanel !== "favorites" && nextPanel !== "notes") return;
+        state.mobilePanel = nextPanel;
+        writeMobilePanelPreference(nextPanel);
+        renderMobilePanels();
+      });
+    });
+
+    if (typeof mobilePanelQuery.addEventListener === "function") {
+      mobilePanelQuery.addEventListener("change", function () {
+        renderMobilePanels();
+      });
+    } else if (typeof mobilePanelQuery.addListener === "function") {
+      mobilePanelQuery.addListener(function () {
+        renderMobilePanels();
+      });
+    }
+
     if (exportButton instanceof HTMLButtonElement) {
       exportButton.addEventListener("click", async function () {
         setBusy(true);
@@ -944,6 +1015,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     });
 
     Promise.allSettled([loadIndex(), refreshNotes()]).then(function () {
+      state.mobilePanel = readMobilePanelPreference();
       refreshFavorites();
       render();
     });

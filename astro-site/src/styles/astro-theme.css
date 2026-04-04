@@ -2026,6 +2026,10 @@ body.reader-notes-editor-open .reader-notes-shell {
   padding: 0;
 }
 
+.personal-mobile-nav {
+  display: none;
+}
+
 .notes-hero {
   display: grid;
   gap: 18px;
@@ -3001,6 +3005,44 @@ html.is-capacitor-app .tool-switch--share {
     gap: 10px;
     padding-top: 14px;
     padding-bottom: 12px;
+  }
+  .personal-mobile-nav {
+    position: sticky;
+    top: 12px;
+    z-index: 8;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 4px;
+    border: 1px solid rgba(23, 48, 67, 0.08);
+    border-radius: 20px;
+    background: rgba(255, 251, 245, 0.92);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 14px 28px rgba(23, 48, 67, 0.08);
+  }
+  .personal-mobile-tab {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--text-soft);
+    font: inherit;
+    cursor: pointer;
+  }
+  .personal-mobile-tab.is-active {
+    background: linear-gradient(135deg, var(--navy), #2a5e7f);
+    color: #f8f3ea;
+    box-shadow: 0 10px 18px rgba(23, 48, 67, 0.16);
+  }
+  .personal-mobile-tab:not(.is-active):hover,
+  .personal-mobile-tab:not(.is-active):focus-visible {
+    background: rgba(255, 255, 255, 0.72);
   }
   .stats-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4861,6 +4903,7 @@ html[data-theme="dark"] .personal-preference-block,
 html[data-theme="dark"] .personal-last-visit,
 html[data-theme="dark"] .site-footer-inner,
 html[data-theme="dark"] .mobile-app-dock,
+html[data-theme="dark"] .personal-mobile-nav,
 html[data-theme="dark"] .share-menu,
 html[data-theme="dark"] .share-inline-feedback,
 html[data-theme="dark"] .toc-card--mobile-reading,
@@ -4882,6 +4925,7 @@ html[data-theme="dark"] .mobile-page-badge,
 html[data-theme="dark"] .slot-badge,
 html[data-theme="dark"] .site-footer-meta,
 html[data-theme="dark"] .mobile-dock-item,
+html[data-theme="dark"] .personal-mobile-tab,
 html[data-theme="dark"] .notes-note-page,
 html[data-theme="dark"] .notes-note-time,
 html[data-theme="dark"] .personal-last-visit-time,
@@ -4892,6 +4936,7 @@ html[data-theme="dark"] .personal-last-visit-context {
 html[data-theme="dark"] .brand-mark,
 html[data-theme="dark"] .nav-pill.is-active,
 html[data-theme="dark"] .btn,
+html[data-theme="dark"] .personal-mobile-tab.is-active,
 html[data-theme="dark"] .notes-filter-reset.is-active,
 html[data-theme="dark"] .preference-chip.is-active,
 html[data-theme="dark"] .tool-switch--share {
@@ -4903,6 +4948,8 @@ html[data-theme="dark"] .nav-pill:hover,
 html[data-theme="dark"] .nav-pill:focus-visible,
 html[data-theme="dark"] .tool-switch:hover,
 html[data-theme="dark"] .tool-switch:focus-visible,
+html[data-theme="dark"] .personal-mobile-tab:hover,
+html[data-theme="dark"] .personal-mobile-tab:focus-visible,
 html[data-theme="dark"] .notes-icon-button:hover,
 html[data-theme="dark"] .notes-icon-button:focus-visible,
 html[data-theme="dark"] .notes-filter-reset:hover,

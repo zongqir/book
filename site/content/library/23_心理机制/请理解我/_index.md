@@ -1,8 +1,10 @@
 ---
-title: "请理解我"
-book_title: "请理解我"
-author: ""
-created_at: "2026-04-04T10:00:00+08:00"
-updated_at: "2026-04-04T10:00:00+08:00"
-status: "draft"
+title: 请理解我
+book_title: 请理解我
+author: ''
+created_at: '2026-04-04T10:00:00+08:00'
+updated_at: '2026-04-04T10:00:00+08:00'
+status: draft
+summary: 通过气质理论理解人际差异和沟通障碍
 ---
+

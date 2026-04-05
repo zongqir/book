@@ -1742,6 +1742,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .mobile-dock-item span:last-child {
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .mobile-dock-item.is-active span:last-child {
@@ -3016,7 +3017,7 @@ html.is-capacitor-app .tool-switch--share {
   }
   .mobile-app-dock {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--mobile-dock-count, 4), minmax(0, 1fr));
     gap: 6px;
   }
   .home-stage,

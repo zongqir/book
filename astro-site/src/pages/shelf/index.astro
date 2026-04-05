@@ -1,0 +1,353 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toInternalHref } from "../../lib/internal-links";
+
+const libraryHref = toInternalHref("/library/");
+const notesHref = toInternalHref("/notes/");
+---
+
+<BaseLayout
+  title="书架"
+  description="把最近阅读、在读书和收藏书放在一起，回来先接着读。"
+  canonicalPath="/shelf/"
+  ogDescription="把最近阅读、在读书和收藏书放在一起，回来先接着读。"
+  isShelf={true}
+>
+  <div class="page-stack shelf-dashboard">
+    <section class="library-panel shelf-stage">
+      <div class="shelf-hero">
+        <div class="shelf-hero-copy">
+          <p class="hero-kicker">书架</p>
+          <h1>回来先接着读</h1>
+          <p class="shelf-lead">这里不做管理，只把你最可能马上打开的书放在前面。</p>
+        </div>
+        <div class="stats-strip shelf-stage-strip">
+          <div class="stat-block">
+            <span class="stat-label">最近阅读</span>
+            <strong class="stat-value" id="shelf-last-visit-count">0</strong>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">在读书籍</span>
+            <strong class="stat-value" id="shelf-reading-books-count">0</strong>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">收藏书籍</span>
+            <strong class="stat-value" id="shelf-favorite-books-count">0</strong>
+          </div>
+        </div>
+        <div class="shelf-hero-actions">
+          <a class="btn" href={libraryHref}>去目录找书</a>
+          <a class="tool-switch" href={notesHref}>打开个人管理</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="shelf-stage-grid">
+      <section class="content-card shelf-spotlight-card">
+        <div class="section-head shelf-section-head">
+          <div>
+            <p class="eyebrow">继续阅读</p>
+            <h2>上次停下来的地方</h2>
+          </div>
+        </div>
+
+        <div class="shelf-spotlight" id="shelf-last-visit" hidden>
+          <div class="shelf-spotlight-topline">
+            <span class="meta-chip" id="shelf-last-visit-label">继续阅读</span>
+            <time class="shelf-spotlight-time" id="shelf-last-visit-time"></time>
+          </div>
+          <h3 id="shelf-last-visit-title">最近阅读</h3>
+          <p class="shelf-spotlight-context" id="shelf-last-visit-context"></p>
+          <p class="shelf-spotlight-summary" id="shelf-last-visit-summary"></p>
+          <div class="shelf-spotlight-actions">
+            <a class="btn" id="shelf-last-visit-link" href={libraryHref}>继续打开</a>
+          </div>
+        </div>
+
+        <div class="notes-empty personal-empty shelf-empty" id="shelf-last-visit-empty" hidden>
+          <h2>这里还没有最近阅读</h2>
+          <p>先随便打开一本书，或者进入一篇文章，书架下次就能直接把你接回来。</p>
+        </div>
+      </section>
+
+      <section class="content-card shelf-reading-card">
+        <div class="section-head shelf-section-head">
+          <div>
+            <p class="eyebrow">在读</p>
+            <h2>现在还在推进的书</h2>
+          </div>
+          <span class="meta-chip" id="shelf-reading-inline-count">0 本</span>
+        </div>
+
+        <div class="shelf-book-list" id="shelf-reading-results"></div>
+        <div class="notes-empty personal-empty shelf-empty" id="shelf-reading-empty" hidden>
+          <h2>还没有标记在读的书</h2>
+          <p>在书页把阅读进度切到“在读”，这本书就会出现在书架上。</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="content-card shelf-favorites-card">
+      <div class="section-head shelf-section-head">
+        <div>
+          <p class="eyebrow">收藏书</p>
+          <h2>想反复回来的几本</h2>
+        </div>
+        <a class="tool-switch tool-switch--compact" href={notesHref}>去个人看全部收藏</a>
+      </div>
+
+      <div class="shelf-favorite-grid" id="shelf-favorite-results"></div>
+      <div class="notes-empty personal-empty shelf-empty" id="shelf-favorite-empty" hidden>
+        <h2>还没有收藏的书</h2>
+        <p>在任意书页点一下爱心，书架里就会多一层“常回来”的感觉。</p>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    const BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
+    const LAST_VISIT_STORAGE_KEY = "book:last-visit:v1";
+    const libraryHref = {JSON.stringify(libraryHref)};
+
+    const lastVisitCountNode = document.getElementById("shelf-last-visit-count");
+    const readingBooksCountNode = document.getElementById("shelf-reading-books-count");
+    const favoriteBooksCountNode = document.getElementById("shelf-favorite-books-count");
+    const lastVisitNode = document.getElementById("shelf-last-visit");
+    const lastVisitEmptyNode = document.getElementById("shelf-last-visit-empty");
+    const lastVisitLabelNode = document.getElementById("shelf-last-visit-label");
+    const lastVisitTimeNode = document.getElementById("shelf-last-visit-time");
+    const lastVisitTitleNode = document.getElementById("shelf-last-visit-title");
+    const lastVisitContextNode = document.getElementById("shelf-last-visit-context");
+    const lastVisitSummaryNode = document.getElementById("shelf-last-visit-summary");
+    const lastVisitLinkNode = document.getElementById("shelf-last-visit-link");
+    const readingInlineCountNode = document.getElementById("shelf-reading-inline-count");
+    const readingResultsNode = document.getElementById("shelf-reading-results");
+    const readingEmptyNode = document.getElementById("shelf-reading-empty");
+    const favoriteResultsNode = document.getElementById("shelf-favorite-results");
+    const favoriteEmptyNode = document.getElementById("shelf-favorite-empty");
+
+    const state = {
+      booksById: new Map(),
+      readingBooks: [],
+      favoriteBooks: [],
+      lastVisit: null,
+    };
+
+    function readBookStatuses() {
+      try {
+        const raw = window.localStorage.getItem(BOOK_STATUS_STORAGE_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object" || !parsed.books || typeof parsed.books !== "object") {
+          return {};
+        }
+        return parsed.books;
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function readLastVisit() {
+      try {
+        const raw = window.localStorage.getItem(LAST_VISIT_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+        if (
+          typeof parsed.url !== "string" ||
+          typeof parsed.title !== "string" ||
+          typeof parsed.label !== "string" ||
+          typeof parsed.context !== "string" ||
+          typeof parsed.summary !== "string" ||
+          typeof parsed.updatedAt !== "string"
+        ) {
+          return null;
+        }
+        return parsed;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("\n", " ");
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return "";
+      return new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(parsed);
+    }
+
+    function compareByUpdatedAtDesc(left, right) {
+      return String(right.updated_at || "").localeCompare(String(left.updated_at || ""))
+        || String(left.title || "").localeCompare(String(right.title || ""));
+    }
+
+    function refreshCollections() {
+      state.lastVisit = readLastVisit();
+      const bookStatuses = readBookStatuses();
+      const booksWithStatus = Array.from(state.booksById.values())
+        .map((book) => ({
+          ...book,
+          ...(bookStatuses[book.id] || {}),
+        }))
+        .sort(compareByUpdatedAtDesc);
+
+      state.readingBooks = booksWithStatus.filter((book) => book.read_state === "reading");
+      state.favoriteBooks = booksWithStatus.filter((book) => book.curation_state === "favorite");
+    }
+
+    function renderStats() {
+      if (lastVisitCountNode) lastVisitCountNode.textContent = state.lastVisit ? "1" : "0";
+      if (readingBooksCountNode) readingBooksCountNode.textContent = String(state.readingBooks.length);
+      if (favoriteBooksCountNode) favoriteBooksCountNode.textContent = String(state.favoriteBooks.length);
+      if (readingInlineCountNode) readingInlineCountNode.textContent = state.readingBooks.length + " 本";
+    }
+
+    function renderLastVisit() {
+      if (!(lastVisitNode instanceof HTMLElement) || !(lastVisitEmptyNode instanceof HTMLElement)) return;
+
+      if (!state.lastVisit) {
+        lastVisitNode.hidden = true;
+        lastVisitEmptyNode.hidden = false;
+        return;
+      }
+
+      lastVisitEmptyNode.hidden = true;
+      lastVisitNode.hidden = false;
+
+      if (lastVisitLabelNode instanceof HTMLElement) {
+        lastVisitLabelNode.textContent = state.lastVisit.label || "继续阅读";
+      }
+      if (lastVisitTimeNode instanceof HTMLElement) {
+        lastVisitTimeNode.textContent = formatTime(state.lastVisit.updatedAt);
+        lastVisitTimeNode.setAttribute("datetime", state.lastVisit.updatedAt);
+      }
+      if (lastVisitTitleNode instanceof HTMLElement) {
+        lastVisitTitleNode.textContent = state.lastVisit.title || "最近阅读";
+      }
+      if (lastVisitContextNode instanceof HTMLElement) {
+        lastVisitContextNode.textContent = state.lastVisit.context || "目录里最近打开的内容";
+      }
+      if (lastVisitSummaryNode instanceof HTMLElement) {
+        lastVisitSummaryNode.textContent = state.lastVisit.summary || "回到刚才停下的位置。";
+      }
+      if (lastVisitLinkNode instanceof HTMLAnchorElement) {
+        lastVisitLinkNode.href = state.lastVisit.url || libraryHref;
+      }
+    }
+
+    function renderReadingBooks() {
+      if (!(readingResultsNode instanceof HTMLElement)) return;
+
+      if (!state.readingBooks.length) {
+        readingResultsNode.innerHTML = "";
+        if (readingEmptyNode instanceof HTMLElement) readingEmptyNode.hidden = false;
+        return;
+      }
+
+      if (readingEmptyNode instanceof HTMLElement) readingEmptyNode.hidden = true;
+      readingResultsNode.innerHTML = state.readingBooks
+        .map((book) => `
+          <article class="personal-card shelf-book-card">
+            <div class="personal-card-topline">
+              <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
+              <span class="meta-chip">在读</span>
+              ${book.curation_state === "favorite" ? '<span class="meta-chip">已收藏</span>' : ""}
+            </div>
+            <h3>${escapeHtml(book.title)}</h3>
+            <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
+            <div class="personal-card-actions">
+              <a class="btn btn-shelf-primary" href="${escapeAttribute(book.url || "#")}">继续阅读</a>
+            </div>
+          </article>
+        `)
+        .join("");
+    }
+
+    function renderFavoriteBooks() {
+      if (!(favoriteResultsNode instanceof HTMLElement)) return;
+
+      const visibleFavorites = state.favoriteBooks.slice(0, 6);
+      if (!visibleFavorites.length) {
+        favoriteResultsNode.innerHTML = "";
+        if (favoriteEmptyNode instanceof HTMLElement) favoriteEmptyNode.hidden = false;
+        return;
+      }
+
+      if (favoriteEmptyNode instanceof HTMLElement) favoriteEmptyNode.hidden = true;
+      favoriteResultsNode.innerHTML = visibleFavorites
+        .map((book) => `
+          <article class="personal-card shelf-favorite-card">
+            <div class="personal-card-topline">
+              <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
+              <span class="meta-chip">收藏</span>
+            </div>
+            <h3>${escapeHtml(book.title)}</h3>
+            <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
+            <div class="personal-card-actions">
+              <a class="tool-switch tool-switch--compact" href="${escapeAttribute(book.url || "#")}">打开这本书</a>
+            </div>
+          </article>
+        `)
+        .join("");
+    }
+
+    function render() {
+      renderStats();
+      renderLastVisit();
+      renderReadingBooks();
+      renderFavoriteBooks();
+    }
+
+    async function loadIndex() {
+      try {
+        const response = await fetch("/data/site-content.json", { cache: "force-cache" });
+        if (!response.ok) throw new Error("Failed to load site content");
+        const payload = await response.json();
+        const books = Array.isArray(payload.books) ? payload.books : [];
+        books.forEach((book) => {
+          if (book && book.id) state.booksById.set(book.id, book);
+        });
+      } catch (error) {
+        console.error("Failed to load shelf index", error);
+      } finally {
+        refreshCollections();
+      }
+    }
+
+    window.addEventListener("book-status:changed", function () {
+      refreshCollections();
+      render();
+    });
+
+    window.addEventListener("storage", function (event) {
+      if (event.key === BOOK_STATUS_STORAGE_KEY || event.key === LAST_VISIT_STORAGE_KEY) {
+        refreshCollections();
+        render();
+      }
+    });
+
+    Promise.allSettled([loadIndex()]).then(function () {
+      refreshCollections();
+      render();
+    });
+  </script>
+</BaseLayout>

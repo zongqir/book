@@ -14,6 +14,7 @@ type Props = {
   ogImageAlt?: string;
   isHome?: boolean;
   isLibrary?: boolean;
+  isShelf?: boolean;
 };
 
 const {
@@ -27,6 +28,7 @@ const {
   ogImageAlt,
   isHome = false,
   isLibrary = false,
+  isShelf = false,
 } = Astro.props;
 const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
 const pathname = Astro.url.pathname;
@@ -37,11 +39,12 @@ const socialImage = new URL(ogImage, Astro.site);
 const socialImageAlt = ogImageAlt || socialTitle;
 const isNotes = pathname.startsWith("/notes");
 const isAppDownload = pathname.startsWith("/app");
-const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isNotes ? "个人" : title;
+const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isShelf ? "书架" : isNotes ? "个人" : title;
 const appDownload = getAndroidAppDownloadConfig();
 const showAppDownloadEntry = appDownload.available;
 const homeHref = toInternalHref("/");
 const libraryHref = toInternalHref("/library/");
+const shelfHref = toInternalHref("/shelf/");
 const notesHref = toInternalHref("/notes/");
 const appHref = toInternalHref("/app/");
 ---
@@ -149,7 +152,7 @@ const appHref = toInternalHref("/app/");
       rel="stylesheet"
     />
   </head>
-  <body class:list={["theme-astro", isLibrary && "is-library", isHome && "is-home", isNotes && "is-notes"]}>
+  <body class:list={["theme-astro", isLibrary && "is-library", isShelf && "is-shelf", isHome && "is-home", isNotes && "is-notes"]}>
     <div class="page-frame">
       <header class="site-header-wrap">
         <div class="site-header shell">
@@ -164,6 +167,7 @@ const appHref = toInternalHref("/app/");
             <nav class="top-nav" aria-label="主导航">
               <a class:list={["nav-pill", isHome && "is-active"]} href={homeHref}>首页</a>
               <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>目录</a>
+              <a class:list={["nav-pill", isShelf && "is-active"]} href={shelfHref}>书架</a>
               <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
             </nav>
           </div>
@@ -197,8 +201,12 @@ const appHref = toInternalHref("/app/");
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>目录</span>
       </a>
-      <a class:list={["mobile-dock-item", isNotes && "is-active"]} href={notesHref}>
+      <a class:list={["mobile-dock-item", isShelf && "is-active"]} href={shelfHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
+        <span>书架</span>
+      </a>
+      <a class:list={["mobile-dock-item", isNotes && "is-active"]} href={notesHref}>
+        <span class="mobile-dock-dot mobile-dock-dot--settings" aria-hidden="true"></span>
         <span>个人</span>
       </a>
     </nav>

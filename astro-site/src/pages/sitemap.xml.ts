@@ -15,6 +15,7 @@ export function GET({ site }: { site: URL }) {
   const urls = [
     { path: "/", updatedAt: "" },
     { path: "/library/", updatedAt: "" },
+    { path: "/shelf/", updatedAt: "" },
     { path: "/notes/", updatedAt: "" },
     ...index.sections.map((item) => ({ path: item.url, updatedAt: "" })),
     ...index.books.map((item) => ({ path: item.url, updatedAt: item.updated_at || "" })),

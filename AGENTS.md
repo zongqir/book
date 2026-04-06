@@ -13,7 +13,7 @@
 
 这是一个以读书拆解和站点内容生产为中心的仓库，不是应用代码仓库。
 
-补充：单书 review 的分发与落盘规则见 `.codex/references/book-review-dispatch-spec.md`。其中 `main` 只按书分发并检查 `.review.md` 是否存在，`subagent` 负责逐篇生成内部 review 文件。
+补充：单书 review 的分发与落盘规则见 `.codex/references/book-review-dispatch-spec.md`。其中 `main` 只按书分发并检查该书目录下是否存在 `review.md`，`subagent` 负责按书生成内部 review 文件。
 
 当前实际工作重心在：
 

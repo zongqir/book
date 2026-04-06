@@ -5,7 +5,7 @@
 把单书 review 从 main 的职责里拿出来。
 
 - `main` 只负责按书分发
-- `subagent` 只负责按篇 review 并落盘
+- `subagent` 只负责按书 review 并落盘
 - review 结果默认持久化，但不进入默认展示流
 - `subagent` 完成后，只回给 `main` 一句结果
 
@@ -20,7 +20,7 @@
 1. 找到还没处理或还没 review 的书
 2. 按**书籍维度**把目录交给某个 `subagent`
 3. 维持 **5 个并发 subagent**；谁先完成，就立刻补发下一本可用的书
-4. 检查这本书下每篇正式文稿是否都有对应的 `.review.md`
+4. 检查这本书目录下是否已经存在 `review.md`
 5. 如果缺 review 文件，再次分发该书目录
 
 `main` 不负责：
@@ -30,41 +30,32 @@
 - 判断是否该拆页、转 `.QA.md` 或改走逐章
 - 阅读长篇 review 说明
 
-`main` 的判断只有一个：**有没有 review 文件。**
+`main` 的判断只有一个：**有没有 `review.md`。**
 
 并发默认值固定为 **5**。`main` 不需要等一轮全部结束再统一补发；哪个 `subagent` 先完成，就把下一本可用的书递过去。
 
-### subagent 负责逐篇 review
+### subagent 负责整本书 review
 
 `subagent` 接到的是**一本书目录**，不是单篇文章。
 
 它要在这本书内部完成：
 
 1. 找出需要 review 的正式文稿
-2. 对每篇正文生成对应 `.review.md`
-3. 在每个 review 文件里完成三类判定：
+2. 生成一本书唯一的 `review.md`
+3. 在这个 review 文件里按 slot 汇总三类判定：
    - `slot-fit`：这页是不是这个 slot；是否符合该 slot 对应 skill 的规范
    - `coverage`：有没有压缩过头，导致内容只剩摘要感，撑不起正式展示
    - `granularity`：这一页是否已经装不下；如果继续塞在一篇里，会不会读起来发硬、发满、AI 味很重
-4. 把详细判断写进 `.review.md`
+4. 只保留后续改写真正需要的短注，不写长篇解释
 5. 最后只给 `main` 回一条一句话结果
 
 ## review 文件命名
 
-每篇正文对应一个同名 review 文件。
+每本书只保留一个 review 文件：
 
-正文：
+- `review.md`
 
-- `00_为什么读这本书.md`
-- `05_方法论总结.md`
-- `08_论证链.md`
-
-对应 review：
-
-- `00_为什么读这本书.review.md`
-- `05_方法论总结.review.md`
-- `08_论证链.review.md`
-
+它放在该书目录根下，与正式正文并列。
 
 ## review 文件属性
 
@@ -84,20 +75,50 @@ review 文件使用 Markdown + frontmatter，而不是纯 yaml。
 
 ```yaml
 ---
-title: "《书名》05_方法论总结 review"
 book_title: "书名"
 created_at: "2026-04-05T10:00:00+08:00"
 updated_at: "2026-04-05T10:00:00+08:00"
 visibility: "internal"
-review_target: "05_方法论总结.md"
-slot: "05"
-review_verdict: "rewrite-required"
+review_status: "done"
 review_scope:
-  - slot-fit
-  - coverage
-  - granularity
+  - "00"
+  - "02"
+  - "03"
+  - "04"
+  - "05"
+  - "06"
+  - "10"
 ---
 ```
+
+## 每个 slot 的最小记录格式
+
+review 的目标不是解释你怎么审，而是告诉后续改写要注意什么。
+
+每个 slot 默认只保留这些短项：
+
+- `verdict`
+- `keep`
+- `fix`
+- `watch`
+
+推荐写法：
+
+```md
+## 00_为什么读这本书
+- verdict: rewrite-required
+- keep: 开头切入成立
+- fix: 后半段别滑成导购
+- watch: 要回答为什么现在值得纳入判断系统
+```
+
+约束：
+
+- 每个 slot 默认 3-5 条短注
+- 不复述正文内容
+- 不写长段分析
+- 不把 review 写成第二份正文
+- 如果某个 slot 没问题，也只留一句简短通过说明
 
 ## review_verdict 取值
 
@@ -157,6 +178,16 @@ review_scope:
 - 如果补足后仍然装不下，再建议拆页
 - 如果这本书整体就不是单页能压住的，再建议逐章
 
+## 与正式 `10_复盘指标.md` 的关系
+
+这里的 `review.md` 是**内部改写提示单**，不是正式正文槽位。
+
+必须明确区分：
+
+- `10_复盘指标.md`：正式资料库正文槽位
+- `review.md`：单书内部 review 文件，只辅助后续重写
+
+不要把“生成 review 文件”和“写 10 槽位”混成同一件事。
 
 ## main 的并发调度方式
 
@@ -170,26 +201,26 @@ review_scope:
 这里的“可用”指的是：
 
 - 这本书目录已经存在
-- 这本书下还有正式文稿缺 `.review.md`
+- 这本书目录下还没有 `review.md`
 - 当前没有被另一个 `subagent` 重复处理
 
 `main` 的职责是维持队列，不是理解 review 内容。
 
 ## subagent 交回给 main 的格式
 
-详细判断写进 `.review.md`。
+详细判断写进 `review.md`。
 
 交回 `main` 的结果只保留**一句话**。
 
 允许的风格：
 
 - `《书名》review 已补齐。`
-- `《书名》缺失 review 已生成，详细结果已写入各篇 .review.md。`
+- `《书名》review.md 已生成。`
 
 不要给 `main` 回传：
 
 - 长段总结
-- 每篇 verdict 列表
+- 每个 slot 的 verdict 列表
 - 大段问题说明
 - review 正文内容
 
@@ -197,31 +228,29 @@ review_scope:
 
 ## main 的最小检查逻辑
 
-对一本书目录，逐篇检查正式文稿是否存在同名 `.review.md`。
+对一本书目录，只检查是否存在 `review.md`。
 
 ### 通过条件
 
-- 每篇正式文稿都有对应 `.review.md`
+- 该书目录下已有 `review.md`
 
 ### 不通过条件
 
-- 任一正式文稿缺少同名 `.review.md`
+- 该书目录下没有 `review.md`
 
 一旦缺失，`main` 只做一件事：**把整本书目录重新交给某个 subagent。**
-
-
 
 ## 推荐工作流
 
 1. `main` 发现一本书缺 review
 2. `main` 把该书目录分发给 `subagent`
-3. `subagent` 逐篇生成 `.review.md`
+3. `subagent` 生成一本书唯一的 `review.md`
 4. `subagent` 只回一句话给 `main`
 5. `main` 继续检查下一本书
 
 ## 这份规范的核心句
 
-- `main` 按书分发，只查 review 是否存在
-- `subagent` 按篇 review，详细结果写入 `.review.md`
+- `main` 按书分发，只查 `review.md` 是否存在
+- `subagent` 按书 review，详细结果汇总写入 `review.md`
 - review 文件统一 `visibility: internal`
 - 回传给 `main` 的结果只保留一句话

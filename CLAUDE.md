@@ -119,7 +119,7 @@ Claude Code 不会自动理解 `.codex/skills/` 是技能系统。
 
 所以只要任务落到单书槽位，必须显式打开对应 `SKILL.md` 再写。不要只读 `AGENTS.md` 就直接动笔。
 
-补充：如果任务是单书 review 分发或落盘，先读 `.codex/references/book-review-dispatch-spec.md`。默认是 `main` 按书分发，`subagent` 逐篇生成 `.review.md`，并且只回给 `main` 一句结果。
+补充：如果任务是单书 review 分发或落盘，先读 `.codex/references/book-review-dispatch-spec.md`。默认是 `main` 按书分发，`subagent` 为整本书生成一个简短的 `review.md`，按 slot 写最小提示，并且只回给 `main` 一句结果。
 
 ## 提交前校验
 

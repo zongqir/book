@@ -32,6 +32,49 @@ const ogImage = buildLibraryOgImagePath(parts);
 const ogImageAlt = describeNodeForOg(node);
 const libraryHref = toInternalHref("/library/");
 
+function buildBreadcrumbContext(parts: string[]) {
+  return parts.filter(Boolean).join(" / ");
+}
+
+function buildRecentBookMeta(node: ReturnType<typeof getNodeBySlug>) {
+  if (node.kind === "book") {
+    return {
+      kind: "book",
+      bookId: node.book.id,
+      bookTitle: node.book.title,
+      bookUrl: node.book.url,
+      url: node.book.url,
+      context: buildBreadcrumbContext([
+        node.book.section_title,
+        ...node.ancestorBooks.map((ancestor) => ancestor.title),
+        node.book.title,
+      ]),
+      summary: node.book.summary || "",
+    };
+  }
+
+  if (node.kind === "page" && node.book) {
+    return {
+      kind: "page",
+      bookId: node.book.id,
+      bookTitle: node.book.title,
+      bookUrl: node.book.url,
+      url: node.page.url,
+      context: buildBreadcrumbContext([
+        node.section?.title || "",
+        ...node.ancestorBooks.map((ancestor) => ancestor.title),
+        node.book.title,
+        node.page.title,
+      ]),
+      summary: node.page.summary || node.page.intent || "",
+    };
+  }
+
+  return null;
+}
+
+const recentBookMeta = buildRecentBookMeta(node);
+
 function getReadStateLabel(value: "unread" | "reading" | "read") {
   if (value === "reading") return "在读";
   if (value === "read") return "已读";
@@ -75,7 +118,15 @@ function getBookStatusCopy(
   isLibrary={true}
 >
   {node.kind === "section" && (
-    <div class="page-stack">
+    <div
+      class="page-stack"
+      data-current-library-node
+      data-node-kind="section"
+      data-url={node.url}
+      data-title={node.title}
+      data-context={node.title}
+      data-summary=""
+    >
       <section class="library-panel">
         <div class="page-intro page-intro--section">
           <nav class="breadcrumb" aria-label="breadcrumb">
@@ -119,7 +170,18 @@ function getBookStatusCopy(
   )}
 
   {node.kind === "book" && (
-    <div class="page-stack">
+    <div
+      class="page-stack"
+      data-current-library-node
+      data-node-kind="book"
+      data-book-id={recentBookMeta?.bookId || ""}
+      data-book-title={recentBookMeta?.bookTitle || ""}
+      data-book-url={recentBookMeta?.bookUrl || ""}
+      data-url={recentBookMeta?.url || node.url}
+      data-title={node.title}
+      data-context={recentBookMeta?.context || node.title}
+      data-summary={recentBookMeta?.summary || ""}
+    >
       <section class="library-panel">
         <div class="page-intro page-intro--book">
           <nav class="breadcrumb" aria-label="breadcrumb">
@@ -341,7 +403,18 @@ function getBookStatusCopy(
   )}
 
   {node.kind === "page" && (
-    <div class="page-stack">
+    <div
+      class="page-stack"
+      data-current-library-node
+      data-node-kind="page"
+      data-book-id={recentBookMeta?.bookId || ""}
+      data-book-title={recentBookMeta?.bookTitle || ""}
+      data-book-url={recentBookMeta?.bookUrl || ""}
+      data-url={recentBookMeta?.url || node.url}
+      data-title={node.page.title}
+      data-context={recentBookMeta?.context || node.page.title}
+      data-summary={recentBookMeta?.summary || ""}
+    >
       <section class="library-panel">
         <div class="doc-hero doc-hero--page">
           <nav class="breadcrumb" aria-label="breadcrumb">

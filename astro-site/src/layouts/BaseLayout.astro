@@ -107,9 +107,11 @@ const appHref = toInternalHref("/app/");
       <script>
         import { initShareActions } from "../lib/share-actions";
         import { initFavoriteButtons } from "../lib/personal-library";
+        import { upsertRecentBookVisit } from "../lib/personal-preferences";
 
         initShareActions();
         initFavoriteButtons();
+        window.__upsertRecentBookVisit = upsertRecentBookVisit;
       </script>
     )}
     <title>{pageTitle}</title>
@@ -378,46 +380,26 @@ const appHref = toInternalHref("/app/");
         }
 
         function buildRecentBookPayload() {
-          var pageNode = document.querySelector(".doc-content[data-page-id]");
-          var pageFavoriteButton = document.querySelector('[data-favorite-kind="page"][data-book-id]');
-          var bookRoot = document.querySelector("[data-book-status-root]") || document.querySelector('[data-favorite-kind="book"][data-book-id]');
-          var titleNode = document.querySelector("h1");
-          if (!(titleNode instanceof HTMLElement)) return null;
+          var metaNode = document.querySelector("[data-current-library-node]");
+          if (!(metaNode instanceof HTMLElement)) return null;
 
-          var pageBookId = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookId || "") : "";
-          var pageBookTitle = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookTitle || "") : "";
-          var pageBookUrl = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookUrl || "") : "";
-          var fallbackBookId = bookRoot instanceof HTMLElement ? (bookRoot.dataset.bookId || "") : "";
-          var bookId = pageBookId || fallbackBookId;
+          var bookId = metaNode.dataset.bookId || "";
           if (!bookId) return null;
 
-          var bookTitle = pageBookTitle
-            || (pageNode instanceof HTMLElement ? pageNode.dataset.bookTitle : "")
-            || titleNode.textContent.trim();
-          var bookUrl = pageBookUrl
-            || (pageNode instanceof HTMLElement ? pageNode.dataset.bookUrl : "")
-            || window.location.pathname;
-          if (!bookTitle || !bookUrl) return null;
+          var bookTitle = metaNode.dataset.bookTitle || "";
+          var bookUrl = metaNode.dataset.bookUrl || "";
+          var url = metaNode.dataset.url || window.location.pathname;
+          var context = metaNode.dataset.context || "";
+          var summary = metaNode.dataset.summary || "";
 
-          var breadcrumbParts = Array.prototype.slice
-            .call(document.querySelectorAll(".breadcrumb a, .breadcrumb span"))
-            .map(function (node) {
-              return node && node.textContent ? node.textContent.trim() : "";
-            })
-            .filter(function (text) {
-              return text && text !== "/";
-            });
-          var summaryNode = document.querySelector(".doc-summary, .page-intro p");
-          var summary = summaryNode && summaryNode.textContent
-            ? summaryNode.textContent.replace(/\s+/g, " ").trim().slice(0, 96)
-            : "";
+          if (!bookTitle || !bookUrl || !url) return null;
 
           return {
             bookId: bookId,
             title: bookTitle,
             bookUrl: bookUrl,
-            url: window.location.pathname + window.location.search + window.location.hash,
-            context: breadcrumbParts.slice(1).join(" / "),
+            url: url,
+            context: context,
             summary: summary,
             updatedAt: new Date().toISOString(),
           };
@@ -428,6 +410,11 @@ const appHref = toInternalHref("/app/");
           if (!payload) return;
 
           try {
+            if (typeof window.__upsertRecentBookVisit === "function") {
+              window.__upsertRecentBookVisit(payload);
+              return;
+            }
+
             var next = [payload].concat(
               readRecentBooks().filter(function (item) {
                 return item.bookId !== payload.bookId;

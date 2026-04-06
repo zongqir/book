@@ -3,7 +3,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { toInternalHref } from "../../lib/internal-links";
 
 const libraryHref = toInternalHref("/library/");
-const notesHref = toInternalHref("/notes/");
 ---
 
 <BaseLayout
@@ -23,7 +22,6 @@ const notesHref = toInternalHref("/notes/");
         </div>
         <div class="shelf-hero-actions">
           <a class="btn" href={libraryHref}>去目录找书</a>
-          <a class="tool-switch" href={notesHref}>打开个人管理</a>
         </div>
       </div>
     </section>
@@ -60,40 +58,23 @@ const notesHref = toInternalHref("/notes/");
         </div>
       </section>
     </div>
-
-    <section class="content-card shelf-favorites-card">
-      <div class="section-head shelf-section-head">
-        <div>
-          <p class="eyebrow">收藏书</p>
-          <h2>想反复回来的几本</h2>
-        </div>
-        <a class="tool-switch tool-switch--compact" href={notesHref}>去个人看全部收藏</a>
-      </div>
-
-      <div class="shelf-favorite-grid" id="shelf-favorite-results"></div>
-      <div class="notes-empty personal-empty shelf-empty" id="shelf-favorite-empty" hidden>
-        <h2>还没有收藏的书</h2>
-        <p>在任意书页点一下爱心，书架里就会多一层“常回来”的感觉。</p>
-      </div>
-    </section>
   </div>
 
-  <script is:inline>
+  <script>
+    import { readRecentBookVisits } from "../../lib/personal-preferences";
+
     const BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
     const RECENT_BOOK_VISITS_STORAGE_KEY = "book:recent-books:v1";
-    const libraryHref = {JSON.stringify(libraryHref)};
+    const libraryHref = "/library/";
 
     const lastVisitNode = document.getElementById("shelf-last-visit");
     const lastVisitEmptyNode = document.getElementById("shelf-last-visit-empty");
     const readingResultsNode = document.getElementById("shelf-reading-results");
     const readingEmptyNode = document.getElementById("shelf-reading-empty");
-    const favoriteResultsNode = document.getElementById("shelf-favorite-results");
-    const favoriteEmptyNode = document.getElementById("shelf-favorite-empty");
 
     const state = {
       booksById: new Map(),
       readingBooks: [],
-      favoriteBooks: [],
       recentBooks: [],
     };
 
@@ -112,25 +93,7 @@ const notesHref = toInternalHref("/notes/");
     }
 
     function readRecentBooks() {
-      try {
-        const raw = window.localStorage.getItem(RECENT_BOOK_VISITS_STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter((item) => (
-          item
-          && typeof item.bookId === "string"
-          && item.bookId
-          && typeof item.title === "string"
-          && typeof item.bookUrl === "string"
-          && typeof item.url === "string"
-          && typeof item.context === "string"
-          && typeof item.summary === "string"
-          && typeof item.updatedAt === "string"
-        ));
-      } catch (error) {
-        return [];
-      }
+      return readRecentBookVisits();
     }
 
     function escapeHtml(value) {
@@ -175,7 +138,6 @@ const notesHref = toInternalHref("/notes/");
         .sort(compareByUpdatedAtDesc);
 
       state.readingBooks = booksWithStatus.filter((book) => book.read_state === "reading");
-      state.favoriteBooks = booksWithStatus.filter((book) => book.curation_state === "favorite");
     }
 
     function renderLastVisit() {
@@ -238,38 +200,9 @@ const notesHref = toInternalHref("/notes/");
         .join("");
     }
 
-    function renderFavoriteBooks() {
-      if (!(favoriteResultsNode instanceof HTMLElement)) return;
-
-      const visibleFavorites = state.favoriteBooks.slice(0, 6);
-      if (!visibleFavorites.length) {
-        favoriteResultsNode.innerHTML = "";
-        if (favoriteEmptyNode instanceof HTMLElement) favoriteEmptyNode.hidden = false;
-        return;
-      }
-
-      if (favoriteEmptyNode instanceof HTMLElement) favoriteEmptyNode.hidden = true;
-      favoriteResultsNode.innerHTML = visibleFavorites
-        .map((book) => `
-          <article class="personal-card shelf-favorite-card">
-            <div class="personal-card-topline">
-              <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
-              <span class="meta-chip">收藏</span>
-            </div>
-            <h3>${escapeHtml(book.title)}</h3>
-            <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
-            <div class="personal-card-actions">
-              <a class="tool-switch tool-switch--compact" href="${escapeAttribute(book.url || "#")}">打开这本书</a>
-            </div>
-          </article>
-        `)
-        .join("");
-    }
-
     function render() {
       renderLastVisit();
       renderReadingBooks();
-      renderFavoriteBooks();
     }
 
     async function loadIndex() {
@@ -298,6 +231,11 @@ const notesHref = toInternalHref("/notes/");
         refreshCollections();
         render();
       }
+    });
+
+    window.addEventListener("recent-books:changed", function () {
+      refreshCollections();
+      render();
     });
 
     Promise.allSettled([loadIndex()]).then(function () {

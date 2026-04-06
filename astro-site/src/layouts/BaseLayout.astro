@@ -229,6 +229,8 @@ const appHref = toInternalHref("/app/");
       (function () {
         var PWA_DISMISS_KEY = "book:pwa-install-dismissed-until:v1";
         var LAST_VISIT_KEY = "book:last-visit:v1";
+        var RECENT_BOOKS_KEY = "book:recent-books:v1";
+        var RECENT_BOOKS_LIMIT = 5;
         var PWA_DISMISS_MS = 1000 * 60 * 60 * 24 * 5;
         var promptNode = document.getElementById("pwa-prompt");
         var promptTitle = document.getElementById("pwa-prompt-title");
@@ -353,6 +355,83 @@ const appHref = toInternalHref("/app/");
           wasOffline = !navigator.onLine;
         }
 
+        function readRecentBooks() {
+          try {
+            var raw = window.localStorage.getItem(RECENT_BOOKS_KEY);
+            if (!raw) return [];
+            var parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(function (item) {
+              return item
+                && typeof item.bookId === "string"
+                && item.bookId
+                && typeof item.title === "string"
+                && typeof item.bookUrl === "string"
+                && typeof item.url === "string"
+                && typeof item.context === "string"
+                && typeof item.summary === "string"
+                && typeof item.updatedAt === "string";
+            });
+          } catch (error) {
+            return [];
+          }
+        }
+
+        function buildRecentBookPayload() {
+          var pageNode = document.querySelector(".doc-content[data-page-id]");
+          var bookRoot = document.querySelector("[data-book-id]");
+          var titleNode = document.querySelector("h1");
+          if (!(titleNode instanceof HTMLElement) || !(bookRoot instanceof HTMLElement)) return null;
+
+          var bookId = bookRoot.dataset.bookId || "";
+          if (!bookId) return null;
+
+          var bookTitle = (pageNode instanceof HTMLElement ? pageNode.dataset.bookTitle : "")
+            || titleNode.textContent.trim();
+          var bookUrl = (pageNode instanceof HTMLElement ? pageNode.dataset.bookUrl : "")
+            || window.location.pathname;
+          if (!bookTitle || !bookUrl) return null;
+
+          var breadcrumbParts = Array.prototype.slice
+            .call(document.querySelectorAll(".breadcrumb a, .breadcrumb span"))
+            .map(function (node) {
+              return node && node.textContent ? node.textContent.trim() : "";
+            })
+            .filter(function (text) {
+              return text && text !== "/";
+            });
+          var summaryNode = document.querySelector(".doc-summary, .page-intro p");
+          var summary = summaryNode && summaryNode.textContent
+            ? summaryNode.textContent.replace(/\s+/g, " ").trim().slice(0, 96)
+            : "";
+
+          return {
+            bookId: bookId,
+            title: bookTitle,
+            bookUrl: bookUrl,
+            url: window.location.pathname + window.location.search + window.location.hash,
+            context: breadcrumbParts.slice(1).join(" / "),
+            summary: summary,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+
+        function rememberRecentBookVisit() {
+          var payload = buildRecentBookPayload();
+          if (!payload) return;
+
+          try {
+            var next = [payload].concat(
+              readRecentBooks().filter(function (item) {
+                return item.bookId !== payload.bookId;
+              }),
+            ).slice(0, RECENT_BOOKS_LIMIT);
+            window.localStorage.setItem(RECENT_BOOKS_KEY, JSON.stringify(next));
+          } catch (error) {
+            console.warn("Failed to persist recent books", error);
+          }
+        }
+
         window.addEventListener("offline", syncNetworkToast);
         window.addEventListener("online", syncNetworkToast);
         syncNetworkToast();
@@ -395,6 +474,7 @@ const appHref = toInternalHref("/app/");
         }
 
         rememberLibraryVisit();
+        rememberRecentBookVisit();
 
         window.addEventListener("beforeinstallprompt", function (event) {
           event.preventDefault();

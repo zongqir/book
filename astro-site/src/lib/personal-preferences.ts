@@ -10,9 +10,20 @@ export type LastVisitRecord = {
   updatedAt: string;
 };
 
+export type RecentBookVisitRecord = {
+  bookId: string;
+  title: string;
+  bookUrl: string;
+  url: string;
+  context: string;
+  summary: string;
+  updatedAt: string;
+};
+
 export const THEME_STORAGE_KEY = "book:theme:v1";
 export const READER_FONT_SIZE_STORAGE_KEY = "book:reader-font-size:v1";
 export const LAST_VISIT_STORAGE_KEY = "book:last-visit:v1";
+export const RECENT_BOOK_VISITS_STORAGE_KEY = "book:recent-books:v1";
 
 const DEFAULT_THEME: ThemePreference = "light";
 const DEFAULT_READER_FONT_SIZE: ReaderFontSizePreference = "md";

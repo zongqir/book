@@ -1,8 +1,5 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { toInternalHref } from "../../lib/internal-links";
-
-const libraryHref = toInternalHref("/library/");
 ---
 
 <BaseLayout title="个人" description="回看你留在这个浏览器里的笔记、收藏的书和收藏的文章。">
@@ -42,7 +39,7 @@ const libraryHref = toInternalHref("/library/");
           <p class="eyebrow">偏好</p>
           <h2>阅读设置</h2>
         </div>
-        <p class="personal-preferences-intro">把常用设置和本地管理留在这里。回来时，界面明暗、字号和最近阅读都会继续接上。</p>
+        <p class="personal-preferences-intro">把常用设置和本地管理留在这里。回来时，界面明暗和字号都会继续接上。</p>
       </div>
 
       <div class="personal-preferences-grid">
@@ -68,30 +65,6 @@ const libraryHref = toInternalHref("/library/");
             <button class="preference-chip" type="button" data-font-size-option="sm">小一点</button>
             <button class="preference-chip" type="button" data-font-size-option="md">标准</button>
             <button class="preference-chip" type="button" data-font-size-option="lg">大一点</button>
-          </div>
-        </section>
-
-        <section class="personal-preference-block personal-preference-block--recent">
-          <div class="personal-preference-copy">
-            <p class="eyebrow">最近阅读</p>
-            <h3>上次停下来的地方</h3>
-            <p>你离开目录、书页或章节页时，这里会自动记住。</p>
-          </div>
-          <div class="personal-last-visit" id="personal-last-visit" hidden>
-            <div class="personal-last-visit-topline">
-              <span class="meta-chip" id="personal-last-visit-label">继续阅读</span>
-              <time class="personal-last-visit-time" id="personal-last-visit-time"></time>
-            </div>
-            <h3 id="personal-last-visit-title">最近阅读</h3>
-            <p class="personal-last-visit-context" id="personal-last-visit-context"></p>
-            <p class="personal-last-visit-summary" id="personal-last-visit-summary"></p>
-            <div class="personal-last-visit-actions">
-              <a class="tool-switch" id="personal-last-visit-link" href={libraryHref}>继续打开</a>
-            </div>
-          </div>
-          <div class="notes-empty personal-empty" id="personal-last-visit-empty" hidden>
-            <h2>还没有最近阅读</h2>
-            <p>去目录里点开一本书，或者进入任意文章，这里就会留下你上次停下来的位置。</p>
           </div>
         </section>
       </div>
@@ -232,10 +205,8 @@ const libraryHref = toInternalHref("/library/");
       removePageFavorite,
     } from "../../lib/personal-library";
     import {
-      LAST_VISIT_STORAGE_KEY,
       READER_FONT_SIZE_STORAGE_KEY,
       THEME_STORAGE_KEY,
-      readLastVisit,
       readReaderFontSizePreference,
       readThemePreference,
       writeReaderFontSizePreference,
@@ -274,14 +245,6 @@ const libraryHref = toInternalHref("/library/");
     const favoritePagesEmptyNode = document.getElementById("favorite-pages-empty");
     const themeButtons = Array.from(document.querySelectorAll("[data-theme-option]"));
     const fontSizeButtons = Array.from(document.querySelectorAll("[data-font-size-option]"));
-    const lastVisitNode = document.getElementById("personal-last-visit");
-    const lastVisitEmptyNode = document.getElementById("personal-last-visit-empty");
-    const lastVisitLabelNode = document.getElementById("personal-last-visit-label");
-    const lastVisitTimeNode = document.getElementById("personal-last-visit-time");
-    const lastVisitTitleNode = document.getElementById("personal-last-visit-title");
-    const lastVisitContextNode = document.getElementById("personal-last-visit-context");
-    const lastVisitSummaryNode = document.getElementById("personal-last-visit-summary");
-    const lastVisitLinkNode = document.getElementById("personal-last-visit-link");
     const mobilePanelButtons = Array.from(document.querySelectorAll("[data-personal-panel-tab]"));
     const mobilePanels = Array.from(document.querySelectorAll("[data-personal-panel]"));
     const colorButtons = Array.from(document.querySelectorAll("[data-notes-color]"));
@@ -304,7 +267,6 @@ const libraryHref = toInternalHref("/library/");
       color: "all",
       theme: "light",
       fontSize: "md",
-      lastVisit: null,
       mobilePanel: "notes",
       booksById: new Map(),
       pagesById: new Map(),
@@ -459,7 +421,6 @@ const libraryHref = toInternalHref("/library/");
     function renderPreferences() {
       state.theme = readThemePreference();
       state.fontSize = readReaderFontSizePreference();
-      state.lastVisit = readLastVisit();
 
       themeButtons.forEach((button) => {
         if (!(button instanceof HTMLButtonElement)) return;
@@ -474,37 +435,6 @@ const libraryHref = toInternalHref("/library/");
         button.classList.toggle("is-active", isActive);
         button.setAttribute("aria-pressed", isActive ? "true" : "false");
       });
-
-      if (!(lastVisitNode instanceof HTMLElement) || !(lastVisitEmptyNode instanceof HTMLElement)) return;
-
-      if (!state.lastVisit) {
-        lastVisitNode.hidden = true;
-        lastVisitEmptyNode.hidden = false;
-        return;
-      }
-
-      lastVisitEmptyNode.hidden = true;
-      lastVisitNode.hidden = false;
-
-      if (lastVisitLabelNode instanceof HTMLElement) {
-        lastVisitLabelNode.textContent = state.lastVisit.label || "继续阅读";
-      }
-      if (lastVisitTimeNode instanceof HTMLElement) {
-        lastVisitTimeNode.textContent = formatTime(state.lastVisit.updatedAt);
-        lastVisitTimeNode.setAttribute("datetime", state.lastVisit.updatedAt);
-      }
-      if (lastVisitTitleNode instanceof HTMLElement) {
-        lastVisitTitleNode.textContent = state.lastVisit.title || "最近阅读";
-      }
-      if (lastVisitContextNode instanceof HTMLElement) {
-        lastVisitContextNode.textContent = state.lastVisit.context || "目录里最近打开的内容";
-      }
-      if (lastVisitSummaryNode instanceof HTMLElement) {
-        lastVisitSummaryNode.textContent = state.lastVisit.summary || "继续回到刚才看到的位置。";
-      }
-      if (lastVisitLinkNode instanceof HTMLAnchorElement) {
-        lastVisitLinkNode.href = state.lastVisit.url || libraryHref;
-      }
     }
 
     function renderFavoriteCollections() {
@@ -1032,7 +962,7 @@ const libraryHref = toInternalHref("/library/");
         return;
       }
 
-      if (event.key === THEME_STORAGE_KEY || event.key === READER_FONT_SIZE_STORAGE_KEY || event.key === LAST_VISIT_STORAGE_KEY) {
+      if (event.key === THEME_STORAGE_KEY || event.key === READER_FONT_SIZE_STORAGE_KEY) {
         renderPreferences();
       }
     });

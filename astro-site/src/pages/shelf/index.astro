@@ -47,22 +47,12 @@ const notesHref = toInternalHref("/notes/");
         <div class="section-head shelf-section-head">
           <div>
             <p class="eyebrow">继续阅读</p>
-            <h2>上次停下来的地方</h2>
+            <h2>最近打开的五本书</h2>
           </div>
+          <span class="meta-chip" id="shelf-last-visit-inline-count">0 本</span>
         </div>
 
-        <div class="shelf-spotlight" id="shelf-last-visit" hidden>
-          <div class="shelf-spotlight-topline">
-            <span class="meta-chip" id="shelf-last-visit-label">继续阅读</span>
-            <time class="shelf-spotlight-time" id="shelf-last-visit-time"></time>
-          </div>
-          <h3 id="shelf-last-visit-title">最近阅读</h3>
-          <p class="shelf-spotlight-context" id="shelf-last-visit-context"></p>
-          <p class="shelf-spotlight-summary" id="shelf-last-visit-summary"></p>
-          <div class="shelf-spotlight-actions">
-            <a class="btn" id="shelf-last-visit-link" href={libraryHref}>继续打开</a>
-          </div>
-        </div>
+        <div class="shelf-recent-list" id="shelf-last-visit"></div>
 
         <div class="notes-empty personal-empty shelf-empty" id="shelf-last-visit-empty" hidden>
           <h2>这里还没有最近阅读</h2>
@@ -106,7 +96,7 @@ const notesHref = toInternalHref("/notes/");
 
   <script is:inline>
     const BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
-    const LAST_VISIT_STORAGE_KEY = "book:last-visit:v1";
+    const RECENT_BOOK_VISITS_STORAGE_KEY = "book:recent-books:v1";
     const libraryHref = {JSON.stringify(libraryHref)};
 
     const lastVisitCountNode = document.getElementById("shelf-last-visit-count");
@@ -114,12 +104,7 @@ const notesHref = toInternalHref("/notes/");
     const favoriteBooksCountNode = document.getElementById("shelf-favorite-books-count");
     const lastVisitNode = document.getElementById("shelf-last-visit");
     const lastVisitEmptyNode = document.getElementById("shelf-last-visit-empty");
-    const lastVisitLabelNode = document.getElementById("shelf-last-visit-label");
-    const lastVisitTimeNode = document.getElementById("shelf-last-visit-time");
-    const lastVisitTitleNode = document.getElementById("shelf-last-visit-title");
-    const lastVisitContextNode = document.getElementById("shelf-last-visit-context");
-    const lastVisitSummaryNode = document.getElementById("shelf-last-visit-summary");
-    const lastVisitLinkNode = document.getElementById("shelf-last-visit-link");
+    const lastVisitInlineCountNode = document.getElementById("shelf-last-visit-inline-count");
     const readingInlineCountNode = document.getElementById("shelf-reading-inline-count");
     const readingResultsNode = document.getElementById("shelf-reading-results");
     const readingEmptyNode = document.getElementById("shelf-reading-empty");
@@ -130,7 +115,7 @@ const notesHref = toInternalHref("/notes/");
       booksById: new Map(),
       readingBooks: [],
       favoriteBooks: [],
-      lastVisit: null,
+      recentBooks: [],
     };
 
     function readBookStatuses() {
@@ -147,25 +132,25 @@ const notesHref = toInternalHref("/notes/");
       }
     }
 
-    function readLastVisit() {
+    function readRecentBooks() {
       try {
-        const raw = window.localStorage.getItem(LAST_VISIT_STORAGE_KEY);
-        if (!raw) return null;
+        const raw = window.localStorage.getItem(RECENT_BOOK_VISITS_STORAGE_KEY);
+        if (!raw) return [];
         const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== "object") return null;
-        if (
-          typeof parsed.url !== "string" ||
-          typeof parsed.title !== "string" ||
-          typeof parsed.label !== "string" ||
-          typeof parsed.context !== "string" ||
-          typeof parsed.summary !== "string" ||
-          typeof parsed.updatedAt !== "string"
-        ) {
-          return null;
-        }
-        return parsed;
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => (
+          item
+          && typeof item.bookId === "string"
+          && item.bookId
+          && typeof item.title === "string"
+          && typeof item.bookUrl === "string"
+          && typeof item.url === "string"
+          && typeof item.context === "string"
+          && typeof item.summary === "string"
+          && typeof item.updatedAt === "string"
+        ));
       } catch (error) {
-        return null;
+        return [];
       }
     }
 
@@ -201,7 +186,7 @@ const notesHref = toInternalHref("/notes/");
     }
 
     function refreshCollections() {
-      state.lastVisit = readLastVisit();
+      state.recentBooks = readRecentBooks();
       const bookStatuses = readBookStatuses();
       const booksWithStatus = Array.from(state.booksById.values())
         .map((book) => ({
@@ -215,16 +200,18 @@ const notesHref = toInternalHref("/notes/");
     }
 
     function renderStats() {
-      if (lastVisitCountNode) lastVisitCountNode.textContent = state.lastVisit ? "1" : "0";
+      if (lastVisitCountNode) lastVisitCountNode.textContent = String(state.recentBooks.length);
       if (readingBooksCountNode) readingBooksCountNode.textContent = String(state.readingBooks.length);
       if (favoriteBooksCountNode) favoriteBooksCountNode.textContent = String(state.favoriteBooks.length);
       if (readingInlineCountNode) readingInlineCountNode.textContent = state.readingBooks.length + " 本";
+      if (lastVisitInlineCountNode) lastVisitInlineCountNode.textContent = state.recentBooks.length + " 本";
     }
 
     function renderLastVisit() {
       if (!(lastVisitNode instanceof HTMLElement) || !(lastVisitEmptyNode instanceof HTMLElement)) return;
 
-      if (!state.lastVisit) {
+      if (!state.recentBooks.length) {
+        lastVisitNode.innerHTML = "";
         lastVisitNode.hidden = true;
         lastVisitEmptyNode.hidden = false;
         return;
@@ -232,26 +219,24 @@ const notesHref = toInternalHref("/notes/");
 
       lastVisitEmptyNode.hidden = true;
       lastVisitNode.hidden = false;
-
-      if (lastVisitLabelNode instanceof HTMLElement) {
-        lastVisitLabelNode.textContent = state.lastVisit.label || "继续阅读";
-      }
-      if (lastVisitTimeNode instanceof HTMLElement) {
-        lastVisitTimeNode.textContent = formatTime(state.lastVisit.updatedAt);
-        lastVisitTimeNode.setAttribute("datetime", state.lastVisit.updatedAt);
-      }
-      if (lastVisitTitleNode instanceof HTMLElement) {
-        lastVisitTitleNode.textContent = state.lastVisit.title || "最近阅读";
-      }
-      if (lastVisitContextNode instanceof HTMLElement) {
-        lastVisitContextNode.textContent = state.lastVisit.context || "目录里最近打开的内容";
-      }
-      if (lastVisitSummaryNode instanceof HTMLElement) {
-        lastVisitSummaryNode.textContent = state.lastVisit.summary || "回到刚才停下的位置。";
-      }
-      if (lastVisitLinkNode instanceof HTMLAnchorElement) {
-        lastVisitLinkNode.href = state.lastVisit.url || libraryHref;
-      }
+      lastVisitNode.innerHTML = state.recentBooks
+        .slice(0, 5)
+        .map((book, index) => `
+          <article class="shelf-recent-item${index === 0 ? " is-primary" : ""}">
+            <div class="shelf-recent-topline">
+              <span class="meta-chip">继续阅读</span>
+              <time class="shelf-recent-time" datetime="${escapeAttribute(book.updatedAt)}">${escapeHtml(formatTime(book.updatedAt) || "刚刚")}</time>
+            </div>
+            <h3>${escapeHtml(book.title || "最近阅读")}</h3>
+            <p class="shelf-recent-context">${escapeHtml(book.context || "目录里最近打开的内容")}</p>
+            <p class="shelf-recent-summary">${escapeHtml(book.summary || "回到刚才停下的位置。")}</p>
+            <div class="shelf-recent-actions">
+              <a class="${index === 0 ? "btn btn-shelf-primary" : "tool-switch tool-switch--compact"}" href="${escapeAttribute(book.url || book.bookUrl || libraryHref)}">继续打开</a>
+              ${book.url && book.bookUrl && book.url !== book.bookUrl ? `<a class="tool-switch tool-switch--compact" href="${escapeAttribute(book.bookUrl)}">打开书页</a>` : ""}
+            </div>
+          </article>
+        `)
+        .join("");
     }
 
     function renderReadingBooks() {
@@ -339,7 +324,7 @@ const notesHref = toInternalHref("/notes/");
     });
 
     window.addEventListener("storage", function (event) {
-      if (event.key === BOOK_STATUS_STORAGE_KEY || event.key === LAST_VISIT_STORAGE_KEY) {
+      if (event.key === BOOK_STATUS_STORAGE_KEY || event.key === RECENT_BOOK_VISITS_STORAGE_KEY) {
         refreshCollections();
         render();
       }

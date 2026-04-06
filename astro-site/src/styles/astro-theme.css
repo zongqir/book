@@ -132,7 +132,7 @@ img { display: block; max-width: 100%; }
 }
 .top-nav {
   display: inline-grid;
-  grid-template-columns: repeat(3, minmax(78px, 1fr));
+  grid-template-columns: repeat(4, minmax(78px, 1fr));
   align-items: center;
   gap: 6px;
   padding: 6px;
@@ -2207,10 +2207,6 @@ body.reader-notes-editor-open .reader-notes-shell {
     linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 250, 244, 0.38));
 }
 
-.personal-preference-block--recent {
-  grid-column: 1 / -1;
-}
-
 .personal-preference-copy {
   display: grid;
   gap: 8px;
@@ -2259,42 +2255,6 @@ body.reader-notes-editor-open .reader-notes-shell {
   color: #f8f3ea;
   background: linear-gradient(135deg, var(--navy), #2a5e7f);
   box-shadow: 0 12px 22px rgba(23, 48, 67, 0.18);
-}
-
-.personal-last-visit {
-  display: grid;
-  gap: 10px;
-  padding: 18px;
-  border-radius: 22px;
-  border: 1px solid rgba(23, 48, 67, 0.08);
-  background:
-    radial-gradient(circle at top right, rgba(29, 109, 116, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 248, 242, 0.72));
-}
-
-.personal-last-visit-topline,
-.personal-last-visit-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.personal-last-visit-time,
-.personal-last-visit-context,
-.personal-last-visit-summary {
-  margin: 0;
-}
-
-.personal-last-visit-time,
-.personal-last-visit-context {
-  color: var(--text-faint);
-  font-size: 0.82rem;
-}
-
-.personal-last-visit-summary {
-  color: var(--text-soft);
-  line-height: 1.72;
 }
 
 .personal-collections-grid {
@@ -2430,17 +2390,34 @@ body.reader-notes-editor-open .reader-notes-shell {
   gap: 18px;
 }
 
+.shelf-spotlight-card,
+.shelf-reading-card,
+.shelf-favorites-card {
+  padding: 22px;
+}
+
 .shelf-spotlight-card {
   min-height: 100%;
 }
 
-.shelf-spotlight {
+.shelf-recent-list,
+.shelf-book-list,
+.shelf-favorite-grid {
   display: grid;
   gap: 12px;
-  padding: 22px;
-  min-height: 100%;
-  border-radius: 28px;
+}
+
+.shelf-recent-item {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 24px;
   border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 18px 40px rgba(23, 48, 67, 0.08);
+}
+
+.shelf-recent-item.is-primary {
   background:
     linear-gradient(150deg, rgba(23, 48, 67, 0.95), rgba(42, 94, 127, 0.9)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 64%);
@@ -2448,34 +2425,35 @@ body.reader-notes-editor-open .reader-notes-shell {
   box-shadow: 0 24px 52px rgba(23, 48, 67, 0.18);
 }
 
-.shelf-spotlight .meta-chip {
+.shelf-recent-item.is-primary .meta-chip {
   color: #f8f3ea;
   border-color: rgba(248, 243, 234, 0.24);
   background: rgba(248, 243, 234, 0.08);
 }
 
-.shelf-spotlight-topline,
-.shelf-spotlight-actions {
+.shelf-recent-topline,
+.shelf-recent-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.shelf-spotlight-time {
-  color: rgba(248, 243, 234, 0.74);
+.shelf-recent-time {
+  color: var(--text-faint);
   font-size: 0.84rem;
 }
 
-.shelf-spotlight-context,
-.shelf-spotlight-summary {
+.shelf-recent-item.is-primary .shelf-recent-time,
+.shelf-recent-item.is-primary .shelf-recent-context,
+.shelf-recent-item.is-primary .shelf-recent-summary {
   color: rgba(248, 243, 234, 0.82);
 }
 
-.shelf-book-list,
-.shelf-favorite-grid {
-  display: grid;
-  gap: 12px;
+.shelf-recent-context,
+.shelf-recent-summary {
+  margin: 0;
+  color: var(--text-soft);
 }
 
 .shelf-favorite-grid {
@@ -3325,7 +3303,7 @@ html.is-capacitor-app .tool-switch--share {
   .btn-shelf-primary {
     width: 100%;
   }
-  .shelf-spotlight,
+  .shelf-recent-item,
   .shelf-reading-card,
   .shelf-favorites-card {
     padding: 18px;
@@ -3594,8 +3572,7 @@ html.is-capacitor-app .tool-switch--share {
   .personal-preferences-grid {
     grid-template-columns: 1fr;
   }
-  .personal-preference-block,
-  .personal-preference-block--recent {
+  .personal-preference-block {
     padding: 16px;
     border-radius: 20px;
   }
@@ -3607,10 +3584,6 @@ html.is-capacitor-app .tool-switch--share {
     min-height: 34px;
     padding: 0 12px;
     font-size: 0.88rem;
-  }
-  .personal-last-visit {
-    padding: 16px;
-    border-radius: 18px;
   }
   .notes-stage-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5267,8 +5240,7 @@ html[data-theme="dark"] .notes-note-card,
 html[data-theme="dark"] .personal-card,
 html[data-theme="dark"] .personal-collection,
 html[data-theme="dark"] .personal-preference-block,
-html[data-theme="dark"] .personal-last-visit,
-html[data-theme="dark"] .shelf-spotlight,
+html[data-theme="dark"] .shelf-recent-item,
 html[data-theme="dark"] .site-footer-inner,
 html[data-theme="dark"] .mobile-app-dock,
 html[data-theme="dark"] .personal-mobile-nav,
@@ -5295,9 +5267,7 @@ html[data-theme="dark"] .site-footer-meta,
 html[data-theme="dark"] .mobile-dock-item,
 html[data-theme="dark"] .personal-mobile-tab,
 html[data-theme="dark"] .notes-note-page,
-html[data-theme="dark"] .notes-note-time,
-html[data-theme="dark"] .personal-last-visit-time,
-html[data-theme="dark"] .personal-last-visit-context {
+html[data-theme="dark"] .notes-note-time {
   color: var(--text-faint);
 }
 
@@ -5369,8 +5339,7 @@ html[data-theme="dark"] .notes-book-group,
 html[data-theme="dark"] .notes-note-card,
 html[data-theme="dark"] .personal-card,
 html[data-theme="dark"] .personal-collection,
-html[data-theme="dark"] .personal-preference-block,
-html[data-theme="dark"] .personal-last-visit {
+html[data-theme="dark"] .personal-preference-block {
   border-color: rgba(236, 223, 203, 0.1);
 }
 

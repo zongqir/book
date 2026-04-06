@@ -379,16 +379,23 @@ const appHref = toInternalHref("/app/");
 
         function buildRecentBookPayload() {
           var pageNode = document.querySelector(".doc-content[data-page-id]");
-          var bookRoot = document.querySelector("[data-book-id]");
+          var pageFavoriteButton = document.querySelector('[data-favorite-kind="page"][data-book-id]');
+          var bookRoot = document.querySelector("[data-book-status-root]") || document.querySelector('[data-favorite-kind="book"][data-book-id]');
           var titleNode = document.querySelector("h1");
-          if (!(titleNode instanceof HTMLElement) || !(bookRoot instanceof HTMLElement)) return null;
+          if (!(titleNode instanceof HTMLElement)) return null;
 
-          var bookId = bookRoot.dataset.bookId || "";
+          var pageBookId = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookId || "") : "";
+          var pageBookTitle = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookTitle || "") : "";
+          var pageBookUrl = pageFavoriteButton instanceof HTMLElement ? (pageFavoriteButton.dataset.bookUrl || "") : "";
+          var fallbackBookId = bookRoot instanceof HTMLElement ? (bookRoot.dataset.bookId || "") : "";
+          var bookId = pageBookId || fallbackBookId;
           if (!bookId) return null;
 
-          var bookTitle = (pageNode instanceof HTMLElement ? pageNode.dataset.bookTitle : "")
+          var bookTitle = pageBookTitle
+            || (pageNode instanceof HTMLElement ? pageNode.dataset.bookTitle : "")
             || titleNode.textContent.trim();
-          var bookUrl = (pageNode instanceof HTMLElement ? pageNode.dataset.bookUrl : "")
+          var bookUrl = pageBookUrl
+            || (pageNode instanceof HTMLElement ? pageNode.dataset.bookUrl : "")
             || window.location.pathname;
           if (!bookTitle || !bookUrl) return null;
 

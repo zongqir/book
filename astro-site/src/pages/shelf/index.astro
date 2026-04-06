@@ -21,20 +21,6 @@ const notesHref = toInternalHref("/notes/");
           <h1>回来先接着读</h1>
           <p class="shelf-lead">这里不做管理，只把你最可能马上打开的书放在前面。</p>
         </div>
-        <div class="stats-strip shelf-stage-strip">
-          <div class="stat-block">
-            <span class="stat-label">最近阅读</span>
-            <strong class="stat-value" id="shelf-last-visit-count">0</strong>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">在读书籍</span>
-            <strong class="stat-value" id="shelf-reading-books-count">0</strong>
-          </div>
-          <div class="stat-block">
-            <span class="stat-label">收藏书籍</span>
-            <strong class="stat-value" id="shelf-favorite-books-count">0</strong>
-          </div>
-        </div>
         <div class="shelf-hero-actions">
           <a class="btn" href={libraryHref}>去目录找书</a>
           <a class="tool-switch" href={notesHref}>打开个人管理</a>
@@ -47,9 +33,8 @@ const notesHref = toInternalHref("/notes/");
         <div class="section-head shelf-section-head">
           <div>
             <p class="eyebrow">继续阅读</p>
-            <h2>最近打开的五本书</h2>
+            <h2>最近打开的书</h2>
           </div>
-          <span class="meta-chip" id="shelf-last-visit-inline-count">0 本</span>
         </div>
 
         <div class="shelf-recent-list" id="shelf-last-visit"></div>
@@ -66,7 +51,6 @@ const notesHref = toInternalHref("/notes/");
             <p class="eyebrow">在读</p>
             <h2>现在还在推进的书</h2>
           </div>
-          <span class="meta-chip" id="shelf-reading-inline-count">0 本</span>
         </div>
 
         <div class="shelf-book-list" id="shelf-reading-results"></div>
@@ -99,13 +83,8 @@ const notesHref = toInternalHref("/notes/");
     const RECENT_BOOK_VISITS_STORAGE_KEY = "book:recent-books:v1";
     const libraryHref = {JSON.stringify(libraryHref)};
 
-    const lastVisitCountNode = document.getElementById("shelf-last-visit-count");
-    const readingBooksCountNode = document.getElementById("shelf-reading-books-count");
-    const favoriteBooksCountNode = document.getElementById("shelf-favorite-books-count");
     const lastVisitNode = document.getElementById("shelf-last-visit");
     const lastVisitEmptyNode = document.getElementById("shelf-last-visit-empty");
-    const lastVisitInlineCountNode = document.getElementById("shelf-last-visit-inline-count");
-    const readingInlineCountNode = document.getElementById("shelf-reading-inline-count");
     const readingResultsNode = document.getElementById("shelf-reading-results");
     const readingEmptyNode = document.getElementById("shelf-reading-empty");
     const favoriteResultsNode = document.getElementById("shelf-favorite-results");
@@ -199,14 +178,6 @@ const notesHref = toInternalHref("/notes/");
       state.favoriteBooks = booksWithStatus.filter((book) => book.curation_state === "favorite");
     }
 
-    function renderStats() {
-      if (lastVisitCountNode) lastVisitCountNode.textContent = String(state.recentBooks.length);
-      if (readingBooksCountNode) readingBooksCountNode.textContent = String(state.readingBooks.length);
-      if (favoriteBooksCountNode) favoriteBooksCountNode.textContent = String(state.favoriteBooks.length);
-      if (readingInlineCountNode) readingInlineCountNode.textContent = state.readingBooks.length + " 本";
-      if (lastVisitInlineCountNode) lastVisitInlineCountNode.textContent = state.recentBooks.length + " 本";
-    }
-
     function renderLastVisit() {
       if (!(lastVisitNode instanceof HTMLElement) || !(lastVisitEmptyNode instanceof HTMLElement)) return;
 
@@ -296,7 +267,6 @@ const notesHref = toInternalHref("/notes/");
     }
 
     function render() {
-      renderStats();
       renderLastVisit();
       renderReadingBooks();
       renderFavoriteBooks();

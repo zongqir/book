@@ -2358,10 +2358,6 @@ body.reader-notes-editor-open .reader-notes-shell {
   line-height: 1.78;
 }
 
-.shelf-stage-strip {
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
-}
-
 .shelf-hero-actions {
   display: flex;
   flex-wrap: wrap;

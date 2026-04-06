@@ -137,6 +137,7 @@ def is_single_book_doc(path: Path) -> bool:
         and not any(part == "90_专题研究" for part in parts)
         and path.name != "_index.md"
         and not path.name.endswith(".QA.md")
+        and not path.name.endswith(".review.md")
     )
 
 

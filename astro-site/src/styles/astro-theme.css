@@ -3230,6 +3230,9 @@ html.is-capacitor-app .tool-switch--share {
   .notes-hero h1 {
     display: none;
   }
+  .notes-dashboard .notes-stage {
+    display: none;
+  }
   .library-panel--index .library-hero p,
   .notes-hero .hero-kicker,
   .notes-stage-strip {

@@ -101,7 +101,7 @@ function getBookStatusCopy(
     curationState === "favorite"
       ? "它会继续参与随机，而且更常出现。"
       : curationState === "uninterested"
-        ? "它会从首页随机里排除，但目录里还保留。"
+        ? "它会从首页随机里排除，但分类里还保留。"
         : "它会按普通权重参与随机。";
   return `${progress}${curation} 只保存在当前浏览器。`;
 }
@@ -130,7 +130,7 @@ function getBookStatusCopy(
       <section class="library-panel">
         <div class="page-intro page-intro--section">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href={libraryHref}>目录</a>
+            <a href={libraryHref}>分类</a>
             <span>/</span>
             <span>{node.title}</span>
           </nav>
@@ -185,7 +185,7 @@ function getBookStatusCopy(
       <section class="library-panel">
         <div class="page-intro page-intro--book">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href={libraryHref}>目录</a>
+            <a href={libraryHref}>分类</a>
             <span>/</span>
             <a href={toInternalHref(`/library/${node.book.section_key}/`)}>{node.book.section_title}</a>
             {node.ancestorBooks.map((ancestor) => (
@@ -418,7 +418,7 @@ function getBookStatusCopy(
       <section class="library-panel">
         <div class="doc-hero doc-hero--page">
           <nav class="breadcrumb" aria-label="breadcrumb">
-            <a href={libraryHref}>目录</a>
+            <a href={libraryHref}>分类</a>
             {node.section && (
               <>
                 <span>/</span>
@@ -466,7 +466,7 @@ function getBookStatusCopy(
             <div
               class="share-inline"
               data-share-area
-              data-share-title={`${node.book?.title || "读书库"} · ${node.page.title}`}
+              data-share-title={`${node.book?.title || "今天读什么"} · ${node.page.title}`}
               data-share-text={node.page.summary || node.page.intent || node.page.title}
               data-share-url={node.page.url}
               data-share-image={ogImage}

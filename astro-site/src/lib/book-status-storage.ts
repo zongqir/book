@@ -252,7 +252,7 @@ function buildStatusCopy(status: BookStatusRecord) {
     status.curation_state === "favorite"
       ? "它会继续参与随机，而且更常出现。"
       : status.curation_state === "uninterested"
-        ? "它会从首页随机里排除，但目录里还保留。"
+        ? "它会从首页随机里排除，但分类里还保留。"
         : "它会按普通权重参与随机。";
   return progress + curation + " 只保存在当前浏览器。";
 }

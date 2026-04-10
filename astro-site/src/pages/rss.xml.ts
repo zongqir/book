@@ -20,7 +20,7 @@ export function GET({ site }: { site: URL }) {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${escapeXml("读书库")}</title>
+    <title>${escapeXml("今天读什么")}</title>
     <link>${escapeXml(siteUrl.toString())}</link>
     <description>${escapeXml("读书拆解、文稿与摘句更新订阅。")}</description>
     <language>zh-CN</language>

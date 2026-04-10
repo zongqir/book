@@ -18,8 +18,8 @@ type Props = {
 };
 
 const {
-  title = "读书库",
-  description = "读书库",
+  title = "今天读什么",
+  description = "今天读什么",
   canonicalPath,
   ogTitle,
   ogDescription,
@@ -30,7 +30,7 @@ const {
   isLibrary = false,
   isShelf = false,
 } = Astro.props;
-const pageTitle = isHome ? "读书库" : `${title} | 读书库`;
+const pageTitle = isHome ? "今天读什么" : `${title} | 今天读什么`;
 const pathname = Astro.url.pathname;
 const canonicalUrl = new URL(canonicalPath || pathname, Astro.site);
 const socialTitle = ogTitle || pageTitle;
@@ -39,7 +39,7 @@ const socialImage = new URL(ogImage, Astro.site);
 const socialImageAlt = ogImageAlt || socialTitle;
 const isNotes = pathname.startsWith("/notes");
 const isAppDownload = pathname.startsWith("/app");
-const mobileSectionLabel = isHome ? "首页" : isLibrary ? "目录" : isShelf ? "书架" : isNotes ? "个人" : title;
+const mobileSectionLabel = isHome ? "首页" : isLibrary ? "分类" : isShelf ? "书架" : isNotes ? "个人" : title;
 const appDownload = getAndroidAppDownloadConfig();
 const showAppDownloadEntry = appDownload.available;
 const homeHref = toInternalHref("/");
@@ -117,8 +117,8 @@ const appHref = toInternalHref("/app/");
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="alternate" type="application/rss+xml" title="读书库 RSS" href="/rss.xml" />
-    <meta property="og:site_name" content="读书库" />
+    <link rel="alternate" type="application/rss+xml" title="今天读什么 RSS" href="/rss.xml" />
+    <meta property="og:site_name" content="今天读什么" />
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={socialTitle} />
@@ -134,10 +134,10 @@ const appHref = toInternalHref("/app/");
     <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={socialImage} />
     <meta name="twitter:image:alt" content={socialImageAlt} />
-    <meta name="application-name" content="读书库" />
+    <meta name="application-name" content="今天读什么" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="读书库" />
+    <meta name="apple-mobile-web-app-title" content="今天读什么" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="theme-color" content="#2f5b7c" />
@@ -146,7 +146,7 @@ const appHref = toInternalHref("/app/");
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="192x192" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="alternate" type="application/json" title="读书库 内容索引" href="/data/site-content.json" />
+    <link rel="alternate" type="application/json" title="今天读什么 内容索引" href="/data/site-content.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -161,14 +161,14 @@ const appHref = toInternalHref("/app/");
           <div class="identity">
             <a class="brand" href={homeHref}>
               <span class="brand-mark" aria-hidden="true">BQ</span>
-              <span>读书库</span>
+              <span>今天读什么</span>
             </a>
             <span class="mobile-page-badge">{mobileSectionLabel}</span>
           </div>
           <div class="site-header-actions">
             <nav class="top-nav" aria-label="主导航">
               <a class:list={["nav-pill", isHome && "is-active"]} href={homeHref}>首页</a>
-              <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>目录</a>
+              <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>分类</a>
               <a class:list={["nav-pill", isShelf && "is-active"]} href={shelfHref}>书架</a>
               <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
             </nav>
@@ -201,7 +201,7 @@ const appHref = toInternalHref("/app/");
       </a>
       <a class:list={["mobile-dock-item", isLibrary && "is-active"]} href={libraryHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
-        <span>目录</span>
+        <span>分类</span>
       </a>
       <a class:list={["mobile-dock-item", isShelf && "is-active"]} href={shelfHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
@@ -218,7 +218,7 @@ const appHref = toInternalHref("/app/");
     <section class="pwa-prompt" id="pwa-prompt" hidden aria-live="polite">
       <div class="pwa-prompt-copy">
         <p class="eyebrow">主屏入口</p>
-        <h2 class="pwa-prompt-title" id="pwa-prompt-title">把读书库装到主屏幕</h2>
+        <h2 class="pwa-prompt-title" id="pwa-prompt-title">把今天读什么装到主屏幕</h2>
         <p class="pwa-prompt-text" id="pwa-prompt-text">安装后可以像应用一样打开，也能继续看已缓存的页面和笔记。</p>
       </div>
       <div class="pwa-prompt-actions">
@@ -286,7 +286,7 @@ const appHref = toInternalHref("/app/");
 
           if (mode === "ios") {
             if (promptTitle instanceof HTMLElement) {
-              promptTitle.textContent = "把读书库加到主屏幕";
+              promptTitle.textContent = "把今天读什么加到主屏幕";
             }
             if (promptText instanceof HTMLElement) {
               promptText.textContent = "在 Safari 点分享，再选“添加到主屏幕”。装好后会像应用一样打开。";
@@ -301,7 +301,7 @@ const appHref = toInternalHref("/app/");
           }
 
           if (promptTitle instanceof HTMLElement) {
-            promptTitle.textContent = "把读书库装到主屏幕";
+            promptTitle.textContent = "把今天读什么装到主屏幕";
           }
           if (promptText instanceof HTMLElement) {
             promptText.textContent = "安装后可以像应用一样打开，也能继续看已缓存的页面和笔记。";

@@ -7,15 +7,15 @@ const libraryHref = toInternalHref("/library/");
 const notesHref = toInternalHref("/notes/");
 ---
 
-<BaseLayout title="离线状态" description="当前网络不可用，你仍然可以继续查看已缓存的目录和页面。">
+<BaseLayout title="离线状态" description="当前网络不可用，你仍然可以继续查看已缓存的分类和页面。">
   <div class="page-stack">
     <section class="library-panel">
       <div class="library-hero">
         <h1>现在离线了</h1>
-        <p>网络暂时不可用。你还可以回到首页、目录，或继续看已经缓存过的页面。</p>
+        <p>网络暂时不可用。你还可以回到首页、分类，或继续看已经缓存过的页面。</p>
         <div class="actions library-hero-actions">
           <a class="btn" href={homeHref}>回首页</a>
-          <a class="btn btn-ghost" href={libraryHref}>去目录</a>
+          <a class="btn btn-ghost" href={libraryHref}>去分类</a>
         </div>
       </div>
     </section>
@@ -25,7 +25,7 @@ const notesHref = toInternalHref("/notes/");
         <article class="meta-card">
           <p class="eyebrow">离线还能做什么</p>
           <h2>已缓存的入口还能继续打开</h2>
-          <p>首页、目录、笔记，以及你最近浏览过的正文，离线时都会优先尝试从缓存里打开。</p>
+          <p>首页、分类、笔记，以及你最近浏览过的正文，离线时都会优先尝试从缓存里打开。</p>
         </article>
         <article class="meta-card">
           <p class="eyebrow">重新联网之后</p>
@@ -53,7 +53,7 @@ const notesHref = toInternalHref("/notes/");
         if (navigator.onLine) {
           statusNode.textContent = "网络已恢复。点“重新尝试”回到在线状态。";
         } else {
-          statusNode.textContent = "当前仍然离线。已缓存的目录、笔记和最近访问页面仍可继续打开。";
+          statusNode.textContent = "当前仍然离线。已缓存的分类、笔记和最近访问页面仍可继续打开。";
         }
       }
 

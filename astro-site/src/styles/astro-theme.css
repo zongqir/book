@@ -2116,13 +2116,6 @@ body.reader-notes-editor-open .reader-notes-shell {
   align-items: flex-end;
 }
 
-.personal-preferences-intro {
-  margin: 0;
-  max-width: 34rem;
-  color: var(--text-soft);
-  line-height: 1.75;
-}
-
 .personal-collections-head h2,
 .personal-preference-block h3,
 .personal-collection h3,
@@ -2139,49 +2132,53 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .personal-preference-block {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
-  padding: 18px;
+  padding: 20px 18px 18px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: var(--bg-surface);
 }
 
-.personal-preference-copy {
-  display: grid;
-  gap: 8px;
-}
-
-.personal-preference-copy p {
+.personal-preference-title {
   margin: 0;
-  color: var(--text-soft);
-  line-height: 1.72;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.18rem;
 }
 
-.preference-segment {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.preference-rail {
+  display: grid;
+  gap: 6px;
   padding: 4px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg-surface-sunken);
+}
+
+.preference-rail--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preference-rail--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .preference-chip {
   appearance: none;
   -webkit-appearance: none;
-  display: inline-flex;
+  display: inline-grid;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
+  gap: 2px;
+  min-height: 50px;
+  padding: 6px 10px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   color: var(--text-soft);
   font: inherit;
   cursor: pointer;
+  text-align: center;
 }
 
 .preference-chip:hover,
@@ -2193,6 +2190,23 @@ body.reader-notes-editor-open .reader-notes-shell {
   color: #f8f3ea;
   background: var(--navy);
   box-shadow: var(--shadow-sm);
+}
+
+.preference-chip-scale {
+  line-height: 1;
+  font-family: "Noto Serif SC", serif;
+}
+
+.preference-chip--scale-sm .preference-chip-scale {
+  font-size: 1rem;
+}
+
+.preference-chip--scale-md .preference-chip-scale {
+  font-size: 1.18rem;
+}
+
+.preference-chip--scale-lg .preference-chip-scale {
+  font-size: 1.42rem;
 }
 
 .personal-collections-grid {
@@ -2307,7 +2321,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .shelf-stage-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
 }
 
@@ -2330,6 +2344,7 @@ body.reader-notes-editor-open .reader-notes-shell {
 
 .shelf-spotlight-card {
   min-height: 100%;
+  max-width: 920px;
 }
 
 .shelf-recent-list,
@@ -3501,13 +3516,13 @@ html.is-capacitor-app .tool-switch--share {
     padding: 16px;
     border-radius: 20px;
   }
-  .preference-segment {
+  .preference-rail {
     gap: 6px;
     padding: 3px;
   }
   .preference-chip {
-    min-height: 34px;
-    padding: 0 12px;
+    min-height: 44px;
+    padding: 4px 10px;
     font-size: 0.88rem;
   }
   .notes-stage-strip {
@@ -4326,7 +4341,7 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-editorial-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.78fr);
+  grid-template-columns: minmax(0, 1.16fr) minmax(360px, 0.94fr);
   gap: 22px;
   align-items: stretch;
 }
@@ -4342,9 +4357,9 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-feature-card {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 28px;
-  min-height: 530px;
+  grid-template-rows: auto auto auto;
+  gap: 20px;
+  min-height: 460px;
   padding: 34px;
   border-radius: var(--radius-xl);
   background: var(--bg-surface);
@@ -4403,7 +4418,7 @@ html.is-capacitor-app .tool-switch--share {
   z-index: 1;
   display: grid;
   align-content: start;
-  gap: 18px;
+  gap: 14px;
   padding-left: 18px;
 }
 
@@ -4419,7 +4434,7 @@ html.is-capacitor-app .tool-switch--share {
 .home-feature-summary {
   max-width: 38rem;
   font-size: 1.02rem;
-  line-height: 1.88;
+  line-height: 1.8;
 }
 
 .home-feature-tags {
@@ -4430,10 +4445,10 @@ html.is-capacitor-app .tool-switch--share {
   position: relative;
   z-index: 1;
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  align-self: end;
-  padding: 0 6px 6px 18px;
+  justify-content: flex-start;
+  align-items: center;
+  align-self: start;
+  padding: 0 6px 0 18px;
 }
 
 .home-feature-open-link {
@@ -4472,7 +4487,7 @@ html.is-capacitor-app .tool-switch--share {
 .home-side-column {
   display: grid;
   gap: 18px;
-  align-content: start;
+  align-content: stretch;
 }
 
 .home-quote-panel,
@@ -4480,8 +4495,9 @@ html.is-capacitor-app .tool-switch--share {
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 18px;
-  padding: 22px;
+  gap: 22px;
+  min-height: 460px;
+  padding: 28px;
   border-radius: var(--radius-xl);
   background: var(--bg-surface);
 }
@@ -4507,19 +4523,21 @@ html.is-capacitor-app .tool-switch--share {
   z-index: 1;
   margin: 0;
   font-family: "Noto Serif SC", serif;
-  font-size: 1.45rem;
+  font-size: 1.62rem;
 }
 
 .home-quote-body {
   position: relative;
   z-index: 1;
-  gap: 18px;
+  display: grid;
+  align-content: space-between;
+  gap: 24px;
   padding: 0;
 }
 
 .home-quote-panel .quote-display {
-  font-size: clamp(2.15rem, 3vw, 3.3rem);
-  line-height: 1.26;
+  font-size: clamp(2.25rem, 3vw, 3.45rem);
+  line-height: 1.22;
 }
 
 .home-resume-panel .home-resume-link {
@@ -4641,14 +4659,24 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-mobile-focus {
   display: grid;
-  gap: 16px;
+  gap: 18px;
+  min-height: 320px;
   padding: 24px;
+  align-content: space-between;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 245, 0.98), rgba(255, 246, 236, 0.98)),
+    var(--bg-surface);
 }
 
 .home-mobile-quote-panel {
   display: grid;
   gap: 16px;
+  min-height: 208px;
   padding: 20px;
+  align-content: space-between;
+  background:
+    linear-gradient(180deg, rgba(241, 249, 248, 0.98), rgba(251, 248, 243, 0.98)),
+    var(--bg-surface);
 }
 
 .home-mobile-shelves {
@@ -4757,8 +4785,8 @@ html.is-capacitor-app .tool-switch--share {
 .home-mobile-focus h2 {
   margin: 0;
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(2rem, 3vw, 2.6rem);
-  line-height: 1.08;
+  font-size: clamp(2.1rem, 3vw, 2.8rem);
+  line-height: 1.02;
 }
 
 .home-mobile-focus-copy,
@@ -4775,13 +4803,14 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-mobile-focus-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: center;
+  align-items: end;
 }
 
 .home-mobile-focus-actions .btn {
-  flex: 1 1 auto;
+  width: 100%;
 }
 
 .home-mobile-focus-actions .tool-switch {
@@ -4912,7 +4941,7 @@ html.is-capacitor-app .tool-switch--share {
 
   .home-mobile-shell {
     display: grid;
-    gap: 14px;
+    gap: 16px;
   }
 
   .home-desktop-flow {
@@ -4920,23 +4949,24 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-mobile-focus {
-    gap: 12px;
-    padding: 16px;
-    border-radius: 22px;
+    gap: 14px;
+    min-height: 292px;
+    padding: 18px 16px 16px;
+    border-radius: 24px;
     margin-top: 2px;
   }
 
   .home-mobile-focus h2 {
-    font-size: 1.48rem;
+    font-size: 1.72rem;
   }
 
   .home-mobile-focus-copy {
-    font-size: 0.92rem;
-    line-height: 1.62;
+    font-size: 0.95rem;
+    line-height: 1.68;
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 4;
   }
 
   .home-mobile-focus-topline {
@@ -4956,6 +4986,10 @@ html.is-capacitor-app .tool-switch--share {
     gap: 8px;
   }
 
+  .home-mobile-focus-actions .btn {
+    min-height: 46px;
+  }
+
   .home-mobile-focus-actions .tool-switch {
     min-height: 46px;
     padding: 0 12px;
@@ -4963,19 +4997,10 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-mobile-quote-panel {
+    min-height: 188px;
     gap: 12px;
     padding: 16px;
     border-radius: 22px;
-  }
-
-  .home-mobile-shelves {
-    gap: 12px;
-    padding: 16px;
-    border-radius: 22px;
-  }
-
-  .home-mobile-shelves-head h2 {
-    font-size: 1.08rem;
   }
 
   .home-mobile-quote-panel-head {
@@ -5006,18 +5031,18 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-mobile-quote-card {
-    gap: 10px;
-    padding: 12px 13px;
+    gap: 12px;
+    padding: 14px 14px 15px;
     border-radius: 18px;
   }
 
   .home-mobile-quote-text {
-    font-size: 0.96rem;
-    line-height: 1.52;
+    font-size: 1.02rem;
+    line-height: 1.62;
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
   }
 
   .home-mobile-quote-meta {
@@ -5028,60 +5053,6 @@ html.is-capacitor-app .tool-switch--share {
 
   .home-mobile-quote-card .tool-switch {
     width: auto;
-  }
-
-  .home-mobile-section-grid {
-    gap: 8px;
-  }
-
-  .home-mobile-shelf-grid {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  .home-mobile-shelf-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .home-mobile-shelf-card {
-    flex: 0 0 clamp(152px, 56vw, 190px);
-    min-height: 96px;
-    padding: 12px;
-    overflow: hidden;
-    background: var(--bg-surface-sunken);
-    scroll-snap-align: start;
-  }
-
-  .home-mobile-shelf-card p {
-    font-size: 0.78rem;
-    line-height: 1.42;
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  .home-mobile-section-link {
-    min-height: 82px;
-    padding: 12px;
-    border-radius: 16px;
-  }
-
-  .home-mobile-shelf-grid {
-    gap: 8px;
-  }
-
-  .home-mobile-shelf-card {
-    min-height: 108px;
-    padding: 12px;
-    border-radius: 16px;
-  }
-
-  .home-mobile-shelf-card p {
-    font-size: 0.78rem;
   }
 
   .section-preview-line {

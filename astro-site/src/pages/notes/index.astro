@@ -37,34 +37,34 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <div class="section-head personal-preferences-head">
         <div>
           <p class="eyebrow">偏好</p>
-          <h2>阅读设置</h2>
+          <h2>设置</h2>
         </div>
-        <p class="personal-preferences-intro">把常用设置和本地管理留在这里。回来时，界面明暗和字号都会继续接上。</p>
       </div>
 
       <div class="personal-preferences-grid">
         <section class="personal-preference-block">
-          <div class="personal-preference-copy">
-            <p class="eyebrow">主题</p>
-            <h3>白天还是黑夜</h3>
-            <p>切的是整个站点，不只这一页。</p>
-          </div>
-          <div class="preference-segment" role="group" aria-label="主题切换">
+          <h3 class="personal-preference-title">主题</h3>
+          <div class="preference-rail preference-rail--two" role="group" aria-label="主题切换">
             <button class="preference-chip" type="button" data-theme-option="light">白天</button>
             <button class="preference-chip" type="button" data-theme-option="dark">黑夜</button>
           </div>
         </section>
 
         <section class="personal-preference-block">
-          <div class="personal-preference-copy">
-            <p class="eyebrow">字号</p>
-            <h3>正文看起来顺不顺</h3>
-            <p>只影响文章正文，不改导航和目录。</p>
-          </div>
-          <div class="preference-segment" role="group" aria-label="正文字号切换">
-            <button class="preference-chip" type="button" data-font-size-option="sm">小一点</button>
-            <button class="preference-chip" type="button" data-font-size-option="md">标准</button>
-            <button class="preference-chip" type="button" data-font-size-option="lg">大一点</button>
+          <h3 class="personal-preference-title">字号</h3>
+          <div class="preference-rail preference-rail--three" role="group" aria-label="正文字号切换">
+            <button class="preference-chip preference-chip--scale-sm" type="button" data-font-size-option="sm">
+              <span class="preference-chip-scale" aria-hidden="true">A</span>
+              <span>小</span>
+            </button>
+            <button class="preference-chip preference-chip--scale-md" type="button" data-font-size-option="md">
+              <span class="preference-chip-scale" aria-hidden="true">A</span>
+              <span>中</span>
+            </button>
+            <button class="preference-chip preference-chip--scale-lg" type="button" data-font-size-option="lg">
+              <span class="preference-chip-scale" aria-hidden="true">A</span>
+              <span>大</span>
+            </button>
           </div>
         </section>
       </div>

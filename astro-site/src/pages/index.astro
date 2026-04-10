@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData, loadSiteIndex } from "../lib/content";
 import { toInternalHref } from "../lib/internal-links";
 
-const { books, quotes, sections } = getHomeData();
+const { books, quotes } = getHomeData();
 const firstBook = books[0];
 const siteIndex = loadSiteIndex();
 
@@ -11,22 +11,13 @@ function getBookEntry(bookId: string, fallbackUrl: string) {
   const whyReadPage = siteIndex.pages.find((page) => page.book_id === bookId && String(page.slot ?? "").startsWith("00"));
   return {
     url: whyReadPage?.url ?? fallbackUrl,
-    label: whyReadPage ? "打开导图" : "进入书页",
+    label: "打开书籍",
   };
 }
 
 const firstQuote = quotes[0];
 const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : null;
 const libraryHref = toInternalHref("/library/");
-const sectionPreviewMap = Object.fromEntries(
-  sections.map((section) => [
-    section.key,
-    books
-      .filter((book) => book.section_key === section.key)
-      .slice(0, 3)
-      .map((book) => ({ title: book.title, url: book.url })),
-  ]),
-);
 ---
 
 <BaseLayout
@@ -34,26 +25,23 @@ const sectionPreviewMap = Object.fromEntries(
   isLibrary={false}
   description="随机一本到，直接开读。"
   canonicalPath="/"
-  ogTitle="读书库"
+  ogTitle="今天读什么"
   ogDescription="随机一本到，直接开读。"
 >
   <div class="page-stack">
     <section class="home-mobile-shell" aria-label="手机首页">
       <article class="home-mobile-focus" id="home-mobile-focus-card">
         <p class="home-mobile-focus-topline">
-          <span class="meta-chip" id="home-mobile-focus-mode-chip">此刻入口</span>
+          <span class="meta-chip" id="home-mobile-focus-mode-chip">今天这本</span>
           <span id="home-mobile-focus-category">{firstBook?.section_title ?? "书库"}</span>
         </p>
         <h2 id="home-mobile-focus-title">{firstBook?.title ?? "随机一本到"}</h2>
         <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
-        <div class="home-mobile-focus-tags" id="home-mobile-focus-tags">
-          {firstBook?.tags.slice(0, 4).map((tag) => <span class="book-dice-tag">{tag}</span>)}
-        </div>
         <div class="home-mobile-focus-actions">
           <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
-            <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
+            <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "打开书籍"}</span>
           </a>
-          <button class="tool-switch" type="button" id="home-mobile-focus-secondary" data-action="random-book">换一本</button>
+          <button class="tool-switch" type="button" id="home-mobile-focus-secondary">换一本</button>
         </div>
       </article>
 
@@ -61,7 +49,7 @@ const sectionPreviewMap = Object.fromEntries(
         <div class="home-mobile-quote-panel-head">
           <div>
             <p class="hero-kicker">摘句</p>
-            <h2>再读一句</h2>
+            <h2>今天这一句</h2>
           </div>
           <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
         </div>
@@ -78,44 +66,6 @@ const sectionPreviewMap = Object.fromEntries(
         )}
       </article>
 
-      <section class="home-mobile-shelves" aria-label="书架方向">
-        <div class="home-mobile-shelves-head">
-          <div>
-            <p class="hero-kicker">书架方向</p>
-            <h2>先挑个方向</h2>
-          </div>
-          <span class="meta-chip">{sections.length} 个方向</span>
-        </div>
-        <div class="home-mobile-shelf-grid">
-          {sections.slice(0, 4).map((section) => (
-            <a class="home-mobile-shelf-card" href={section.url}>
-              <div class="home-mobile-shelf-top">
-                <strong>{section.title}</strong>
-                <span>{section.book_count} 本</span>
-              </div>
-              <p>{sectionPreviewMap[section.key]?.[0]?.title ?? "打开这个方向看看"}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <details class="home-mobile-drawer home-mobile-drawer--sections">
-        <summary>
-          <span>全部方向</span>
-          <em>{sections.length} 个方向</em>
-        </summary>
-        <div class="home-mobile-drawer-body">
-          <div class="home-mobile-section-grid">
-            {sections.map((section) => (
-              <a class="home-mobile-section-link" href={section.url}>
-                <strong>{section.title}</strong>
-                <span>{section.book_count} 本书</span>
-              </a>
-            ))}
-          </div>
-          <a class="tool-switch" href={libraryHref}>看全部目录</a>
-        </div>
-      </details>
     </section>
 
     <div class="home-desktop-flow">
@@ -123,7 +73,7 @@ const sectionPreviewMap = Object.fromEntries(
         <article class="home-feature-card" data-book-dice>
           <div class="home-feature-head">
             <div class="home-feature-headline">
-              <p class="home-feature-kicker">随机一本到</p>
+              <p class="home-feature-kicker">今天这本</p>
             </div>
             <button class="tool-switch" type="button" id="book-dice-shuffle">换一本</button>
           </div>
@@ -135,13 +85,10 @@ const sectionPreviewMap = Object.fromEntries(
                 </p>
                 <h1 class="home-feature-title" id="book-dice-title">{firstBook.title}</h1>
                 <p class="book-dice-summary home-feature-summary" id="book-dice-summary">{firstBook.summary}</p>
-                <div class="book-dice-tags home-feature-tags" id="book-dice-tags">
-                  {firstBook.tags.map((tag) => <span class="book-dice-tag">{tag}</span>)}
-                </div>
               </div>
               <div class="home-feature-actions">
                 <a class="home-feature-open-link" id="book-dice-open" href={firstBookEntry?.url ?? firstBook.url}>
-                  <span id="book-dice-open-label">{firstBookEntry?.label ?? "进入书页"}</span>
+                  <span id="book-dice-open-label">{firstBookEntry?.label ?? "打开书籍"}</span>
                   <span class="home-feature-open-arrow" aria-hidden="true">↗</span>
                 </a>
               </div>
@@ -154,7 +101,7 @@ const sectionPreviewMap = Object.fromEntries(
         <aside class="home-side-column">
           <article class="home-quote-panel" data-random-quote>
             <header class="home-side-head">
-              <h2>摘句</h2>
+              <h2>今天这一句</h2>
               <button class="tool-switch" type="button" id="random-quote-shuffle">换一句</button>
             </header>
             {firstQuote ? (
@@ -169,62 +116,13 @@ const sectionPreviewMap = Object.fromEntries(
               <p class="tool-empty">暂时还没有句子卡可抽。</p>
             )}
           </article>
-
-          <article class="home-resume-panel" id="home-resume-card" hidden>
-            <header class="home-side-head">
-              <h2>接上次</h2>
-            </header>
-            <a class="home-resume-link" id="home-resume-link" href={libraryHref}>
-              <p class="book-dice-meta">
-                <span id="home-resume-category">上次停留</span>
-              </p>
-              <h3 id="home-resume-title">回到刚才看到的地方</h3>
-              <p class="home-resume-copy" id="home-resume-copy">下次打开时，先接回你上次停下的位置。</p>
-              <div class="section-enter">
-                <span>接着读</span>
-                <span>→</span>
-              </div>
-            </a>
-          </article>
         </aside>
-      </section>
-
-      <section class="home-shelves-panel" id="home-categories">
-        <div class="section-head section-head--home-categories">
-          <div>
-            <h2>书架方向</h2>
-          </div>
-        </div>
-
-        <div class="home-shelf-list">
-          {sections.map((section) => (
-            <a class="home-shelf-row" href={section.url}>
-              <div class="home-shelf-heading">
-                <p class="section-volume-inline">
-                  <strong>{section.book_count}</strong>
-                  <span>本书</span>
-                </p>
-                <h3>{section.title}</h3>
-              </div>
-              <div class="home-shelf-preview">
-                {(sectionPreviewMap[section.key] ?? []).map((book) => (
-                  <span class="home-shelf-book">{book.title}</span>
-                ))}
-              </div>
-              <div class="home-shelf-enter">
-                <span>进入分类</span>
-                <span>→</span>
-              </div>
-            </a>
-          ))}
-        </div>
       </section>
     </div>
   </div>
 
   <script is:inline>
     (function () {
-      var LAST_VISIT_KEY = "book:last-visit:v1";
       var BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
       var contentSource = "/data/site-content.json";
       var FAVORITE_CURATION_STATE = "favorite";
@@ -234,27 +132,18 @@ const sectionPreviewMap = Object.fromEntries(
       var quotes = [];
       var currentBook = 0;
       var currentQuote = 0;
-      var mobileFocusState = "book";
 
       var bookTitle = document.getElementById("book-dice-title");
       var bookSummary = document.getElementById("book-dice-summary");
       var bookCategory = document.getElementById("book-dice-category");
-      var bookTags = document.getElementById("book-dice-tags");
       var bookOpen = document.getElementById("book-dice-open");
       var bookOpenLabel = document.getElementById("book-dice-open-label");
       var bookShuffle = document.getElementById("book-dice-shuffle");
-
-      var resumeCard = document.getElementById("home-resume-card");
-      var resumeLink = document.getElementById("home-resume-link");
-      var resumeCategory = document.getElementById("home-resume-category");
-      var resumeTitle = document.getElementById("home-resume-title");
-      var resumeCopy = document.getElementById("home-resume-copy");
 
       var mobileFocusModeChip = document.getElementById("home-mobile-focus-mode-chip");
       var mobileFocusCategory = document.getElementById("home-mobile-focus-category");
       var mobileFocusTitle = document.getElementById("home-mobile-focus-title");
       var mobileFocusCopy = document.getElementById("home-mobile-focus-copy");
-      var mobileFocusTags = document.getElementById("home-mobile-focus-tags");
       var mobileFocusOpen = document.getElementById("home-mobile-focus-open");
       var mobileFocusOpenLabel = document.getElementById("home-mobile-focus-open-label");
       var mobileFocusSecondary = document.getElementById("home-mobile-focus-secondary");
@@ -267,31 +156,6 @@ const sectionPreviewMap = Object.fromEntries(
       var mobileQuoteBook = document.getElementById("home-mobile-quote-book");
       var mobileQuoteLink = document.getElementById("home-mobile-quote-link");
       var mobileQuoteShuffle = document.getElementById("home-mobile-quote-shuffle");
-
-      function readLastVisit() {
-        try {
-          var raw = window.localStorage.getItem(LAST_VISIT_KEY);
-          if (!raw) return null;
-          return JSON.parse(raw);
-        } catch (error) {
-          return null;
-        }
-      }
-
-      function hasLastVisit(item) {
-        return Boolean(item && item.url && item.title);
-      }
-
-      function setTags(container, tags) {
-        if (!(container instanceof HTMLElement)) return;
-        container.innerHTML = "";
-        (Array.isArray(tags) ? tags : []).slice(0, 4).forEach(function (tag) {
-          var el = document.createElement("span");
-          el.className = "book-dice-tag";
-          el.textContent = tag;
-          container.appendChild(el);
-        });
-      }
 
       function readBookStatusOverrides() {
         try {
@@ -325,75 +189,18 @@ const sectionPreviewMap = Object.fromEntries(
         };
       }
 
-      function renderResume(item) {
-        if (!(resumeCard instanceof HTMLElement)) return;
-        if (!hasLastVisit(item)) {
-          resumeCard.hidden = true;
-          return;
-        }
-        resumeCard.hidden = false;
-        if (resumeLink) resumeLink.href = item.url;
-        if (resumeCategory) resumeCategory.textContent = item.label || "上次停留";
-        if (resumeTitle) resumeTitle.textContent = item.title;
-        if (resumeCopy) resumeCopy.textContent = item.summary || item.context || "回到刚才停下的位置。";
-      }
-
-      function renderMobileFocusResume(item) {
-        if (!hasLastVisit(item)) return;
-        mobileFocusState = "resume";
-        if (mobileFocusModeChip) mobileFocusModeChip.textContent = item.label || "上次看到";
-        if (mobileFocusCategory) mobileFocusCategory.textContent = item.context || "上次停留";
-        if (mobileFocusTitle) mobileFocusTitle.textContent = item.title;
-        if (mobileFocusCopy) mobileFocusCopy.textContent = item.summary || item.context || "回到刚才停下的位置。";
-        setTags(mobileFocusTags, []);
-        if (mobileFocusOpen) mobileFocusOpen.href = item.url;
-        if (mobileFocusOpenLabel) mobileFocusOpenLabel.textContent = "继续读";
-        if (mobileFocusSecondary instanceof HTMLButtonElement) {
-          mobileFocusSecondary.hidden = books.length <= 0;
-          mobileFocusSecondary.dataset.action = "book";
-          mobileFocusSecondary.textContent = "换一本";
-        }
-      }
-
       function renderMobileFocusBook(current) {
         if (!current) return;
-        mobileFocusState = "book";
-        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "此刻入口";
+        if (mobileFocusModeChip) mobileFocusModeChip.textContent = "今天这本";
         if (mobileFocusCategory) mobileFocusCategory.textContent = current.category || "未分类";
         if (mobileFocusTitle) mobileFocusTitle.textContent = current.title || "未命名";
         if (mobileFocusCopy) mobileFocusCopy.textContent = current.summary || "";
-        setTags(mobileFocusTags, current.tags);
         if (mobileFocusOpen) mobileFocusOpen.href = current.entryUrl || current.url || "#";
-        if (mobileFocusOpenLabel) mobileFocusOpenLabel.textContent = current.entryLabel || "进入书页";
+        if (mobileFocusOpenLabel) mobileFocusOpenLabel.textContent = current.entryLabel || "打开书籍";
 
         if (mobileFocusSecondary instanceof HTMLButtonElement) {
-          var lastVisit = readLastVisit();
-          if (hasLastVisit(lastVisit)) {
-            mobileFocusSecondary.hidden = false;
-            mobileFocusSecondary.dataset.action = "resume";
-            mobileFocusSecondary.textContent = "回上次";
-          } else if (books.length > 1) {
-            mobileFocusSecondary.hidden = false;
-            mobileFocusSecondary.dataset.action = "random-book";
-            mobileFocusSecondary.textContent = "换一本";
-          } else {
-            mobileFocusSecondary.hidden = true;
-          }
-        }
-      }
-
-      function syncMobileFocus(preferredMode) {
-        var lastVisit = readLastVisit();
-        if (preferredMode === "resume" && hasLastVisit(lastVisit)) {
-          renderMobileFocusResume(lastVisit);
-          return;
-        }
-        if (preferredMode !== "book" && hasLastVisit(lastVisit)) {
-          renderMobileFocusResume(lastVisit);
-          return;
-        }
-        if (books.length) {
-          renderMobileFocusBook(books[currentBook]);
+          mobileFocusSecondary.hidden = books.length <= 1;
+          mobileFocusSecondary.textContent = "换一本";
         }
       }
 
@@ -406,11 +213,8 @@ const sectionPreviewMap = Object.fromEntries(
         if (bookSummary) bookSummary.textContent = current.summary || "";
         if (bookCategory) bookCategory.textContent = current.category || "未分类";
         if (bookOpen) bookOpen.href = current.entryUrl || current.url || "#";
-        if (bookOpenLabel) bookOpenLabel.textContent = current.entryLabel || "进入书页";
-        setTags(bookTags, current.tags);
-        if (mobileFocusState === "book") {
-          renderMobileFocusBook(current);
-        }
+        if (bookOpenLabel) bookOpenLabel.textContent = current.entryLabel || "打开书籍";
+        renderMobileFocusBook(current);
       }
 
       function randomBook(excludeCurrent) {
@@ -460,24 +264,15 @@ const sectionPreviewMap = Object.fromEntries(
         return next;
       }
 
-      renderResume(readLastVisit());
-
       if (bookShuffle) {
         bookShuffle.addEventListener("click", function () {
           renderBook(randomBook(true));
-          syncMobileFocus("book");
         });
       }
 
       if (mobileFocusSecondary instanceof HTMLButtonElement) {
         mobileFocusSecondary.addEventListener("click", function () {
-          var action = mobileFocusSecondary.dataset.action || "random-book";
-          if (action === "resume") {
-            syncMobileFocus("resume");
-            return;
-          }
           renderBook(randomBook(true));
-          syncMobileFocus("book");
         });
       }
 
@@ -529,7 +324,7 @@ const sectionPreviewMap = Object.fromEntries(
                     title: source.title || "未命名",
                     url: source.url || "#",
                     entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
-                    entryLabel: whyReadPage ? "打开导图" : "进入书页",
+                    entryLabel: "打开书籍",
                     summary: source.summary || "",
                     category: source.section_title || "未分类",
                     tags: Array.isArray(source.tags) ? source.tags : [],
@@ -552,7 +347,6 @@ const sectionPreviewMap = Object.fromEntries(
 
           if (books.length) {
             renderBook(randomBook(false));
-            syncMobileFocus("auto");
           }
           if (quotes.length) {
             renderQuote(randomQuote(false));

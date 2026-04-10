@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">读书库</string>
-    <string name="title_activity_main">读书库</string>
+    <string name="app_name">今天读什么</string>
+    <string name="title_activity_main">今天读什么</string>
     <string name="package_name">com.zongqir.book</string>
     <string name="custom_url_scheme">com.zongqir.book</string>
 </resources>

@@ -20,7 +20,7 @@ export function buildLibraryOgImagePath(parts: string[]) {
 export function describeNodeForOg(node: PageNode): string {
   if (node.kind === "section") return `${node.section.title}分类页`;
   if (node.kind === "book") return `《${node.book.title}》书页`;
-  return `${node.book?.title || "读书库"} · ${node.page.title}`;
+  return `${node.book?.title || "今天读什么"} · ${node.page.title}`;
 }
 
 export function renderLibraryOgSvg(node: PageNode): string {
@@ -95,7 +95,7 @@ export function renderLibraryOgSvg(node: PageNode): string {
       ${summaryMarkup}
       <text x="890" y="142" font-size="16" fill="${accent.strong}" letter-spacing="3">${escapeXml(data.sourceTitle)}</text>
       ${sourceMarkup}
-      <text x="96" y="534" font-size="20" fill="#5c7182">book.zongqir.com</text>
+      <text x="96" y="534" font-size="20" fill="#5c7182">今天读什么 · book.zongqir.com</text>
     </svg>
   `.trim();
 }
@@ -104,14 +104,14 @@ function getOgImageData(node: PageNode): OgImageData {
   if (node.kind === "section") {
     const bookTitles = node.books.slice(0, 3).map((book) => book.title);
     return {
-      eyebrow: "读书库 · 分类",
+      eyebrow: "今天读什么 · 分类",
       title: node.section.title,
       summary: `这个方向下有 ${node.books.length} 本书，可以从书页直接往里读。${bookTitles.length ? `先从 ${bookTitles.join("、")} 开始。` : ""}`,
       sourceTitle: "来源",
       sourceLines: [
         { label: "类型", value: "分类页" },
         { label: "数量", value: `${node.books.length} 本书` },
-        { label: "站点", value: "读书库" },
+        { label: "站点", value: "今天读什么" },
       ],
       accent: "amber",
     };
@@ -133,12 +133,12 @@ function getOgImageData(node: PageNode): OgImageData {
   }
 
   return {
-    eyebrow: node.book ? `${node.section?.title || "读书库"} · ${node.book.title}` : "读书库",
+    eyebrow: node.book ? `${node.section?.title || "今天读什么"} · ${node.book.title}` : "今天读什么",
     title: node.page.title,
     summary: node.page.summary || node.page.intent || `${node.book?.title || "这本书"}里的这一页，适合直接分享出去。`,
     sourceTitle: "来源",
     sourceLines: [
-      { label: "书名", value: node.book?.title || "读书库" },
+      { label: "书名", value: node.book?.title || "今天读什么" },
       { label: "栏目", value: node.page.section_title || "未分类" },
       { label: "页位", value: node.page.slot || "正文页" },
     ],

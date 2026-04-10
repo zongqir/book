@@ -7,9 +7,9 @@ const libraryHref = toInternalHref("/library/");
 
 <BaseLayout
   title="书架"
-  description="把最近阅读、在读书和收藏书放在一起，回来先接着读。"
+  description="把最近打开的书放在前面，回来先接着读。"
   canonicalPath="/shelf/"
-  ogDescription="把最近阅读、在读书和收藏书放在一起，回来先接着读。"
+  ogDescription="把最近打开的书放在前面，回来先接着读。"
   isShelf={true}
 >
   <div class="page-stack shelf-dashboard">
@@ -21,7 +21,7 @@ const libraryHref = toInternalHref("/library/");
           <p class="shelf-lead">这里不做管理，只把你最可能马上打开的书放在前面。</p>
         </div>
         <div class="shelf-hero-actions">
-          <a class="btn" href={libraryHref}>去目录找书</a>
+          <a class="btn" href={libraryHref}>去分类找书</a>
         </div>
       </div>
     </section>
@@ -42,55 +42,21 @@ const libraryHref = toInternalHref("/library/");
           <p>先随便打开一本书，或者进入一篇文章，书架下次就能直接把你接回来。</p>
         </div>
       </section>
-
-      <section class="content-card shelf-reading-card">
-        <div class="section-head shelf-section-head">
-          <div>
-            <p class="eyebrow">在读</p>
-            <h2>现在还在推进的书</h2>
-          </div>
-        </div>
-
-        <div class="shelf-book-list" id="shelf-reading-results"></div>
-        <div class="notes-empty personal-empty shelf-empty" id="shelf-reading-empty" hidden>
-          <h2>还没有标记在读的书</h2>
-          <p>在书页把阅读进度切到“在读”，这本书就会出现在书架上。</p>
-        </div>
-      </section>
     </div>
   </div>
 
   <script>
     import { readRecentBookVisits } from "../../lib/personal-preferences";
 
-    const BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
     const RECENT_BOOK_VISITS_STORAGE_KEY = "book:recent-books:v1";
     const libraryHref = "/library/";
 
     const lastVisitNode = document.getElementById("shelf-last-visit");
     const lastVisitEmptyNode = document.getElementById("shelf-last-visit-empty");
-    const readingResultsNode = document.getElementById("shelf-reading-results");
-    const readingEmptyNode = document.getElementById("shelf-reading-empty");
 
     const state = {
-      booksById: new Map(),
-      readingBooks: [],
       recentBooks: [],
     };
-
-    function readBookStatuses() {
-      try {
-        const raw = window.localStorage.getItem(BOOK_STATUS_STORAGE_KEY);
-        if (!raw) return {};
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed !== "object" || !parsed.books || typeof parsed.books !== "object") {
-          return {};
-        }
-        return parsed.books;
-      } catch (error) {
-        return {};
-      }
-    }
 
     function readRecentBooks() {
       return readRecentBookVisits();
@@ -122,22 +88,8 @@ const libraryHref = toInternalHref("/library/");
       }).format(parsed);
     }
 
-    function compareByUpdatedAtDesc(left, right) {
-      return String(right.updated_at || "").localeCompare(String(left.updated_at || ""))
-        || String(left.title || "").localeCompare(String(right.title || ""));
-    }
-
     function refreshCollections() {
       state.recentBooks = readRecentBooks();
-      const bookStatuses = readBookStatuses();
-      const booksWithStatus = Array.from(state.booksById.values())
-        .map((book) => ({
-          ...book,
-          ...(bookStatuses[book.id] || {}),
-        }))
-        .sort(compareByUpdatedAtDesc);
-
-      state.readingBooks = booksWithStatus.filter((book) => book.read_state === "reading");
     }
 
     function renderLastVisit() {
@@ -161,7 +113,7 @@ const libraryHref = toInternalHref("/library/");
               <time class="shelf-recent-time" datetime="${escapeAttribute(book.updatedAt)}">${escapeHtml(formatTime(book.updatedAt) || "刚刚")}</time>
             </div>
             <h3>${escapeHtml(book.title || "最近阅读")}</h3>
-            <p class="shelf-recent-context">${escapeHtml(book.context || "目录里最近打开的内容")}</p>
+            <p class="shelf-recent-context">${escapeHtml(book.context || "分类里最近打开的内容")}</p>
             <p class="shelf-recent-summary">${escapeHtml(book.summary || "回到刚才停下的位置。")}</p>
             <div class="shelf-recent-actions">
               <a class="${index === 0 ? "btn btn-shelf-primary" : "tool-switch tool-switch--compact"}" href="${escapeAttribute(book.url || book.bookUrl || libraryHref)}">继续打开</a>
@@ -172,62 +124,12 @@ const libraryHref = toInternalHref("/library/");
         .join("");
     }
 
-    function renderReadingBooks() {
-      if (!(readingResultsNode instanceof HTMLElement)) return;
-
-      if (!state.readingBooks.length) {
-        readingResultsNode.innerHTML = "";
-        if (readingEmptyNode instanceof HTMLElement) readingEmptyNode.hidden = false;
-        return;
-      }
-
-      if (readingEmptyNode instanceof HTMLElement) readingEmptyNode.hidden = true;
-      readingResultsNode.innerHTML = state.readingBooks
-        .map((book) => `
-          <article class="personal-card shelf-book-card">
-            <div class="personal-card-topline">
-              <span class="meta-chip">${escapeHtml(book.section_title || "未分类")}</span>
-              <span class="meta-chip">在读</span>
-              ${book.curation_state === "favorite" ? '<span class="meta-chip">已收藏</span>' : ""}
-            </div>
-            <h3>${escapeHtml(book.title)}</h3>
-            <p>${escapeHtml(book.summary || "这本书目前还没有摘要。")}</p>
-            <div class="personal-card-actions">
-              <a class="btn btn-shelf-primary" href="${escapeAttribute(book.url || "#")}">继续阅读</a>
-            </div>
-          </article>
-        `)
-        .join("");
-    }
-
     function render() {
       renderLastVisit();
-      renderReadingBooks();
     }
-
-    async function loadIndex() {
-      try {
-        const response = await fetch("/data/site-content.json", { cache: "force-cache" });
-        if (!response.ok) throw new Error("Failed to load site content");
-        const payload = await response.json();
-        const books = Array.isArray(payload.books) ? payload.books : [];
-        books.forEach((book) => {
-          if (book && book.id) state.booksById.set(book.id, book);
-        });
-      } catch (error) {
-        console.error("Failed to load shelf index", error);
-      } finally {
-        refreshCollections();
-      }
-    }
-
-    window.addEventListener("book-status:changed", function () {
-      refreshCollections();
-      render();
-    });
 
     window.addEventListener("storage", function (event) {
-      if (event.key === BOOK_STATUS_STORAGE_KEY || event.key === RECENT_BOOK_VISITS_STORAGE_KEY) {
+      if (event.key === RECENT_BOOK_VISITS_STORAGE_KEY) {
         refreshCollections();
         render();
       }
@@ -238,9 +140,7 @@ const libraryHref = toInternalHref("/library/");
       render();
     });
 
-    Promise.allSettled([loadIndex()]).then(function () {
-      refreshCollections();
-      render();
-    });
+    refreshCollections();
+    render();
   </script>
 </BaseLayout>

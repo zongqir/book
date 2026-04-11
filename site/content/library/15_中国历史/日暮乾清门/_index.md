@@ -1,8 +1,8 @@
 ---
-title: "日暮乾清门"
-book_title: "日暮乾清门"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 日暮乾清门
+book_title: 日暮乾清门
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 这是一本从皇帝视角观察清代权力运作的微观政治史，揭示了奏折、仪式、日程如何构成皇权的具体操作系统
 ---

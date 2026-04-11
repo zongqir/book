@@ -1,8 +1,8 @@
 ---
-title: "征服的怒潮"
-book_title: "征服的怒潮"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 征服的怒潮
+book_title: 征服的怒潮
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 理解二战转折期的全球协调逻辑——盟军如何在1942-1944年间将分散防御转化为统一进攻
 ---

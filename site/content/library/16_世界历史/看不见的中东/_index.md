@@ -1,8 +1,8 @@
 ---
-title: "看不见的中东"
-book_title: "看不见的中东"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 看不见的中东
+book_title: 看不见的中东
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 安德森以欧洲知识分子的批判视角审视中东当代政治——聚焦以色列-巴勒斯坦冲突、伊拉克战争和阿拉伯政治格局
 ---

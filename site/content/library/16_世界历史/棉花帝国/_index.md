@@ -1,8 +1,8 @@
 ---
-title: "棉花帝国"
-book_title: "棉花帝国"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 棉花帝国
+book_title: 棉花帝国
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 全球资本主义史的暴力起源和制度转换，以棉花产业为观察窗口
 ---

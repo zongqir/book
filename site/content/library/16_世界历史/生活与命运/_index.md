@@ -1,8 +1,8 @@
 ---
-title: "生活与命运"
-book_title: "生活与命运"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 生活与命运
+book_title: 生活与命运
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 从斯大林格勒战役看极权制度如何塑造和扭曲人性——格罗斯曼用小说的形式写出了20世纪最残酷的政治真相
 ---

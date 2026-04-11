@@ -1,8 +1,8 @@
 ---
-title: "荒野上的大师"
-book_title: "荒野上的大师"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 荒野上的大师
+book_title: 荒野上的大师
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 格拉恩追踪了探险家珀西·福塞特在亚马逊丛林失踪的真实故事——执着追寻'失落之城Z'的探险最终吞没了探险者本人
 ---

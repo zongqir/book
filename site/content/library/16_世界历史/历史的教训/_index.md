@@ -1,8 +1,8 @@
 ---
-title: "历史的教训"
-book_title: "历史的教训"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 历史的教训
+book_title: 历史的教训
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 杜兰特夫妇用一百多页把从《文明的故事》十一卷中提炼出的历史规律和反复出现的模式写成一本薄书
 ---

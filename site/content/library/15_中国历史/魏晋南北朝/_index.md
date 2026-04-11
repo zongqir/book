@@ -1,8 +1,8 @@
 ---
-title: "魏晋南北朝"
-book_title: "魏晋南北朝"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 魏晋南北朝
+book_title: 魏晋南北朝
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 川本芳昭从民族融合和文化互渗的角度重写魏晋南北朝——这不是一段混乱的过渡期而是中华文明自我更新的关键阶段
 ---

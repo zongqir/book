@@ -1,8 +1,8 @@
 ---
-title: "明治天皇"
-book_title: "明治天皇"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 明治天皇
+book_title: 明治天皇
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 基恩用详尽的日本史料重建了明治天皇的一生——从幕末的少年天皇到领导日本完成近代化转型的核心象征
 ---

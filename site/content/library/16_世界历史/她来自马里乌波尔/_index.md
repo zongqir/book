@@ -1,8 +1,8 @@
 ---
-title: "她来自马里乌波尔"
-book_title: "她来自马里乌波尔"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 她来自马里乌波尔
+book_title: 她来自马里乌波尔
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 通过一个德俄混血女孩的家族史，看见20世纪暴力史中被遗忘的普通人如何生存和传承
 ---

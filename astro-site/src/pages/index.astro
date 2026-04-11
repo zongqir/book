@@ -29,12 +29,6 @@ function markdownToPlainText(markdown: string) {
     .trim();
 }
 
-function clampText(value: string, maxLength = 210) {
-  const text = value.trim();
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trimEnd() + "...";
-}
-
 function extractLeadParagraph(markdown: string) {
   const blocks = markdown
     .split(/\r?\n\s*\r?\n/)
@@ -62,7 +56,7 @@ function getWhyReadLead(pageId?: string) {
   if (!pageId) return "";
   try {
     const markdown = contentSource.loadPageMarkdown(pageId);
-    return clampText(extractLeadParagraph(markdown));
+    return extractLeadParagraph(markdown);
   } catch (_error) {
     return "";
   }

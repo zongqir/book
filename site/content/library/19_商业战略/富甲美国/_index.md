@@ -1,8 +1,8 @@
 ---
-title: "富甲美国"
-book_title: "富甲美国"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 富甲美国
+book_title: 富甲美国
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 沃尔顿亲述如何通过极致成本控制、小镇包围战略和对顾客价值的执念，将沃尔玛从乡镇小店打造成全球最大零售商
 ---

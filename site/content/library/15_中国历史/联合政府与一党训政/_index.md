@@ -1,8 +1,8 @@
 ---
-title: "联合政府与一党训政"
-book_title: "联合政府与一党训政"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 联合政府与一党训政
+book_title: 联合政府与一党训政
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 揭示1944-1946年国共谈判中双方真实战略意图，理解政治口号与实际权力博弈的分离
 ---

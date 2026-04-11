@@ -1,8 +1,8 @@
 ---
-title: "崖山"
-book_title: "崖山"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 崖山
+book_title: 崖山
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 崖山海战是南宋灭亡的终点也是中国历史上最具象征性的政权覆灭——张明扬还原这场末日之战背后的政治选择和文化心理
 ---

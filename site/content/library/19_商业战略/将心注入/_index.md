@@ -1,8 +1,8 @@
 ---
-title: "将心注入"
-book_title: "将心注入"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 将心注入
+book_title: 将心注入
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 舒尔茨讲述了星巴克从西雅图一家小咖啡店成长为全球品牌的过程——核心是把咖啡店做成'第三空间'而不只是卖咖啡
 ---

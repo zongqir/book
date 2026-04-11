@@ -1,8 +1,8 @@
 ---
-title: "零年：1945"
-book_title: "零年：1945"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 零年：1945
+book_title: 零年：1945
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 1945年不是胜利的终点，而是道德崩坏和重建尝试交织的混乱开端
 ---

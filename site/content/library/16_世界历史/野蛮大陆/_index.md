@@ -1,8 +1,8 @@
 ---
-title: "野蛮大陆"
-book_title: "野蛮大陆"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 野蛮大陆
+book_title: 野蛮大陆
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 打破'战争结束即和平到来'的历史幻觉，看清1945年后欧洲持续数年的复仇、清洗与种族暴力的真实面貌
 ---

@@ -1,8 +1,8 @@
 ---
-title: "翦商"
-book_title: "翦商"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 翦商
+book_title: 翦商
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 李硕用甲骨卜辞和考古遗址重建了商代人祭体系的规模与日常性，并论证周灭商的核心驱动力不是政权更迭，而是终结一套以活人献祭为中心的文明秩序。
 ---

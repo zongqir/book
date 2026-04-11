@@ -1,8 +1,8 @@
 ---
-title: "战时的第三帝国"
-book_title: "战时的第三帝国"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 战时的第三帝国
+book_title: 战时的第三帝国
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 埃文斯三部曲的终章——从战争爆发到帝国崩溃，完整展示一个极权体制在全面战争压力下如何加速自我毁灭
 ---

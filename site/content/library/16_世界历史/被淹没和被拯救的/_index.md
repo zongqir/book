@@ -1,8 +1,8 @@
 ---
-title: "被淹没和被拯救的"
-book_title: "被淹没和被拯救的"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 被淹没和被拯救的
+book_title: 被淹没和被拯救的
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 莱维在生命最后阶段写下的集中营反思——不是回忆录而是对记忆、羞耻、灰色地带和暴力机制的冷静解剖
 ---

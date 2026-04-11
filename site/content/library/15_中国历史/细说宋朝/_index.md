@@ -1,8 +1,8 @@
 ---
-title: "细说宋朝"
-book_title: "细说宋朝"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 细说宋朝
+book_title: 细说宋朝
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 虞云国用'细说'体逐章拆解两宋三百年的政治史——每一章聚焦一个事件或一个人物，读完拼出完整拼图
 ---

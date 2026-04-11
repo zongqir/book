@@ -1,8 +1,8 @@
 ---
-title: "拥抱战败"
-book_title: "拥抱战败"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 拥抱战败
+book_title: 拥抱战败
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 道尔还原1945-1952年美国占领下日本社会的全面转型——从废墟上的绝望到新秩序的接受不是一个简单的'民主化成功故事'
 ---

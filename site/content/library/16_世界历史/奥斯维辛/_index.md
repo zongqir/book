@@ -1,8 +1,8 @@
 ---
-title: "奥斯维辛"
-book_title: "奥斯维辛"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 奥斯维辛
+book_title: 奥斯维辛
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 里斯用当事人口述和档案还原奥斯维辛的运转机制——不是'邪恶的人做了邪恶的事'而是'一套体制让普通人参与了系统性屠杀'
 ---

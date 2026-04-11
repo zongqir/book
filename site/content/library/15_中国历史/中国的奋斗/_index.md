@@ -1,8 +1,8 @@
 ---
-title: "中国的奋斗"
-book_title: "中国的奋斗"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 中国的奋斗
+book_title: 中国的奋斗
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 项飙从底层流动人口和全球化劳工的视角重写中国现代化叙事——奋斗不是一个抽象口号而是一套具体的社会组织机制
 ---

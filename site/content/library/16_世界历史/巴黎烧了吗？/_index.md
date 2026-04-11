@@ -1,8 +1,8 @@
 ---
-title: "巴黎烧了吗？"
-book_title: "巴黎烧了吗？"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 巴黎烧了吗？
+book_title: 巴黎烧了吗？
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 两位记者用小说笔法还原了1944年巴黎解放的最后几天——希特勒下令炸毁巴黎，为什么命令没被执行
 ---

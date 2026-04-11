@@ -1,8 +1,8 @@
 ---
-title: "耳语者"
-book_title: "耳语者"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 耳语者
+book_title: 耳语者
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 费吉斯通过几百个苏联家庭的口述史还原了斯大林时代恐惧如何深入私人生活——人们学会低声说话、学会沉默、学会背叛亲人
 ---

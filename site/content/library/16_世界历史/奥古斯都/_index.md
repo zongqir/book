@@ -1,8 +1,8 @@
 ---
-title: "奥古斯都"
-book_title: "奥古斯都"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 奥古斯都
+book_title: 奥古斯都
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 戈兹沃西还原了屋大维从凯撒养子到罗马帝国缔造者的全过程——一个十八岁继承者如何在血腥内战中活下来并建立了持续五百年的制度
 ---

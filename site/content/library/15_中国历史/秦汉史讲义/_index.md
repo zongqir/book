@@ -1,8 +1,8 @@
 ---
-title: "秦汉史讲义"
-book_title: "秦汉史讲义"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 秦汉史讲义
+book_title: 秦汉史讲义
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 吕思勉用通史学者的眼光写秦汉四百年——不是讲故事，而是拆制度、拆社会、拆政治运作的底层逻辑
 ---

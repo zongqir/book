@@ -1,8 +1,8 @@
 ---
-title: "九王夺嫡"
-book_title: "九王夺嫡"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 九王夺嫡
+book_title: 九王夺嫡
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 康熙晚年储位之争的全景还原——九个皇子的竞争不只是宫斗戏码而是清代皇权继承制度的一次系统性压力测试
 ---

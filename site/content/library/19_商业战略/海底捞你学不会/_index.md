@@ -1,8 +1,8 @@
 ---
-title: "海底捞你学不会"
-book_title: "海底捞你学不会"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 海底捞你学不会
+book_title: 海底捞你学不会
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 黄铁鹰拆解了海底捞用服务差异化建立竞争壁垒的方法——核心不是服务标准而是让员工愿意主动服务的组织设计
 ---

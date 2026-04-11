@@ -1,8 +1,8 @@
 ---
-title: "冰雪王国"
-book_title: "冰雪王国"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 冰雪王国
+book_title: 冰雪王国
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 1879年珍妮特号北极探险的灾难性航行——33个人被困在冰中两年，然后在北极荒原上求生的故事
 ---

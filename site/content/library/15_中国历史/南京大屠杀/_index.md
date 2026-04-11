@@ -1,8 +1,8 @@
 ---
-title: "南京大屠杀"
-book_title: "南京大屠杀"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 南京大屠杀
+book_title: 南京大屠杀
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 三十万人的死亡在战后五十年间被系统性淡化和否认，张纯如用加害者、受害者、旁观者三重证据线揭示了遗忘的运作机制
 ---

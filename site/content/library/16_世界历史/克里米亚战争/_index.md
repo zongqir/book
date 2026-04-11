@@ -1,8 +1,8 @@
 ---
-title: "克里米亚战争"
-book_title: "克里米亚战争"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 克里米亚战争
+book_title: 克里米亚战争
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 费吉斯用多国档案还原了这场被严重低估的近代战争——它改变了欧洲的权力格局、军事技术和国际关系的游戏规则
 ---

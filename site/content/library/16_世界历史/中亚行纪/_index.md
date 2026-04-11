@@ -1,8 +1,8 @@
 ---
-title: "中亚行纪"
-book_title: "中亚行纪"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 中亚行纪
+book_title: 中亚行纪
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 刘子超深入中亚五国的旅行记录——在苏联解体三十年后观察这些被遗忘的国家如何在大国夹缝中寻找自己的身份
 ---

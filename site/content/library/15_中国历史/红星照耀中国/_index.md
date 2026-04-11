@@ -1,8 +1,8 @@
 ---
-title: "红星照耀中国"
-book_title: "红星照耀中国"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 红星照耀中国
+book_title: 红星照耀中国
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 1936年一个美国记者穿过封锁线进入陕北苏区，写下了外部世界第一份关于中国共产党人日常面貌和组织运作的完整现场报道
 ---

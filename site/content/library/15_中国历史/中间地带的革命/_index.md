@@ -1,8 +1,8 @@
 ---
-title: "中间地带的革命"
-book_title: "中间地带的革命"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 中间地带的革命
+book_title: 中间地带的革命
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 杨奎松研究中国革命中的外交维度——中共、国民党和苏美之间的三角博弈如何塑造了革命的走向
 ---

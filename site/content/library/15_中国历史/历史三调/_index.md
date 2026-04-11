@@ -1,8 +1,8 @@
 ---
-title: "历史三调"
-book_title: "历史三调"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 历史三调
+book_title: 历史三调
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 柯文用义和团运动演示了理解历史的三种方式——作为事件、作为经历、作为神话——同一段历史在三个维度上展开完全不同的面貌
 ---

@@ -1,8 +1,8 @@
 ---
-title: "穿越非洲两百年"
-book_title: "穿越非洲两百年"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 穿越非洲两百年
+book_title: 穿越非洲两百年
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 郭建龙以亲身旅行为线索串起非洲两百年的殖民、独立和当代困境——既是游记也是历史叙事
 ---

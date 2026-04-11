@@ -1,8 +1,8 @@
 ---
-title: "金翼"
-book_title: "金翼"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 金翼
+book_title: 金翼
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 林耀华用小说笔法写出了中国农村社会运转的深层结构——两个家族的兴衰轨迹揭示了人际关系网络如何决定经济命运
 ---

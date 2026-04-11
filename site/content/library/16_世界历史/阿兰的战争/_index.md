@@ -1,8 +1,8 @@
 ---
-title: "阿兰的战争"
-book_title: "阿兰的战争"
-created_at: "2026-04-10T10:00:00+08:00"
-updated_at: "2026-04-10T10:00:00+08:00"
-status: "draft"
-summary: ""
+title: 阿兰的战争
+book_title: 阿兰的战争
+created_at: '2026-04-10T10:00:00+08:00'
+updated_at: '2026-04-10T10:00:00+08:00'
+status: draft
+summary: 吉贝尔用漫画记录了一个美国大兵阿兰·英格拉姆·科普的二战回忆——不是英雄叙事而是一个普通士兵对战争的平静讲述
 ---

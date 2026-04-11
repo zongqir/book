@@ -4404,15 +4404,6 @@ html.is-capacitor-app .tool-switch--share {
   gap: 12px;
 }
 
-.home-focus-intro {
-  margin: 0;
-  color: var(--accent-strong);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .home-focus-body h1 {
   max-width: 11ch;
   font-size: clamp(3rem, 5vw, 4.8rem);
@@ -4428,11 +4419,29 @@ html.is-capacitor-app .tool-switch--share {
   line-height: 1.82;
 }
 
-.home-focus-entry {
+.home-focus-whyread {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.home-focus-whyread-label {
   margin: 0;
-  color: var(--text-faint);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-focus-whyread-copy {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.68;
 }
 
 .home-focus-actions {
@@ -4566,6 +4575,17 @@ html.is-capacitor-app .tool-switch--share {
   .home-focus-copy {
     font-size: 0.95rem;
     line-height: 1.68;
+  }
+
+  .home-focus-whyread {
+    gap: 6px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .home-focus-whyread-copy {
+    font-size: 0.9rem;
+    line-height: 1.58;
   }
 
   .home-focus-actions {
@@ -4841,13 +4861,17 @@ html[data-theme="dark"] .home-quote-text {
 }
 
 html[data-theme="dark"] .home-focus-copy,
-html[data-theme="dark"] .home-focus-entry,
 html[data-theme="dark"] .home-focus-topline,
 html[data-theme="dark"] .home-quote-meta {
   color: rgba(229, 229, 231, 0.76);
 }
 
-html[data-theme="dark"] .home-focus-intro {
+html[data-theme="dark"] .home-focus-whyread {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .home-focus-whyread-label {
   color: #f0b088;
 }
 
@@ -4855,6 +4879,10 @@ html[data-theme="dark"] .home-focus-body h1,
 html[data-theme="dark"] .home-card-head h2,
 html[data-theme="dark"] .home-quote-text {
   color: #f4efe7;
+}
+
+html[data-theme="dark"] .home-focus-whyread-copy {
+  color: rgba(244, 239, 231, 0.92);
 }
 
 html[data-theme="dark"] .home-quote-meta {

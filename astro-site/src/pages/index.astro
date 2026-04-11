@@ -12,8 +12,8 @@ function getBookEntry(bookId: string, fallbackUrl: string) {
   const whyReadPage = siteIndex.pages.find((page) => page.book_id === bookId && String(page.slot ?? "").startsWith("00"));
   return {
     url: whyReadPage?.url ?? fallbackUrl,
-    label: whyReadPage ? "先看入口页" : "打开书籍",
-    hint: whyReadPage ? "先从 00 槽位进入" : "直接进入书目录",
+    label: "直接打开",
+    whyRead: whyReadPage?.summary ?? "",
   };
 }
 
@@ -35,22 +35,23 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         <div class="home-focus-head">
           <p class="home-focus-topline">
             <span class="meta-chip" id="home-focus-mode-chip">今天这本</span>
-            <span id="home-focus-category">{firstBook?.section_title ?? "书库"}</span>
           </p>
           <button class="tool-switch" type="button" id="home-focus-secondary">换一本</button>
         </div>
 
         <div class="home-focus-body">
-          <p class="home-focus-intro">今天读什么</p>
           <h1 id="home-focus-title">{firstBook?.title ?? "随机一本到"}</h1>
           <p class="home-focus-copy" id="home-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
         </div>
 
-        <p class="home-focus-entry" id="home-focus-entry-hint">{firstBookEntry?.hint ?? "直接进入书目录"}</p>
+        <div class="home-focus-whyread" id="home-focus-whyread-wrap" hidden={!firstBookEntry?.whyRead}>
+          <p class="home-focus-whyread-label">为什么读</p>
+          <p class="home-focus-whyread-copy" id="home-focus-whyread-copy">{firstBookEntry?.whyRead ?? ""}</p>
+        </div>
 
         <div class="home-focus-actions">
           <a class="btn" id="home-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
-            <span id="home-focus-open-label">{firstBookEntry?.label ?? "打开书籍"}</span>
+            <span id="home-focus-open-label">{firstBookEntry?.label ?? "直接打开"}</span>
           </a>
         </div>
       </article>
@@ -92,12 +93,12 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
       var currentQuote = 0;
 
       var focusModeChip = document.getElementById("home-focus-mode-chip");
-      var focusCategory = document.getElementById("home-focus-category");
       var focusTitle = document.getElementById("home-focus-title");
       var focusCopy = document.getElementById("home-focus-copy");
+      var focusWhyReadWrap = document.getElementById("home-focus-whyread-wrap");
+      var focusWhyReadCopy = document.getElementById("home-focus-whyread-copy");
       var focusOpen = document.getElementById("home-focus-open");
       var focusOpenLabel = document.getElementById("home-focus-open-label");
-      var focusEntryHint = document.getElementById("home-focus-entry-hint");
       var focusSecondary = document.getElementById("home-focus-secondary");
 
       var quoteText = document.getElementById("home-quote-text");
@@ -144,12 +145,12 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         if (!current) return;
 
         if (focusModeChip) focusModeChip.textContent = "今天这本";
-        if (focusCategory) focusCategory.textContent = current.category || "未分类";
         if (focusTitle) focusTitle.textContent = current.title || "未命名";
         if (focusCopy) focusCopy.textContent = current.summary || "";
+        if (focusWhyReadCopy) focusWhyReadCopy.textContent = current.whyRead || "";
+        if (focusWhyReadWrap) focusWhyReadWrap.hidden = !current.whyRead;
         if (focusOpen) focusOpen.href = current.entryUrl || current.url || "#";
-        if (focusOpenLabel) focusOpenLabel.textContent = current.entryLabel || "打开书籍";
-        if (focusEntryHint) focusEntryHint.textContent = current.entryHint || "直接进入书目录";
+        if (focusOpenLabel) focusOpenLabel.textContent = current.entryLabel || "直接打开";
 
         if (focusSecondary instanceof HTMLButtonElement) {
           focusSecondary.hidden = books.length <= 1;
@@ -251,10 +252,9 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
                     title: source.title || "未命名",
                     url: source.url || "#",
                     entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
-                    entryLabel: whyReadPage ? "先看入口页" : "打开书籍",
-                    entryHint: whyReadPage ? "先从 00 槽位进入" : "直接进入书目录",
+                    entryLabel: "直接打开",
+                    whyRead: whyReadPage && whyReadPage.summary ? whyReadPage.summary : "",
                     summary: source.summary || "",
-                    category: source.section_title || "未分类",
                     tags: Array.isArray(source.tags) ? source.tags : [],
                     readState: item.readState,
                     curationState: item.curationState,

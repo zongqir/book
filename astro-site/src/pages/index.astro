@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData, loadSiteIndex } from "../lib/content";
 import { toInternalHref } from "../lib/internal-links";
 
-const { books, quotes, counts, sections } = getHomeData();
+const { books, quotes } = getHomeData();
 const firstBook = books[0];
 const firstQuote = quotes[0];
 const siteIndex = loadSiteIndex();
@@ -18,15 +18,7 @@ function getBookEntry(bookId: string, fallbackUrl: string) {
 }
 
 const libraryHref = toInternalHref("/library/");
-const shelfHref = toInternalHref("/shelf/");
 const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : null;
-const topSections = [...sections]
-  .sort((a, b) => b.book_count - a.book_count || b.page_count - a.page_count || a.title.localeCompare(b.title, "zh-CN"))
-  .slice(0, 4)
-  .map((section) => ({
-    ...section,
-    previewBooks: books.filter((book) => book.section_key === section.key).slice(0, 3),
-  }));
 ---
 
 <BaseLayout
@@ -38,33 +30,7 @@ const topSections = [...sections]
   ogDescription="随机一本到，直接开读。"
 >
   <div class="page-stack home-page">
-    <section class="home-hero-panel">
-      <div class="home-hero-copy">
-        <p class="hero-kicker">今日入口</p>
-        <h1>今天读什么</h1>
-        <p class="home-hero-summary">不用先逛完整个书库。先选一条今天能马上走进去的入口，再决定要不要继续往下拆。</p>
-      </div>
-      <dl class="home-stat-strip" aria-label="书库概览">
-        <div class="home-stat-card">
-          <dt>分类</dt>
-          <dd>{counts.sections}</dd>
-        </div>
-        <div class="home-stat-card">
-          <dt>书</dt>
-          <dd>{counts.books}</dd>
-        </div>
-        <div class="home-stat-card">
-          <dt>页面</dt>
-          <dd>{counts.pages}</dd>
-        </div>
-        <div class="home-stat-card">
-          <dt>摘句</dt>
-          <dd>{counts.quotes}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="home-main-grid">
+    <section class="home-simple-stage">
       <article class="home-focus-card" aria-live="polite">
         <div class="home-focus-head">
           <p class="home-focus-topline">
@@ -75,106 +41,41 @@ const topSections = [...sections]
         </div>
 
         <div class="home-focus-body">
-          <p class="home-focus-label">随机一本到</p>
-          <h2 id="home-focus-title">{firstBook?.title ?? "随机一本到"}</h2>
+          <p class="home-focus-intro">今天读什么</p>
+          <h1 id="home-focus-title">{firstBook?.title ?? "随机一本到"}</h1>
           <p class="home-focus-copy" id="home-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
         </div>
 
-        <dl class="home-focus-meta">
-          <div class="home-focus-meta-item">
-            <dt>拆解页</dt>
-            <dd id="home-focus-page-count">{firstBook?.page_count ?? 0} 页</dd>
-          </div>
-          <div class="home-focus-meta-item">
-            <dt>建议入口</dt>
-            <dd id="home-focus-entry-hint">{firstBookEntry?.hint ?? "直接进入书目录"}</dd>
-          </div>
-        </dl>
+        <p class="home-focus-entry" id="home-focus-entry-hint">{firstBookEntry?.hint ?? "直接进入书目录"}</p>
 
         <div class="home-focus-actions">
           <a class="btn" id="home-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
             <span id="home-focus-open-label">{firstBookEntry?.label ?? "打开书籍"}</span>
           </a>
-          <a class="tool-switch" href={libraryHref}>去分类逛逛</a>
         </div>
       </article>
 
-      <aside class="home-side-stack">
-        <article class="home-route-card">
-          <header class="home-card-head">
-            <div>
-              <p class="eyebrow">今天怎么开始</p>
-              <h2>别先逛，先选一条路</h2>
-            </div>
-          </header>
-
-          <div class="home-route-list">
-            <a class="home-route-item" href={libraryHref}>
-              <span class="home-route-title">按分类挑一本</span>
-              <span class="home-route-copy">技术、沟通、投资、治理这些分类，适合你已经知道自己想看什么。</span>
-            </a>
-            <a class="home-route-item" href={shelfHref}>
-              <span class="home-route-title">回书架续读</span>
-              <span class="home-route-copy">如果你已经给书标过状态，直接回到上次停下的位置。</span>
-            </a>
-            <a class="home-route-item" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
-              <span class="home-route-title">直接打开今天这本</span>
-              <span class="home-route-copy">不做筛选，先读入口页。值不值得继续，打开后再判断。</span>
-            </a>
+      <article class="home-quote-card" aria-label="摘一句">
+        <div class="home-card-head">
+          <div>
+            <p class="eyebrow">摘句</p>
+            <h2>今天这一句</h2>
           </div>
-        </article>
-
-        <article class="home-quote-card" aria-label="摘一句">
-          <div class="home-card-head">
-            <div>
-              <p class="eyebrow">摘句</p>
-              <h2>今天这一句</h2>
-            </div>
-            <button class="tool-switch tool-switch--compact" type="button" id="home-quote-shuffle">换一句</button>
-          </div>
-
-          {firstQuote ? (
-            <div class="home-quote-body" aria-live="polite">
-              <p class="home-quote-text" id="home-quote-text">“{firstQuote.quote}”</p>
-              <div class="home-quote-meta">
-                <span id="home-quote-book">{firstQuote.book_title}</span>
-                <a class="quote-link" id="home-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-              </div>
-            </div>
-          ) : (
-            <p class="tool-empty">暂时还没有句子卡可抽。</p>
-          )}
-        </article>
-      </aside>
-    </section>
-
-    <section class="home-section-panel">
-      <div class="home-section-head">
-        <div>
-          <p class="eyebrow">分类入口</p>
-          <h2>先从这些书架走进去</h2>
+          <button class="tool-switch tool-switch--compact" type="button" id="home-quote-shuffle">换一句</button>
         </div>
-        <a class="tool-switch tool-switch--compact" href={libraryHref}>看全部分类</a>
-      </div>
 
-      <div class="home-section-grid">
-        {topSections.map((section) => (
-          <a class="home-section-card" href={toInternalHref(section.url)}>
-            <div class="home-section-card-head">
-              <span class="home-section-name">{section.title}</span>
-              <span class="home-section-count">{section.book_count} 本</span>
+        {firstQuote ? (
+          <div class="home-quote-body" aria-live="polite">
+            <p class="home-quote-text" id="home-quote-text">“{firstQuote.quote}”</p>
+            <div class="home-quote-meta">
+              <span id="home-quote-book">{firstQuote.book_title}</span>
+              <a class="quote-link" id="home-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
             </div>
-            <p class="home-section-copy">{section.page_count} 页拆解，先从这个方向里最常被打开的书开始。</p>
-            <div class="home-section-preview" aria-hidden="true">
-              {section.previewBooks.length ? (
-                section.previewBooks.map((book) => <span class="home-section-preview-item">{book.title}</span>)
-              ) : (
-                <span class="home-section-preview-item">等待补充</span>
-              )}
-            </div>
-          </a>
-        ))}
-      </div>
+          </div>
+        ) : (
+          <p class="tool-empty">暂时还没有句子卡可抽。</p>
+        )}
+      </article>
     </section>
   </div>
 
@@ -196,7 +97,6 @@ const topSections = [...sections]
       var focusCopy = document.getElementById("home-focus-copy");
       var focusOpen = document.getElementById("home-focus-open");
       var focusOpenLabel = document.getElementById("home-focus-open-label");
-      var focusPageCount = document.getElementById("home-focus-page-count");
       var focusEntryHint = document.getElementById("home-focus-entry-hint");
       var focusSecondary = document.getElementById("home-focus-secondary");
 
@@ -249,7 +149,6 @@ const topSections = [...sections]
         if (focusCopy) focusCopy.textContent = current.summary || "";
         if (focusOpen) focusOpen.href = current.entryUrl || current.url || "#";
         if (focusOpenLabel) focusOpenLabel.textContent = current.entryLabel || "打开书籍";
-        if (focusPageCount) focusPageCount.textContent = String(current.pageCount || 0) + " 页";
         if (focusEntryHint) focusEntryHint.textContent = current.entryHint || "直接进入书目录";
 
         if (focusSecondary instanceof HTMLButtonElement) {
@@ -356,7 +255,6 @@ const topSections = [...sections]
                     entryHint: whyReadPage ? "先从 00 槽位进入" : "直接进入书目录",
                     summary: source.summary || "",
                     category: source.section_title || "未分类",
-                    pageCount: typeof source.page_count === "number" ? source.page_count : 0,
                     tags: Array.isArray(source.tags) ? source.tags : [],
                     readState: item.readState,
                     curationState: item.curationState,

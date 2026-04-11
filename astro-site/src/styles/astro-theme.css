@@ -4345,102 +4345,36 @@ html.is-capacitor-app .tool-switch--share {
 
 
 .home-page {
-  gap: 32px;
+  gap: 18px;
 }
 
-.home-hero-panel {
+.home-simple-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
-  gap: 22px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+  gap: 18px;
+  align-items: stretch;
 }
 
-.home-hero-copy {
-  display: grid;
-  gap: 14px;
-}
-
-.home-hero-copy h1,
 .home-card-head h2,
-.home-section-head h2,
-.home-focus-body h2 {
+.home-focus-body h1 {
   margin: 0;
   font-family: "Noto Serif SC", serif;
 }
 
-.home-hero-copy h1 {
-  font-size: clamp(3.1rem, 5.6vw, 5.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-}
-
-.home-hero-summary {
-  margin: 0;
-  max-width: 42rem;
-  color: var(--text-soft);
-  font-size: 1.06rem;
-  line-height: 1.86;
-}
-
-.home-stat-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-}
-
-.home-stat-card,
 .home-focus-card,
-.home-route-card,
-.home-quote-card,
-.home-section-card {
+.home-quote-card {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
 
-.home-stat-card {
-  display: grid;
-  gap: 10px;
-  min-height: 120px;
-  padding: 18px 18px 20px;
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255, 251, 246, 0.98), rgba(255, 255, 255, 0.98)),
-    var(--bg-surface);
-}
-
-.home-stat-card dt {
-  margin: 0;
-  color: var(--text-faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.76rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.home-stat-card dd {
-  margin: 0;
-  align-self: end;
-  font-family: "Noto Serif SC", serif;
-  font-size: clamp(2rem, 3vw, 2.7rem);
-  line-height: 1;
-}
-
-.home-main-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
-  gap: 22px;
-  align-items: start;
-}
-
 .home-focus-card {
   display: grid;
-  gap: 24px;
+  gap: 18px;
   min-height: 100%;
-  padding: 30px;
-  border-radius: 30px;
+  padding: 26px;
+  border-radius: 28px;
   background:
     radial-gradient(circle at top right, rgba(191, 79, 35, 0.12), transparent 32%),
     linear-gradient(180deg, rgba(255, 249, 243, 0.98), rgba(255, 255, 255, 0.98)),
@@ -4449,10 +4383,8 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-focus-head,
 .home-card-head,
-.home-section-head,
 .home-focus-topline,
-.home-quote-meta,
-.home-section-card-head {
+.home-quote-meta {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -4460,8 +4392,7 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-focus-topline,
-.home-quote-meta,
-.home-section-card-head {
+.home-quote-meta {
   margin: 0;
   flex-wrap: wrap;
   color: var(--text-faint);
@@ -4470,24 +4401,21 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-focus-body {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
-.home-focus-label,
-.home-route-title,
-.home-section-name {
+.home-focus-intro {
   margin: 0;
-  color: var(--text);
-  font-weight: 700;
+  color: var(--accent-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.home-focus-label {
-  font-size: 0.94rem;
-}
-
-.home-focus-body h2 {
-  max-width: 10ch;
-  font-size: clamp(3rem, 5.2vw, 5rem);
+.home-focus-body h1 {
+  max-width: 11ch;
+  font-size: clamp(3rem, 5vw, 4.8rem);
   line-height: 0.98;
   letter-spacing: -0.05em;
 }
@@ -4500,112 +4428,35 @@ html.is-capacitor-app .tool-switch--share {
   line-height: 1.82;
 }
 
-.home-focus-meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
-}
-
-.home-focus-meta-item,
-.home-route-item,
-.home-section-preview-item {
-  border: 1px solid rgba(29, 29, 31, 0.08);
-  background: rgba(255, 255, 255, 0.74);
-}
-
-.home-focus-meta-item {
-  display: grid;
-  gap: 6px;
-  min-height: 88px;
-  padding: 16px 18px;
-  border-radius: 18px;
-}
-
-.home-focus-meta-item dt {
+.home-focus-entry {
   margin: 0;
   color: var(--text-faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.home-focus-meta-item dd {
-  margin: 0;
-  color: var(--text);
-  font-size: 0.98rem;
-  line-height: 1.55;
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
 
 .home-focus-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
-.home-focus-actions .tool-switch {
-  min-height: 44px;
-  padding: 0 18px;
-}
-
-.home-side-stack {
-  display: grid;
-  gap: 18px;
-  align-content: start;
-}
-
-.home-route-card,
 .home-quote-card {
   display: grid;
   gap: 18px;
   padding: 24px;
   border-radius: 26px;
-  background: var(--bg-surface);
-}
-
-.home-route-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 244, 239, 0.98)),
-    var(--bg-surface);
-}
-
-.home-quote-card {
   background:
     linear-gradient(180deg, rgba(240, 249, 247, 0.98), rgba(255, 255, 255, 0.98)),
     var(--bg-surface);
 }
 
-.home-card-head h2,
-.home-section-head h2 {
+.home-card-head h2 {
   font-size: clamp(1.42rem, 2.2vw, 1.9rem);
   line-height: 1.15;
 }
 
-.home-card-head .eyebrow,
-.home-section-head .eyebrow {
+.home-card-head .eyebrow {
   margin: 0 0 10px;
-}
-
-.home-route-list {
-  display: grid;
-  gap: 10px;
-}
-
-.home-route-item {
-  display: grid;
-  gap: 6px;
-  min-height: 92px;
-  padding: 16px 18px;
-  border-radius: 18px;
-}
-
-.home-route-copy,
-.home-section-copy {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 0.94rem;
-  line-height: 1.62;
 }
 
 .home-quote-body {
@@ -4626,77 +4477,17 @@ html.is-capacitor-app .tool-switch--share {
   border-top: 1px solid rgba(29, 29, 31, 0.08);
 }
 
-.home-section-panel {
-  display: grid;
-  gap: 18px;
-}
-
-.home-section-head {
-  align-items: end;
-}
-
-.home-section-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.home-section-card {
-  display: grid;
-  gap: 14px;
-  min-height: 100%;
-  padding: 20px;
-  border-radius: 22px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 244, 239, 0.98)),
-    var(--bg-surface);
-}
-
-.home-section-count {
-  color: var(--accent-strong);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.home-section-preview {
-  display: grid;
-  gap: 8px;
-}
-
-.home-section-preview-item {
-  display: block;
-  min-width: 0;
-  padding: 10px 12px;
-  border-radius: 14px;
-  color: var(--text);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.home-route-item:hover,
-.home-route-item:focus-visible,
-.home-section-card:hover,
-.home-section-card:focus-visible,
 .home-focus-card:hover,
-.home-focus-card:focus-within {
+.home-focus-card:focus-within,
+.home-quote-card:hover,
+.home-quote-card:focus-within {
   border-color: var(--border-hover);
   box-shadow: var(--shadow-card-hover);
 }
 
 @media (max-width: 1080px) {
-  .home-hero-panel,
-  .home-main-grid {
+  .home-simple-stage {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .home-section-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-focus-body h2 {
-    max-width: 12ch;
   }
 }
 
@@ -4735,48 +4526,15 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-page {
-    gap: 22px;
+    gap: 14px;
     min-height: calc(100dvh - 132px - var(--safe-bottom));
   }
 
-  .home-hero-panel {
-    gap: 14px;
-  }
-
-  .home-hero-copy {
-    gap: 10px;
-  }
-
-  .home-hero-copy h1 {
-    font-size: clamp(2.4rem, 11vw, 3.2rem);
-  }
-
-  .home-hero-summary {
-    font-size: 0.96rem;
-    line-height: 1.7;
-  }
-
-  .home-stat-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .home-stat-card {
-    min-height: 94px;
-    padding: 14px 14px 16px;
-    border-radius: 18px;
-  }
-
-  .home-stat-card dd {
-    font-size: 1.68rem;
-  }
-
-  .home-main-grid {
+  .home-simple-stage {
     gap: 14px;
   }
 
   .home-focus-card,
-  .home-route-card,
   .home-quote-card {
     gap: 16px;
     padding: 18px 16px;
@@ -4784,14 +4542,12 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-focus-head,
-  .home-card-head,
-  .home-section-head {
+  .home-card-head {
     align-items: flex-start;
   }
 
   .home-focus-topline,
-  .home-quote-meta,
-  .home-section-card-head {
+  .home-quote-meta {
     font-size: 0.76rem;
   }
 
@@ -4802,15 +4558,7 @@ html.is-capacitor-app .tool-switch--share {
     font-size: 0.68rem;
   }
 
-  .home-focus-body {
-    gap: 12px;
-  }
-
-  .home-focus-label {
-    font-size: 0.86rem;
-  }
-
-  .home-focus-body h2 {
+  .home-focus-body h1 {
     max-width: 12ch;
     font-size: clamp(2rem, 9vw, 2.8rem);
   }
@@ -4820,43 +4568,12 @@ html.is-capacitor-app .tool-switch--share {
     line-height: 1.68;
   }
 
-  .home-focus-meta {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .home-focus-meta-item {
-    min-height: 0;
-    padding: 14px 14px 15px;
-    border-radius: 16px;
-  }
-
   .home-focus-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    display: flex;
   }
 
-  .home-focus-actions .tool-switch {
-    min-height: 44px;
-    padding: 0 16px;
-  }
-
-  .home-card-head h2,
-  .home-section-head h2 {
+  .home-card-head h2 {
     font-size: 1.18rem;
-  }
-
-  .home-route-item {
-    min-height: 0;
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .home-route-copy,
-  .home-section-copy {
-    font-size: 0.9rem;
-    line-height: 1.56;
   }
 
   .home-quote-text {
@@ -4868,26 +4585,6 @@ html.is-capacitor-app .tool-switch--share {
     display: grid;
     gap: 6px;
     padding-top: 12px;
-  }
-
-  .home-section-panel {
-    gap: 14px;
-  }
-
-  .home-section-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .home-section-card {
-    padding: 16px;
-    border-radius: 18px;
-  }
-
-  .home-section-preview-item {
-    padding: 9px 10px;
-    border-radius: 12px;
-    font-size: 0.86rem;
   }
 
   .section-preview-line {
@@ -5118,30 +4815,15 @@ html[data-theme="dark"] .doc-content.reader-notes-pick-mode .reader-note-block:a
   background: rgba(209, 138, 88, 0.12);
 }
 
-html[data-theme="dark"] .home-stat-card,
 html[data-theme="dark"] .home-focus-card,
-html[data-theme="dark"] .home-route-card,
-html[data-theme="dark"] .home-quote-card,
-html[data-theme="dark"] .home-section-card {
+html[data-theme="dark"] .home-quote-card {
   border-color: rgba(255, 255, 255, 0.08);
-}
-
-html[data-theme="dark"] .home-stat-card {
-  background:
-    linear-gradient(180deg, rgba(34, 30, 28, 0.96), rgba(22, 21, 20, 0.98)),
-    var(--bg-surface);
 }
 
 html[data-theme="dark"] .home-focus-card {
   background:
     radial-gradient(circle at top right, rgba(240, 176, 136, 0.12), transparent 34%),
     linear-gradient(180deg, rgba(34, 30, 28, 0.98), rgba(18, 18, 20, 0.98)),
-    var(--bg-surface);
-}
-
-html[data-theme="dark"] .home-route-card {
-  background:
-    linear-gradient(180deg, rgba(31, 29, 29, 0.98), rgba(20, 20, 22, 0.98)),
     var(--bg-surface);
 }
 
@@ -5152,61 +4834,33 @@ html[data-theme="dark"] .home-quote-card {
   border-color: rgba(100, 210, 197, 0.14);
 }
 
-html[data-theme="dark"] .home-section-card {
-  background:
-    linear-gradient(180deg, rgba(31, 29, 29, 0.98), rgba(21, 21, 23, 0.98)),
-    var(--bg-surface);
-}
-
-html[data-theme="dark"] .home-hero-copy h1,
 html[data-theme="dark"] .home-card-head h2,
-html[data-theme="dark"] .home-section-head h2,
-html[data-theme="dark"] .home-focus-body h2,
+html[data-theme="dark"] .home-focus-body h1,
 html[data-theme="dark"] .home-quote-text {
   color: #f4efe7;
 }
 
-html[data-theme="dark"] .home-hero-summary,
 html[data-theme="dark"] .home-focus-copy,
-html[data-theme="dark"] .home-route-copy,
-html[data-theme="dark"] .home-section-copy,
+html[data-theme="dark"] .home-focus-entry,
 html[data-theme="dark"] .home-focus-topline,
-html[data-theme="dark"] .home-quote-meta,
-html[data-theme="dark"] .home-section-card-head {
+html[data-theme="dark"] .home-quote-meta {
   color: rgba(229, 229, 231, 0.76);
 }
 
-html[data-theme="dark"] .home-stat-card dt,
-html[data-theme="dark"] .home-focus-meta-item dt {
-  color: rgba(229, 229, 231, 0.5);
+html[data-theme="dark"] .home-focus-intro {
+  color: #f0b088;
 }
 
-html[data-theme="dark"] .home-stat-card dd,
-html[data-theme="dark"] .home-focus-label,
-html[data-theme="dark"] .home-route-title,
-html[data-theme="dark"] .home-section-name,
-html[data-theme="dark"] .home-focus-meta-item dd,
-html[data-theme="dark"] .home-section-preview-item {
+html[data-theme="dark"] .home-focus-body h1,
+html[data-theme="dark"] .home-card-head h2,
+html[data-theme="dark"] .home-quote-text {
   color: #f4efe7;
-}
-
-html[data-theme="dark"] .home-focus-meta-item,
-html[data-theme="dark"] .home-route-item,
-html[data-theme="dark"] .home-section-preview-item {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-html[data-theme="dark"] .home-focus-meta-item dd,
-html[data-theme="dark"] .home-section-preview-item {
-  color: rgba(244, 239, 231, 0.92);
 }
 
 html[data-theme="dark"] .home-quote-meta {
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 
-html[data-theme="dark"] .home-section-count,
 html[data-theme="dark"] .quote-link {
   color: #f0b088;
 }

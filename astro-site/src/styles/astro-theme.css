@@ -4345,146 +4345,120 @@ html.is-capacitor-app .tool-switch--share {
 
 
 .home-page {
-  gap: 18px;
+  gap: 20px;
 }
 
-.home-simple-stage {
+.home-single-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
-  gap: 18px;
-  align-items: stretch;
 }
 
-.home-focus-body h1 {
-  margin: 0;
-  font-family: "Noto Serif SC", serif;
-}
-
-.home-focus-card,
-.home-quote-card {
+.home-cover-card {
   position: relative;
   overflow: hidden;
+  display: grid;
+  gap: 24px;
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 34px 32px 28px;
+  border-radius: 34px;
   border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at top right, rgba(191, 79, 35, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(255, 249, 243, 0.98), rgba(255, 255, 255, 0.98)),
+    var(--bg-surface);
   box-shadow: var(--shadow-card);
 }
 
-.home-focus-card {
+.home-cover-copy {
   display: grid;
-  gap: 18px;
-  min-height: 100%;
-  padding: 26px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(191, 79, 35, 0.12), transparent 32%),
-    linear-gradient(180deg, rgba(255, 249, 243, 0.98), rgba(255, 255, 255, 0.98)),
-    var(--bg-surface);
-}
-
-.home-focus-head,
-.home-quote-meta {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
   gap: 14px;
 }
 
-.home-quote-meta {
+.home-cover-title {
   margin: 0;
-  flex-wrap: wrap;
-  color: var(--text-faint);
-  font-size: 0.82rem;
+  max-width: 12ch;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(3.2rem, 6vw, 5.6rem);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
 }
 
-.home-focus-body {
-  display: grid;
-  gap: 12px;
-}
-
-.home-focus-body h1 {
-  max-width: 11ch;
-  font-size: clamp(3rem, 5vw, 4.8rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-}
-
-.home-focus-copy {
+.home-cover-summary {
   margin: 0;
-  max-width: 36rem;
+  max-width: 38rem;
   color: var(--text-soft);
-  font-size: 1.02rem;
-  line-height: 1.82;
+  font-size: 1.04rem;
+  line-height: 1.84;
 }
 
-.home-focus-whyread {
-  display: grid;
+.home-cover-why {
+  max-width: 36rem;
   padding: 16px 18px;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(29, 29, 31, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.74);
 }
 
-.home-focus-whyread-copy {
+.home-cover-why p {
   margin: 0;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   line-height: 1.68;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
-.home-focus-actions {
+.home-cover-quote {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.home-quote-card {
-  display: grid;
-  gap: 18px;
-  padding: 24px;
-  border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(240, 249, 247, 0.98), rgba(255, 255, 255, 0.98)),
-    var(--bg-surface);
-}
-
-.home-quote-body {
-  display: grid;
-  gap: 18px;
-  align-content: space-between;
-}
-
-.home-quote-text {
-  margin: 0;
-  max-width: 16ch;
-  font-family: "Noto Sans SC", sans-serif;
-  font-size: clamp(1.9rem, 3vw, 2.7rem);
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.home-quote-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.home-quote-meta {
-  padding-top: 16px;
+  max-width: 42rem;
+  gap: 12px;
+  padding-top: 20px;
   border-top: 1px solid rgba(29, 29, 31, 0.08);
 }
 
-.home-focus-card:hover,
-.home-focus-card:focus-within,
-.home-quote-card:hover,
-.home-quote-card:focus-within {
+.home-cover-quote-text {
+  margin: 0;
+  max-width: 15ch;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(1.68rem, 2.8vw, 2.3rem);
+  font-weight: 600;
+  line-height: 1.44;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.home-cover-quote-source {
+  margin: 0;
+  color: var(--text-faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-cover-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.home-cover-actions .btn,
+.home-cover-actions .tool-switch {
+  width: 100%;
+  min-height: 46px;
+}
+
+.home-cover-card:hover,
+.home-cover-card:focus-within {
   border-color: var(--border-hover);
   box-shadow: var(--shadow-card-hover);
 }
 
 @media (max-width: 1080px) {
-  .home-simple-stage {
-    grid-template-columns: minmax(0, 1fr);
+  .home-cover-card {
+    width: 100%;
   }
 }
 
@@ -4527,64 +4501,44 @@ html.is-capacitor-app .tool-switch--share {
     min-height: calc(100dvh - 132px - var(--safe-bottom));
   }
 
-  .home-simple-stage {
-    gap: 14px;
-  }
-
-  .home-focus-card,
-  .home-quote-card {
+  .home-cover-card {
     gap: 16px;
-    padding: 18px 16px;
-    border-radius: 24px;
+    padding: 22px 18px 18px;
+    border-radius: 26px;
   }
 
-  .home-focus-head,
-  .home-quote-meta {
-    align-items: flex-start;
-  }
-
-  .home-quote-meta {
-    font-size: 0.76rem;
-  }
-
-  .home-focus-body h1 {
+  .home-cover-title {
     max-width: 12ch;
-    font-size: clamp(2rem, 9vw, 2.8rem);
+    font-size: clamp(2.4rem, 9vw, 3.3rem);
   }
 
-  .home-focus-copy {
+  .home-cover-summary {
     font-size: 0.95rem;
     line-height: 1.68;
   }
 
-  .home-focus-whyread {
+  .home-cover-why {
     padding: 14px;
     border-radius: 16px;
   }
 
-  .home-focus-whyread-copy {
+  .home-cover-why p {
     font-size: 0.9rem;
     line-height: 1.58;
   }
 
-  .home-focus-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-quote-text {
+  .home-cover-quote-text {
     max-width: none;
-    font-size: 1.5rem;
-    line-height: 1.56;
+    font-size: 1.42rem;
+    line-height: 1.5;
   }
 
-  .home-quote-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .home-cover-quote-source {
+    font-size: 0.7rem;
   }
 
-  .home-quote-meta {
-    display: grid;
-    gap: 6px;
-    padding-top: 12px;
+  .home-cover-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .section-preview-line {
@@ -4815,55 +4769,38 @@ html[data-theme="dark"] .doc-content.reader-notes-pick-mode .reader-note-block:a
   background: rgba(209, 138, 88, 0.12);
 }
 
-html[data-theme="dark"] .home-focus-card,
-html[data-theme="dark"] .home-quote-card {
+html[data-theme="dark"] .home-cover-card {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-html[data-theme="dark"] .home-focus-card {
+html[data-theme="dark"] .home-cover-card {
   background:
     radial-gradient(circle at top right, rgba(240, 176, 136, 0.12), transparent 34%),
     linear-gradient(180deg, rgba(34, 30, 28, 0.98), rgba(18, 18, 20, 0.98)),
     var(--bg-surface);
 }
 
-html[data-theme="dark"] .home-quote-card {
-  background:
-    linear-gradient(180deg, rgba(24, 42, 43, 0.94), rgba(18, 24, 28, 0.98)),
-    var(--bg-surface);
-  border-color: rgba(100, 210, 197, 0.14);
-}
-
-html[data-theme="dark"] .home-focus-body h1,
-html[data-theme="dark"] .home-quote-text {
+html[data-theme="dark"] .home-cover-title,
+html[data-theme="dark"] .home-cover-quote-text {
   color: #f4efe7;
 }
 
-html[data-theme="dark"] .home-focus-copy,
-html[data-theme="dark"] .home-quote-meta {
+html[data-theme="dark"] .home-cover-summary,
+html[data-theme="dark"] .home-cover-quote-source {
   color: rgba(229, 229, 231, 0.76);
 }
 
-html[data-theme="dark"] .home-focus-whyread {
+html[data-theme="dark"] .home-cover-why {
   border-color: rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme="dark"] .home-focus-body h1,
-html[data-theme="dark"] .home-quote-text {
-  color: #f4efe7;
-}
-
-html[data-theme="dark"] .home-focus-whyread-copy {
+html[data-theme="dark"] .home-cover-why p {
   color: rgba(244, 239, 231, 0.92);
 }
 
-html[data-theme="dark"] .home-quote-meta {
+html[data-theme="dark"] .home-cover-quote {
   border-top-color: rgba(255, 255, 255, 0.08);
-}
-
-html[data-theme="dark"] .quote-link {
-  color: #f0b088;
 }
 
 /* Dark sentence card accent */

@@ -1,23 +1,73 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getHomeData, loadSiteIndex } from "../lib/content";
+import { getContentSource } from "../lib/content-source";
 import { toInternalHref } from "../lib/internal-links";
 
 const { books, quotes } = getHomeData();
 const firstBook = books[0];
-const firstQuote = quotes[0];
 const siteIndex = loadSiteIndex();
+const contentSource = getContentSource();
+const pagesById = new Map(siteIndex.pages.map((page) => [page.id, page]));
+
+function stripWrappingQuotes(value: string) {
+  return value.replace(/^[\"'“”‘’«»「」『』]+|[\"'“”‘’«»「」『』]+$/g, "");
+}
+
+function markdownToPlainText(markdown: string) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/\{\{<[\s\S]*?>\}\}/g, " ")
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/^[>#*\-\d.\s]+/gm, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/[_*~]/g, "")
+    .replace(/\r?\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function clampText(value: string, maxLength = 118) {
+  const text = value.trim();
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trimEnd() + "...";
+}
+
+function getWhyReadLead(pageId?: string) {
+  if (!pageId) return "";
+  try {
+    const markdown = contentSource.loadPageMarkdown(pageId);
+    return clampText(markdownToPlainText(markdown));
+  } catch (_error) {
+    return "";
+  }
+}
 
 function getBookEntry(bookId: string, fallbackUrl: string) {
   const whyReadPage = siteIndex.pages.find((page) => page.book_id === bookId && String(page.slot ?? "").startsWith("00"));
   return {
     url: whyReadPage?.url ?? fallbackUrl,
-    whyRead: whyReadPage?.summary ?? "",
+    whyRead: getWhyReadLead(whyReadPage?.id),
   };
 }
 
 const libraryHref = toInternalHref("/library/");
-const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : null;
+const bookEntryById = new Map(books.map((book) => [book.id, getBookEntry(book.id, book.url)]));
+const whyReadSeed = Object.fromEntries(Array.from(bookEntryById.entries()).map(([bookId, entry]) => [bookId, entry.whyRead]));
+const normalizedQuotes = quotes
+  .map((quote) => {
+    const page = pagesById.get(quote.page_id);
+    return {
+      bookId: page?.book_id ?? "",
+      quote: stripWrappingQuotes(quote.quote || ""),
+      pageTitle: quote.page_title || "查看原文",
+    };
+  })
+  .filter((quote) => quote.bookId);
+const firstBookEntry = firstBook ? bookEntryById.get(firstBook.id) : null;
+const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId === firstBook.id) ?? null : null;
 ---
 
 <BaseLayout
@@ -29,70 +79,69 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
   ogDescription="随机一本到，直接开读。"
 >
   <div class="page-stack home-page">
-    <section class="home-simple-stage">
-      <article class="home-focus-card" aria-live="polite">
-        <div class="home-focus-body">
-          <h1 id="home-focus-title">{firstBook?.title ?? "随机一本到"}</h1>
-          <p class="home-focus-copy" id="home-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
+    <section class="home-single-stage">
+      <article class="home-cover-card" aria-live="polite">
+        <div class="home-cover-copy">
+          <h1 class="home-cover-title" id="home-cover-title">{firstBook?.title ?? "随机一本到"}</h1>
+          <p class="home-cover-summary" id="home-cover-summary">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
         </div>
 
-        <div class="home-focus-whyread" id="home-focus-whyread-wrap" hidden={!firstBookEntry?.whyRead}>
-          <p class="home-focus-whyread-copy" id="home-focus-whyread-copy">{firstBookEntry?.whyRead ?? ""}</p>
+        <div class="home-cover-why" id="home-cover-why" hidden={!firstBookEntry?.whyRead}>
+          <p id="home-cover-why-copy">{firstBookEntry?.whyRead ?? ""}</p>
         </div>
 
-        <div class="home-focus-actions">
-          <a class="btn" id="home-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
-            <span id="home-focus-open-label">直接打开</span>
-          </a>
-          <button class="tool-switch" type="button" id="home-focus-secondary">换一本</button>
+        <div class="home-cover-quote" id="home-cover-quote" hidden={!firstQuote}>
+          <p class="home-cover-quote-text" id="home-cover-quote-text">{firstQuote?.quote ?? ""}</p>
+          <p class="home-cover-quote-source" id="home-cover-quote-source">{firstQuote?.pageTitle ?? ""}</p>
         </div>
-      </article>
 
-      <article class="home-quote-card" aria-label="摘一句">
-        {firstQuote ? (
-          <div class="home-quote-body" aria-live="polite">
-            <p class="home-quote-text" id="home-quote-text">{firstQuote.quote}</p>
-            <div class="home-quote-meta">
-              <span id="home-quote-book">{firstQuote.book_title}</span>
-              <a class="quote-link" id="home-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
-            </div>
-          </div>
-        ) : (
-          <p class="tool-empty">暂时还没有句子卡可抽。</p>
-        )}
-
-        <div class="home-quote-actions">
-          <a class="btn" id="home-quote-open" href={firstQuote?.url ?? "#"}>直接打开</a>
-          <button class="tool-switch" type="button" id="home-quote-shuffle">换一句</button>
+        <div class="home-cover-actions">
+          <button class="tool-switch" type="button" id="home-cover-shuffle-book">换书</button>
+          <button class="tool-switch" type="button" id="home-cover-shuffle-quote">换句子</button>
+          <a class="btn" id="home-cover-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>打开本书</a>
         </div>
       </article>
     </section>
   </div>
 
+  <script type="application/json" id="home-why-read-seed">{JSON.stringify(whyReadSeed)}</script>
+
   <script is:inline>
     (function () {
       var BOOK_STATUS_STORAGE_KEY = "book:statuses:v1";
-      var contentSource = "/data/site-content.json";
       var FAVORITE_CURATION_STATE = "favorite";
       var DEFAULT_READ_STATE = "unread";
       var DEFAULT_CURATION_STATE = "normal";
+      var contentSource = "/data/site-content.json";
+      var whyReadSeedNode = document.getElementById("home-why-read-seed");
+      var whyReadByBookId = {};
+
+      try {
+        if (whyReadSeedNode && whyReadSeedNode.textContent) {
+          whyReadByBookId = JSON.parse(whyReadSeedNode.textContent);
+        }
+      } catch (_error) {
+        whyReadByBookId = {};
+      }
+
       var books = [];
-      var quotes = [];
       var currentBook = 0;
       var currentQuote = 0;
 
-      var focusTitle = document.getElementById("home-focus-title");
-      var focusCopy = document.getElementById("home-focus-copy");
-      var focusWhyReadWrap = document.getElementById("home-focus-whyread-wrap");
-      var focusWhyReadCopy = document.getElementById("home-focus-whyread-copy");
-      var focusOpen = document.getElementById("home-focus-open");
-      var focusSecondary = document.getElementById("home-focus-secondary");
+      var coverTitle = document.getElementById("home-cover-title");
+      var coverSummary = document.getElementById("home-cover-summary");
+      var coverWhy = document.getElementById("home-cover-why");
+      var coverWhyCopy = document.getElementById("home-cover-why-copy");
+      var coverQuote = document.getElementById("home-cover-quote");
+      var coverQuoteText = document.getElementById("home-cover-quote-text");
+      var coverQuoteSource = document.getElementById("home-cover-quote-source");
+      var coverOpen = document.getElementById("home-cover-open");
+      var shuffleBook = document.getElementById("home-cover-shuffle-book");
+      var shuffleQuote = document.getElementById("home-cover-shuffle-quote");
 
-      var quoteText = document.getElementById("home-quote-text");
-      var quoteBook = document.getElementById("home-quote-book");
-      var quoteLink = document.getElementById("home-quote-link");
-      var quoteOpen = document.getElementById("home-quote-open");
-      var quoteShuffle = document.getElementById("home-quote-shuffle");
+      function stripWrappingQuotes(value) {
+        return String(value || "").replace(/^[\"'“”‘’«»「」『』]+|[\"'“”‘’«»「」『』]+$/g, "");
+      }
 
       function readBookStatusOverrides() {
         try {
@@ -103,7 +152,7 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
             return {};
           }
           return parsed.books;
-        } catch (error) {
+        } catch (_error) {
           return {};
         }
       }
@@ -126,22 +175,64 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         };
       }
 
+      function getCurrentBook() {
+        return books[currentBook] || null;
+      }
+
+      function setQuoteState(current, quote) {
+        var hasQuote = Boolean(current && quote);
+        if (coverQuote) coverQuote.hidden = !hasQuote;
+        if (shuffleQuote instanceof HTMLButtonElement) {
+          shuffleQuote.disabled = !current || !current.quotes || current.quotes.length <= 1;
+        }
+        if (!hasQuote) return;
+        if (coverQuoteText) coverQuoteText.textContent = quote.quote || "";
+        if (coverQuoteSource) coverQuoteSource.textContent = quote.pageTitle || "";
+      }
+
+      function renderQuote(index) {
+        var current = getCurrentBook();
+        var currentQuotes = current && Array.isArray(current.quotes) ? current.quotes : [];
+        if (!currentQuotes.length) {
+          currentQuote = 0;
+          setQuoteState(current, null);
+          return;
+        }
+
+        currentQuote = ((index % currentQuotes.length) + currentQuotes.length) % currentQuotes.length;
+        var quote = currentQuotes[currentQuote];
+        if (!quote) {
+          setQuoteState(current, null);
+          return;
+        }
+        setQuoteState(current, quote);
+      }
+
+      function randomQuote(excludeCurrent) {
+        var current = getCurrentBook();
+        var currentQuotes = current && Array.isArray(current.quotes) ? current.quotes : [];
+        if (!currentQuotes.length) return 0;
+        if (currentQuotes.length === 1) return 0;
+        if (!excludeCurrent) return Math.floor(Math.random() * currentQuotes.length);
+        var next = currentQuote;
+        while (next === currentQuote) {
+          next = Math.floor(Math.random() * currentQuotes.length);
+        }
+        return next;
+      }
+
       function renderBook(index) {
         if (!books.length) return;
         currentBook = ((index % books.length) + books.length) % books.length;
         var current = books[currentBook];
         if (!current) return;
 
-        if (focusTitle) focusTitle.textContent = current.title || "未命名";
-        if (focusCopy) focusCopy.textContent = current.summary || "";
-        if (focusWhyReadCopy) focusWhyReadCopy.textContent = current.whyRead || "";
-        if (focusWhyReadWrap) focusWhyReadWrap.hidden = !current.whyRead;
-        if (focusOpen) focusOpen.href = current.entryUrl || current.url || "#";
-
-        if (focusSecondary instanceof HTMLButtonElement) {
-          focusSecondary.hidden = books.length <= 1;
-          focusSecondary.textContent = "换一本";
-        }
+        if (coverTitle) coverTitle.textContent = current.title || "未命名";
+        if (coverSummary) coverSummary.textContent = current.summary || "";
+        if (coverWhyCopy) coverWhyCopy.textContent = current.whyRead || "";
+        if (coverWhy) coverWhy.hidden = !current.whyRead;
+        if (coverOpen) coverOpen.href = current.entryUrl || current.url || "#";
+        renderQuote(randomQuote(false));
       }
 
       function randomBook(excludeCurrent) {
@@ -161,45 +252,14 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         return pool[Math.floor(Math.random() * pool.length)];
       }
 
-      function renderQuote(index) {
-        if (!quotes.length) return;
-        currentQuote = ((index % quotes.length) + quotes.length) % quotes.length;
-        var current = quotes[currentQuote];
-        if (!current) return;
-        if (quoteText) quoteText.textContent = stripWrappingQuotes(current.quote || "");
-        if (quoteBook) quoteBook.textContent = current.bookTitle || "来源";
-        if (quoteLink) {
-          quoteLink.href = current.url || "#";
-          quoteLink.textContent = current.pageTitle || "查看原文";
-        }
-        if (quoteOpen) {
-          quoteOpen.href = current.url || "#";
-        }
-      }
-
-      function randomQuote(excludeCurrent) {
-        if (!quotes.length) return 0;
-        if (quotes.length === 1) return 0;
-        if (!excludeCurrent) return Math.floor(Math.random() * quotes.length);
-        var next = currentQuote;
-        while (next === currentQuote) {
-          next = Math.floor(Math.random() * quotes.length);
-        }
-        return next;
-      }
-
-      function stripWrappingQuotes(value) {
-        return String(value || "").replace(/^[\"'“”‘’«»「」『』]+|[\"'“”‘’«»「」『』]+$/g, "");
-      }
-
-      if (focusSecondary instanceof HTMLButtonElement) {
-        focusSecondary.addEventListener("click", function () {
+      if (shuffleBook instanceof HTMLButtonElement) {
+        shuffleBook.addEventListener("click", function () {
           renderBook(randomBook(true));
         });
       }
 
-      if (quoteShuffle instanceof HTMLElement) {
-        quoteShuffle.addEventListener("click", function () {
+      if (shuffleQuote instanceof HTMLButtonElement) {
+        shuffleQuote.addEventListener("click", function () {
           renderQuote(randomQuote(true));
         });
       }
@@ -210,15 +270,32 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
           return response.json();
         })
         .then(function (payload) {
-          var pageGroups = {};
           var statusOverrides = readBookStatusOverrides();
+          var pagesById = {};
+          var pageGroups = {};
+          var quoteGroups = {};
+
           if (Array.isArray(payload.pages)) {
             payload.pages.forEach(function (page) {
-              if (!page) return;
-              var key = page.book_id;
-              if (!key) return;
-              if (!pageGroups[key]) pageGroups[key] = [];
-              pageGroups[key].push(page);
+              if (!page || !page.id) return;
+              pagesById[page.id] = page;
+              if (!page.book_id) return;
+              if (!pageGroups[page.book_id]) pageGroups[page.book_id] = [];
+              pageGroups[page.book_id].push(page);
+            });
+          }
+
+          if (Array.isArray(payload.quotes)) {
+            payload.quotes.forEach(function (item) {
+              if (!item) return;
+              var page = item.page_id ? pagesById[item.page_id] : null;
+              var bookId = page && page.book_id ? page.book_id : "";
+              if (!bookId) return;
+              if (!quoteGroups[bookId]) quoteGroups[bookId] = [];
+              quoteGroups[bookId].push({
+                quote: stripWrappingQuotes(item.quote || ""),
+                pageTitle: item.page_title || "查看原文",
+              });
             });
           }
 
@@ -242,34 +319,21 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
                     return String(page.slot || "").indexOf("00") === 0;
                   });
                   return {
+                    id: source.id,
                     title: source.title || "未命名",
                     url: source.url || "#",
                     entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
-                    whyRead: whyReadPage && whyReadPage.summary ? whyReadPage.summary : "",
                     summary: source.summary || "",
-                    tags: Array.isArray(source.tags) ? source.tags : [],
+                    whyRead: whyReadByBookId[source.id] || "",
+                    quotes: quoteGroups[source.id] || [],
                     readState: item.readState,
                     curationState: item.curationState,
                   };
                 })
             : [];
 
-          quotes = Array.isArray(payload.quotes)
-            ? payload.quotes.map(function (item) {
-                return {
-                  quote: stripWrappingQuotes(item.quote || ""),
-                  pageTitle: item.page_title || "查看原文",
-                  bookTitle: item.book_title || "来源",
-                  url: item.url || "#",
-                };
-              })
-            : [];
-
           if (books.length) {
             renderBook(randomBook(false));
-          }
-          if (quotes.length) {
-            renderQuote(randomQuote(false));
           }
         })
         .catch(function () {});

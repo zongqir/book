@@ -128,7 +128,7 @@ const firstQuote = featuredBook ? normalizedQuotes.find((quote) => quote.bookId 
     </section>
   </div>
 
-  <script type="application/json" id="home-why-read-seed">{JSON.stringify(whyReadSeed)}</script>
+  <script type="application/json" id="home-why-read-seed" set:html={JSON.stringify(whyReadSeed)}></script>
 
   <script is:inline>
     (function () {

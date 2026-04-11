@@ -32,10 +32,7 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
   <div class="page-stack home-page">
     <section class="home-simple-stage">
       <article class="home-focus-card" aria-live="polite">
-        <div class="home-focus-head">
-          <p class="home-focus-topline">
-            <span class="meta-chip" id="home-focus-mode-chip">今天这本</span>
-          </p>
+        <div class="home-focus-head home-focus-head--actions">
           <button class="tool-switch" type="button" id="home-focus-secondary">换一本</button>
         </div>
 
@@ -57,11 +54,7 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
       </article>
 
       <article class="home-quote-card" aria-label="摘一句">
-        <div class="home-card-head">
-          <div>
-            <p class="eyebrow">摘句</p>
-            <h2>今天这一句</h2>
-          </div>
+        <div class="home-card-head home-card-head--actions">
           <button class="tool-switch tool-switch--compact" type="button" id="home-quote-shuffle">换一句</button>
         </div>
 
@@ -92,7 +85,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
       var currentBook = 0;
       var currentQuote = 0;
 
-      var focusModeChip = document.getElementById("home-focus-mode-chip");
       var focusTitle = document.getElementById("home-focus-title");
       var focusCopy = document.getElementById("home-focus-copy");
       var focusWhyReadWrap = document.getElementById("home-focus-whyread-wrap");
@@ -144,7 +136,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         var current = books[currentBook];
         if (!current) return;
 
-        if (focusModeChip) focusModeChip.textContent = "今天这本";
         if (focusTitle) focusTitle.textContent = current.title || "未命名";
         if (focusCopy) focusCopy.textContent = current.summary || "";
         if (focusWhyReadCopy) focusWhyReadCopy.textContent = current.whyRead || "";

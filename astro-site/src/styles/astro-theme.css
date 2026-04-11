@@ -4383,7 +4383,6 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-focus-head,
 .home-card-head,
-.home-focus-topline,
 .home-quote-meta {
   display: flex;
   align-items: flex-start;
@@ -4391,12 +4390,16 @@ html.is-capacitor-app .tool-switch--share {
   gap: 14px;
 }
 
-.home-focus-topline,
 .home-quote-meta {
   margin: 0;
   flex-wrap: wrap;
   color: var(--text-faint);
   font-size: 0.82rem;
+}
+
+.home-focus-head--actions,
+.home-card-head--actions {
+  justify-content: flex-end;
 }
 
 .home-focus-body {
@@ -4555,16 +4558,8 @@ html.is-capacitor-app .tool-switch--share {
     align-items: flex-start;
   }
 
-  .home-focus-topline,
   .home-quote-meta {
     font-size: 0.76rem;
-  }
-
-  .home-focus-topline .meta-chip {
-    min-height: 22px;
-    padding: 0 8px;
-    border-radius: 8px;
-    font-size: 0.68rem;
   }
 
   .home-focus-body h1 {
@@ -4861,7 +4856,6 @@ html[data-theme="dark"] .home-quote-text {
 }
 
 html[data-theme="dark"] .home-focus-copy,
-html[data-theme="dark"] .home-focus-topline,
 html[data-theme="dark"] .home-quote-meta {
   color: rgba(229, 229, 231, 0.76);
 }

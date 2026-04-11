@@ -29,7 +29,7 @@ function markdownToPlainText(markdown: string) {
     .trim();
 }
 
-function clampText(value: string, maxLength = 118) {
+function clampText(value: string, maxLength = 210) {
   const text = value.trim();
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength).trimEnd() + "...";
@@ -41,11 +41,18 @@ function extractLeadParagraph(markdown: string) {
     .map((block) => block.trim())
     .filter(Boolean);
 
+  const candidates: string[] = [];
+
   for (const block of blocks) {
     if (/^(#|\{\{<|!?\[|<|[-*]\s|\d+\.\s)/.test(block)) continue;
     const text = markdownToPlainText(block);
     if (text.length < 18) continue;
-    return text;
+    candidates.push(text);
+    if (candidates.length >= 2) break;
+  }
+
+  if (candidates.length) {
+    return candidates.join(" ");
   }
 
   return markdownToPlainText(markdown);
@@ -81,9 +88,13 @@ const normalizedQuotes = quotes
     };
   })
   .filter((quote) => quote.bookId);
+const quoteCountByBookId = new Map<string, number>();
+normalizedQuotes.forEach((quote) => {
+  quoteCountByBookId.set(quote.bookId, (quoteCountByBookId.get(quote.bookId) ?? 0) + 1);
+});
 const homepageBooks = books.filter((book) => {
   const entry = bookEntryById.get(book.id);
-  return Boolean(entry && entry.whyRead);
+  return Boolean(entry && entry.whyRead && (quoteCountByBookId.get(book.id) ?? 0) > 0);
 });
 const featuredBook = homepageBooks[0] ?? firstBook;
 const firstBookEntry = featuredBook ? bookEntryById.get(featuredBook.id) : null;
@@ -331,10 +342,13 @@ const firstQuote = featuredBook ? normalizedQuotes.find((quote) => quote.bookId 
                 .map(function (item) {
                   var source = item.item;
                   var pages = pageGroups[source.id] || [];
+                  var quotePool = quoteGroups[source.id] || [];
                   var whyReadPage = pages.find(function (page) {
                     return String(page.slot || "").indexOf("00") === 0;
                   });
                   if (!whyReadPage) return null;
+                  if (!whyReadByBookId[source.id]) return null;
+                  if (!quotePool.length) return null;
                   return {
                     id: source.id,
                     title: source.title || "未命名",
@@ -342,7 +356,7 @@ const firstQuote = featuredBook ? normalizedQuotes.find((quote) => quote.bookId 
                     entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
                     summary: source.summary || "",
                     whyRead: whyReadByBookId[source.id] || "",
-                    quotes: quoteGroups[source.id] || [],
+                    quotes: quotePool,
                     readState: item.readState,
                     curationState: item.curationState,
                   };

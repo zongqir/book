@@ -35,11 +35,27 @@ function clampText(value: string, maxLength = 118) {
   return text.slice(0, maxLength).trimEnd() + "...";
 }
 
+function extractLeadParagraph(markdown: string) {
+  const blocks = markdown
+    .split(/\r?\n\s*\r?\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  for (const block of blocks) {
+    if (/^(#|\{\{<|!?\[|<|[-*]\s|\d+\.\s)/.test(block)) continue;
+    const text = markdownToPlainText(block);
+    if (text.length < 18) continue;
+    return text;
+  }
+
+  return markdownToPlainText(markdown);
+}
+
 function getWhyReadLead(pageId?: string) {
   if (!pageId) return "";
   try {
     const markdown = contentSource.loadPageMarkdown(pageId);
-    return clampText(markdownToPlainText(markdown));
+    return clampText(extractLeadParagraph(markdown));
   } catch (_error) {
     return "";
   }
@@ -62,12 +78,16 @@ const normalizedQuotes = quotes
     return {
       bookId: page?.book_id ?? "",
       quote: stripWrappingQuotes(quote.quote || ""),
-      pageTitle: quote.page_title || "查看原文",
     };
   })
   .filter((quote) => quote.bookId);
-const firstBookEntry = firstBook ? bookEntryById.get(firstBook.id) : null;
-const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId === firstBook.id) ?? null : null;
+const homepageBooks = books.filter((book) => {
+  const entry = bookEntryById.get(book.id);
+  return Boolean(entry && entry.whyRead);
+});
+const featuredBook = homepageBooks[0] ?? firstBook;
+const firstBookEntry = featuredBook ? bookEntryById.get(featuredBook.id) : null;
+const firstQuote = featuredBook ? normalizedQuotes.find((quote) => quote.bookId === featuredBook.id) ?? null : null;
 ---
 
 <BaseLayout
@@ -82,8 +102,8 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
     <section class="home-single-stage">
       <article class="home-cover-card" aria-live="polite">
         <div class="home-cover-copy">
-          <h1 class="home-cover-title" id="home-cover-title">{firstBook?.title ?? "随机一本到"}</h1>
-          <p class="home-cover-summary" id="home-cover-summary">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
+          <h1 class="home-cover-title" id="home-cover-title">{featuredBook?.title ?? "随机一本到"}</h1>
+          <p class="home-cover-summary" id="home-cover-summary">{featuredBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
         </div>
 
         <div class="home-cover-why" id="home-cover-why" hidden={!firstBookEntry?.whyRead}>
@@ -92,13 +112,12 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
 
         <div class="home-cover-quote" id="home-cover-quote" hidden={!firstQuote}>
           <p class="home-cover-quote-text" id="home-cover-quote-text">{firstQuote?.quote ?? ""}</p>
-          <p class="home-cover-quote-source" id="home-cover-quote-source">{firstQuote?.pageTitle ?? ""}</p>
         </div>
 
         <div class="home-cover-actions">
           <button class="tool-switch" type="button" id="home-cover-shuffle-book">换书</button>
           <button class="tool-switch" type="button" id="home-cover-shuffle-quote">换句子</button>
-          <a class="btn" id="home-cover-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>打开本书</a>
+          <a class="btn" id="home-cover-open" href={firstBookEntry?.url ?? featuredBook?.url ?? libraryHref}>打开本书</a>
         </div>
       </article>
     </section>
@@ -134,7 +153,6 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
       var coverWhyCopy = document.getElementById("home-cover-why-copy");
       var coverQuote = document.getElementById("home-cover-quote");
       var coverQuoteText = document.getElementById("home-cover-quote-text");
-      var coverQuoteSource = document.getElementById("home-cover-quote-source");
       var coverOpen = document.getElementById("home-cover-open");
       var shuffleBook = document.getElementById("home-cover-shuffle-book");
       var shuffleQuote = document.getElementById("home-cover-shuffle-quote");
@@ -187,7 +205,6 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
         }
         if (!hasQuote) return;
         if (coverQuoteText) coverQuoteText.textContent = quote.quote || "";
-        if (coverQuoteSource) coverQuoteSource.textContent = quote.pageTitle || "";
       }
 
       function renderQuote(index) {
@@ -294,7 +311,6 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
               if (!quoteGroups[bookId]) quoteGroups[bookId] = [];
               quoteGroups[bookId].push({
                 quote: stripWrappingQuotes(item.quote || ""),
-                pageTitle: item.page_title || "查看原文",
               });
             });
           }
@@ -318,6 +334,7 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
                   var whyReadPage = pages.find(function (page) {
                     return String(page.slot || "").indexOf("00") === 0;
                   });
+                  if (!whyReadPage) return null;
                   return {
                     id: source.id,
                     title: source.title || "未命名",
@@ -330,6 +347,7 @@ const firstQuote = firstBook ? normalizedQuotes.find((quote) => quote.bookId ===
                     curationState: item.curationState,
                   };
                 })
+                .filter(Boolean)
             : [];
 
           if (books.length) {

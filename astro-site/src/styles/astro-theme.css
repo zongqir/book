@@ -4356,11 +4356,11 @@ html.is-capacitor-app .tool-switch--share {
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 24px;
-  width: min(980px, 100%);
+  gap: 22px;
+  width: min(920px, 100%);
   margin: 0 auto;
-  padding: 34px 32px 28px;
-  border-radius: 34px;
+  padding: 32px 30px 24px;
+  border-radius: 30px;
   border: 1px solid var(--border);
   background:
     radial-gradient(circle at top right, rgba(191, 79, 35, 0.16), transparent 28%),
@@ -4385,16 +4385,16 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-cover-summary {
   margin: 0;
-  max-width: 38rem;
+  max-width: 34rem;
   color: var(--text-soft);
-  font-size: 1.04rem;
-  line-height: 1.84;
+  font-size: 1rem;
+  line-height: 1.78;
 }
 
 .home-cover-why {
-  max-width: 36rem;
-  padding: 16px 18px;
-  border-radius: 20px;
+  max-width: 33rem;
+  padding: 14px 16px;
+  border-radius: 18px;
   border: 1px solid rgba(29, 29, 31, 0.08);
   background: rgba(255, 255, 255, 0.74);
 }
@@ -4412,42 +4412,35 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-cover-quote {
   display: grid;
-  max-width: 42rem;
-  gap: 12px;
-  padding-top: 20px;
+  max-width: 34rem;
+  gap: 10px;
+  padding-top: 16px;
   border-top: 1px solid rgba(29, 29, 31, 0.08);
 }
 
 .home-cover-quote-text {
   margin: 0;
-  max-width: 15ch;
+  max-width: 14ch;
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(1.68rem, 2.8vw, 2.3rem);
+  font-size: clamp(1.6rem, 2.6vw, 2.12rem);
   font-weight: 600;
-  line-height: 1.44;
+  line-height: 1.42;
   letter-spacing: -0.03em;
   text-wrap: balance;
-}
-
-.home-cover-quote-source {
-  margin: 0;
-  color: var(--text-faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .home-cover-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .home-cover-actions .btn,
 .home-cover-actions .tool-switch {
   width: 100%;
-  min-height: 46px;
+  min-height: 42px;
+  padding: 0 14px;
+  font-size: 0.92rem;
 }
 
 .home-cover-card:hover,
@@ -4502,43 +4495,47 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-cover-card {
-    gap: 16px;
-    padding: 22px 18px 18px;
-    border-radius: 26px;
+    gap: 14px;
+    padding: 20px 16px 16px;
+    border-radius: 24px;
   }
 
   .home-cover-title {
     max-width: 12ch;
-    font-size: clamp(2.4rem, 9vw, 3.3rem);
+    font-size: clamp(2.25rem, 8.4vw, 3rem);
   }
 
   .home-cover-summary {
-    font-size: 0.95rem;
-    line-height: 1.68;
+    font-size: 0.94rem;
+    line-height: 1.62;
   }
 
   .home-cover-why {
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 16px;
   }
 
   .home-cover-why p {
-    font-size: 0.9rem;
-    line-height: 1.58;
+    font-size: 0.88rem;
+    line-height: 1.54;
   }
 
   .home-cover-quote-text {
     max-width: none;
-    font-size: 1.42rem;
-    line-height: 1.5;
-  }
-
-  .home-cover-quote-source {
-    font-size: 0.7rem;
+    font-size: 1.28rem;
+    line-height: 1.46;
   }
 
   .home-cover-actions {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-cover-actions .btn,
+  .home-cover-actions .tool-switch {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 0.86rem;
   }
 
   .section-preview-line {
@@ -4786,7 +4783,7 @@ html[data-theme="dark"] .home-cover-quote-text {
 }
 
 html[data-theme="dark"] .home-cover-summary,
-html[data-theme="dark"] .home-cover-quote-source {
+html[data-theme="dark"] .home-cover-quote {
   color: rgba(229, 229, 231, 0.76);
 }
 

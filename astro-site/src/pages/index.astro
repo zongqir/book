@@ -36,7 +36,9 @@ const libraryHref = toInternalHref("/library/");
           <span id="home-mobile-focus-category">{firstBook?.section_title ?? "书库"}</span>
         </p>
         <h2 id="home-mobile-focus-title">{firstBook?.title ?? "随机一本到"}</h2>
-        <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
+        <div class="home-mobile-focus-body">
+          <p class="home-mobile-focus-copy" id="home-mobile-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
+        </div>
         <div class="home-mobile-focus-actions">
           <a class="btn" id="home-mobile-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
             <span id="home-mobile-focus-open-label">{firstBookEntry?.label ?? "打开书籍"}</span>
@@ -54,13 +56,13 @@ const libraryHref = toInternalHref("/library/");
           <button class="tool-switch tool-switch--compact" type="button" id="home-mobile-quote-shuffle">换一句</button>
         </div>
         {firstQuote ? (
-          <div class="home-mobile-quote-card">
+          <>
             <p class="home-mobile-quote-text" id="home-mobile-quote-text">“{firstQuote.quote}”</p>
             <div class="home-mobile-quote-meta">
               <span id="home-mobile-quote-book">{firstQuote.book_title}</span>
               <a class="quote-link" id="home-mobile-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
             </div>
-          </div>
+          </>
         ) : (
           <p class="tool-empty">暂时还没有句子卡可抽。</p>
         )}

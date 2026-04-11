@@ -1424,41 +1424,55 @@ html.is-capacitor-app .share-inline {
 .principle-card-statement,
 .sentence-card-quote { font-family: "Noto Serif SC", serif; font-size: 1.25rem; line-height: 1.7; }
 .sentence-card {
-  padding: 22px 24px;
-  background: var(--accent-subtle);
-  border-color: rgba(164, 91, 42, 0.12);
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 244, 0.98), rgba(255, 245, 236, 0.94)),
+    var(--bg-surface);
+  border-color: rgba(164, 91, 42, 0.14);
+  box-shadow: 0 10px 26px rgba(23, 48, 67, 0.06);
 }
 .sentence-card::after {
   content: "“";
   position: absolute;
-  top: 12px;
-  left: 18px;
+  top: 8px;
+  left: 16px;
   font-family: "Noto Serif SC", serif;
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   line-height: 1;
-  color: rgba(164, 91, 42, 0.18);
+  color: rgba(164, 91, 42, 0.14);
   pointer-events: none;
 }
 .sentence-card-quote {
   position: relative;
   z-index: 1;
-  padding-left: 14px;
-  border-left: 2px solid rgba(0, 0, 0, 0.08);
+  padding: 18px 18px 18px 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(164, 91, 42, 0.1);
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .sentence-card-quote p {
   margin: 0;
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(1.16rem, 1.3vw, 1.34rem);
-  line-height: 1.78;
+  font-size: clamp(1.2rem, 1.32vw, 1.4rem);
+  line-height: 1.86;
   letter-spacing: 0.01em;
 }
 .doc-content > .sentence-card + p {
-  margin-top: 0.82em;
+  margin-top: 0.95em;
 }
 .callout-body,
 .principle-card-body,
 .sentence-card-body,
 .memory-card-copy { color: var(--text-soft); }
+.sentence-card-body {
+  padding: 2px 4px 0;
+  font-size: 0.97rem;
+  line-height: 1.78;
+}
 .callout-body > :last-child,
 .principle-card-body > :last-child,
 .sentence-card-body > :last-child,
@@ -4660,9 +4674,9 @@ html.is-capacitor-app .tool-switch--share {
 .home-mobile-focus {
   display: grid;
   gap: 18px;
-  min-height: 320px;
+  min-height: 0;
   padding: 24px;
-  align-content: space-between;
+  align-content: start;
   background:
     linear-gradient(180deg, rgba(255, 251, 245, 0.98), rgba(255, 246, 236, 0.98)),
     var(--bg-surface);
@@ -4670,81 +4684,13 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-mobile-quote-panel {
   display: grid;
-  gap: 16px;
-  min-height: 208px;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  min-height: 0;
   padding: 20px;
-  align-content: space-between;
   background:
     linear-gradient(180deg, rgba(241, 249, 248, 0.98), rgba(251, 248, 243, 0.98)),
     var(--bg-surface);
-}
-
-.home-mobile-shelves {
-  display: grid;
-  gap: 16px;
-  padding: 20px;
-}
-
-.home-mobile-shelves-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.home-mobile-shelves-head h2 {
-  margin: 4px 0 0;
-  font-family: "Noto Serif SC", serif;
-  font-size: 1.24rem;
-  line-height: 1.18;
-}
-
-.home-mobile-shelves-head .hero-kicker {
-  margin: 0;
-}
-
-.home-mobile-shelf-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.home-mobile-shelf-card {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  gap: 10px;
-  min-height: 118px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--bg-surface-sunken);
-}
-
-.home-mobile-shelf-top {
-  display: grid;
-  gap: 4px;
-}
-
-.home-mobile-shelf-top strong {
-  font-family: "Noto Serif SC", serif;
-  font-size: 1rem;
-  line-height: 1.18;
-}
-
-.home-mobile-shelf-top span,
-.home-mobile-shelf-card p {
-  margin: 0;
-  color: var(--text-faint);
-}
-
-.home-mobile-shelf-top span {
-  font-size: 0.76rem;
-}
-
-.home-mobile-shelf-card p {
-  font-size: 0.82rem;
-  line-height: 1.5;
 }
 
 .home-mobile-quote-panel-head {
@@ -4789,17 +4735,20 @@ html.is-capacitor-app .tool-switch--share {
   line-height: 1.02;
 }
 
+.home-mobile-focus-body {
+  display: grid;
+  gap: 10px;
+  padding: 14px 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 48, 67, 0.08);
+  background: rgba(255, 253, 248, 0.76);
+}
+
 .home-mobile-focus-copy,
 .home-mobile-quote-text {
   margin: 0;
   color: var(--text-soft);
   line-height: 1.76;
-}
-
-.home-mobile-focus-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .home-mobile-focus-actions {
@@ -4818,91 +4767,18 @@ html.is-capacitor-app .tool-switch--share {
   flex: 0 0 auto;
 }
 
-.home-mobile-drawer {
-  overflow: hidden;
-}
-
-.home-mobile-drawer > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 20px;
-  cursor: pointer;
-  list-style: none;
-  font-family: "Noto Serif SC", serif;
-  font-size: 1.08rem;
-}
-
-.home-mobile-drawer > summary::-webkit-details-marker {
-  display: none;
-}
-
-.home-mobile-drawer > summary em {
-  font-style: normal;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
-  color: var(--text-faint);
-}
-
-.home-mobile-drawer > summary::after {
-  content: "+";
-  margin-left: auto;
-  font-family: "IBM Plex Mono", monospace;
-  color: var(--text-faint);
-}
-
-.home-mobile-drawer[open] > summary::after {
-  content: "-";
-}
-
-.home-mobile-drawer-body {
-  display: grid;
-  gap: 14px;
-  padding: 0 20px 20px;
-}
-
-.home-mobile-quote-card {
-  display: grid;
-  gap: 14px;
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  background: var(--bg-surface-sunken);
-}
-
 .home-mobile-quote-text {
   font-family: "Noto Serif SC", serif;
-  font-size: 1.14rem;
-  line-height: 1.66;
+  font-size: 1.3rem;
+  line-height: 1.78;
   color: var(--text);
+  align-self: center;
 }
 
-.home-mobile-section-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.home-mobile-section-link {
-  display: grid;
-  gap: 5px;
-  min-height: 90px;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--bg-surface-sunken);
-}
-
-.home-mobile-section-link strong {
-  font-family: "Noto Serif SC", serif;
-  font-size: 1rem;
-  line-height: 1.22;
-}
-
-.home-mobile-section-link span {
-  color: var(--text-faint);
-  font-size: 0.78rem;
+.home-mobile-quote-meta {
+  align-self: end;
+  padding-top: 12px;
+  border-top: 1px solid rgba(23, 48, 67, 0.1);
 }
 
 @media (max-width: 760px) {
@@ -4942,6 +4818,9 @@ html.is-capacitor-app .tool-switch--share {
   .home-mobile-shell {
     display: grid;
     gap: 16px;
+    min-height: calc(100dvh - 138px - var(--safe-bottom));
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: stretch;
   }
 
   .home-desktop-flow {
@@ -4950,7 +4829,7 @@ html.is-capacitor-app .tool-switch--share {
 
   .home-mobile-focus {
     gap: 14px;
-    min-height: 292px;
+    min-height: 100%;
     padding: 18px 16px 16px;
     border-radius: 24px;
     margin-top: 2px;
@@ -4958,6 +4837,11 @@ html.is-capacitor-app .tool-switch--share {
 
   .home-mobile-focus h2 {
     font-size: 1.72rem;
+  }
+
+  .home-mobile-focus-body {
+    padding: 12px 12px 14px;
+    border-radius: 16px;
   }
 
   .home-mobile-focus-copy {
@@ -4997,7 +4881,7 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-mobile-quote-panel {
-    min-height: 188px;
+    min-height: 232px;
     gap: 12px;
     padding: 16px;
     border-radius: 22px;
@@ -5016,29 +4900,9 @@ html.is-capacitor-app .tool-switch--share {
     padding: 0 12px;
   }
 
-  .home-mobile-drawer {
-    border-radius: 20px;
-  }
-
-  .home-mobile-drawer > summary {
-    padding: 16px 16px;
-    font-size: 1rem;
-  }
-
-  .home-mobile-drawer-body {
-    padding: 0 16px 16px;
-    gap: 12px;
-  }
-
-  .home-mobile-quote-card {
-    gap: 12px;
-    padding: 14px 14px 15px;
-    border-radius: 18px;
-  }
-
   .home-mobile-quote-text {
-    font-size: 1.02rem;
-    line-height: 1.62;
+    font-size: 1.2rem;
+    line-height: 1.78;
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
@@ -5049,10 +4913,7 @@ html.is-capacitor-app .tool-switch--share {
     display: grid;
     gap: 6px;
     align-items: flex-start;
-  }
-
-  .home-mobile-quote-card .tool-switch {
-    width: auto;
+    padding-top: 10px;
   }
 
   .section-preview-line {
@@ -5284,17 +5145,96 @@ html[data-theme="dark"] .doc-content.reader-notes-pick-mode .reader-note-block:a
 }
 
 /* Dark feature card vertical line */
+html[data-theme="dark"] .home-feature-card {
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.98), rgba(18, 18, 20, 0.98));
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 html[data-theme="dark"] .home-feature-card::before {
   background: linear-gradient(180deg, rgba(229, 229, 231, 0.3), rgba(229, 229, 231, 0.05));
 }
 
+html[data-theme="dark"] .home-feature-kicker,
+html[data-theme="dark"] .home-mobile-quote-panel-head .hero-kicker {
+  color: #f0b088;
+}
+
+html[data-theme="dark"] .home-feature-title,
+html[data-theme="dark"] .home-side-head h2,
+html[data-theme="dark"] .quote-display,
+html[data-theme="dark"] .home-mobile-focus h2,
+html[data-theme="dark"] .home-mobile-quote-panel-head h2,
+html[data-theme="dark"] .home-mobile-quote-text {
+  color: #f4efe7;
+}
+
+html[data-theme="dark"] .home-feature-summary,
+html[data-theme="dark"] .book-dice-meta,
+html[data-theme="dark"] .random-quote-source,
+html[data-theme="dark"] .home-mobile-focus-copy,
+html[data-theme="dark"] .home-mobile-focus-topline,
+html[data-theme="dark"] .home-mobile-quote-meta {
+  color: rgba(229, 229, 231, 0.76);
+}
+
+html[data-theme="dark"] .home-quote-panel {
+  background: linear-gradient(180deg, rgba(25, 43, 44, 0.9), rgba(18, 24, 28, 0.96));
+  border-color: rgba(100, 210, 197, 0.12);
+}
+
+html[data-theme="dark"] .home-mobile-focus {
+  background:
+    linear-gradient(180deg, rgba(34, 30, 28, 0.98), rgba(22, 20, 19, 0.98)),
+    var(--bg-surface);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .home-mobile-focus-body {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .home-mobile-quote-panel {
+  background:
+    linear-gradient(180deg, rgba(24, 42, 43, 0.94), rgba(19, 26, 28, 0.96)),
+    var(--bg-surface);
+  border-color: rgba(100, 210, 197, 0.12);
+}
+
+html[data-theme="dark"] .home-mobile-quote-meta {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .quote-link,
+html[data-theme="dark"] .home-mobile-quote-link {
+  color: #f0b088;
+}
+
 /* Dark sentence card accent */
+html[data-theme="dark"] .sentence-card {
+  border-color: rgba(240, 176, 136, 0.12);
+  background:
+    linear-gradient(180deg, rgba(42, 34, 28, 0.96), rgba(28, 24, 21, 0.98)),
+    var(--bg-surface);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+}
+
 html[data-theme="dark"] .sentence-card::after {
-  color: rgba(239, 184, 137, 0.16);
+  color: rgba(239, 184, 137, 0.12);
 }
 
 html[data-theme="dark"] .sentence-card-quote {
-  border-left-color: rgba(239, 184, 137, 0.26);
+  border-color: rgba(240, 176, 136, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme="dark"] .sentence-card-quote p {
+  color: #f4efe7;
+}
+
+html[data-theme="dark"] .sentence-card-body {
+  color: rgba(229, 229, 231, 0.78);
 }
 
 /* Dark memory card items */

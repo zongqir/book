@@ -12,7 +12,6 @@ function getBookEntry(bookId: string, fallbackUrl: string) {
   const whyReadPage = siteIndex.pages.find((page) => page.book_id === bookId && String(page.slot ?? "").startsWith("00"));
   return {
     url: whyReadPage?.url ?? fallbackUrl,
-    label: "直接打开",
     whyRead: whyReadPage?.summary ?? "",
   };
 }
@@ -32,10 +31,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
   <div class="page-stack home-page">
     <section class="home-simple-stage">
       <article class="home-focus-card" aria-live="polite">
-        <div class="home-focus-head home-focus-head--actions">
-          <button class="tool-switch" type="button" id="home-focus-secondary">换一本</button>
-        </div>
-
         <div class="home-focus-body">
           <h1 id="home-focus-title">{firstBook?.title ?? "随机一本到"}</h1>
           <p class="home-focus-copy" id="home-focus-copy">{firstBook?.summary ?? "先打开一页，再决定今天往哪走。"}</p>
@@ -47,17 +42,13 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
 
         <div class="home-focus-actions">
           <a class="btn" id="home-focus-open" href={firstBookEntry?.url ?? firstBook?.url ?? libraryHref}>
-            <span id="home-focus-open-label">{firstBookEntry?.label ?? "直接打开"}</span>
+            <span id="home-focus-open-label">直接打开</span>
           </a>
+          <button class="tool-switch" type="button" id="home-focus-secondary">换一本</button>
         </div>
       </article>
 
       <article class="home-quote-card" aria-label="摘一句">
-        <div class="home-card-head home-card-head--actions">
-          <h2>摘句</h2>
-          <button class="tool-switch tool-switch--compact" type="button" id="home-quote-shuffle">换一句</button>
-        </div>
-
         {firstQuote ? (
           <div class="home-quote-body" aria-live="polite">
             <p class="home-quote-text" id="home-quote-text">{firstQuote.quote}</p>
@@ -69,6 +60,11 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         ) : (
           <p class="tool-empty">暂时还没有句子卡可抽。</p>
         )}
+
+        <div class="home-quote-actions">
+          <a class="btn" id="home-quote-open" href={firstQuote?.url ?? "#"}>直接打开</a>
+          <button class="tool-switch" type="button" id="home-quote-shuffle">换一句</button>
+        </div>
       </article>
     </section>
   </div>
@@ -90,12 +86,12 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
       var focusWhyReadWrap = document.getElementById("home-focus-whyread-wrap");
       var focusWhyReadCopy = document.getElementById("home-focus-whyread-copy");
       var focusOpen = document.getElementById("home-focus-open");
-      var focusOpenLabel = document.getElementById("home-focus-open-label");
       var focusSecondary = document.getElementById("home-focus-secondary");
 
       var quoteText = document.getElementById("home-quote-text");
       var quoteBook = document.getElementById("home-quote-book");
       var quoteLink = document.getElementById("home-quote-link");
+      var quoteOpen = document.getElementById("home-quote-open");
       var quoteShuffle = document.getElementById("home-quote-shuffle");
 
       function readBookStatusOverrides() {
@@ -141,7 +137,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         if (focusWhyReadCopy) focusWhyReadCopy.textContent = current.whyRead || "";
         if (focusWhyReadWrap) focusWhyReadWrap.hidden = !current.whyRead;
         if (focusOpen) focusOpen.href = current.entryUrl || current.url || "#";
-        if (focusOpenLabel) focusOpenLabel.textContent = current.entryLabel || "直接打开";
 
         if (focusSecondary instanceof HTMLButtonElement) {
           focusSecondary.hidden = books.length <= 1;
@@ -176,6 +171,9 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         if (quoteLink) {
           quoteLink.href = current.url || "#";
           quoteLink.textContent = current.pageTitle || "查看原文";
+        }
+        if (quoteOpen) {
+          quoteOpen.href = current.url || "#";
         }
       }
 
@@ -247,7 +245,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
                     title: source.title || "未命名",
                     url: source.url || "#",
                     entryUrl: whyReadPage && whyReadPage.url ? whyReadPage.url : (source.url || "#"),
-                    entryLabel: "直接打开",
                     whyRead: whyReadPage && whyReadPage.summary ? whyReadPage.summary : "",
                     summary: source.summary || "",
                     tags: Array.isArray(source.tags) ? source.tags : [],

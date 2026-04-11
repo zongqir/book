@@ -4355,7 +4355,6 @@ html.is-capacitor-app .tool-switch--share {
   align-items: stretch;
 }
 
-.home-card-head h2,
 .home-focus-body h1 {
   margin: 0;
   font-family: "Noto Serif SC", serif;
@@ -4382,7 +4381,6 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-focus-head,
-.home-card-head,
 .home-quote-meta {
   display: flex;
   align-items: flex-start;
@@ -4395,11 +4393,6 @@ html.is-capacitor-app .tool-switch--share {
   flex-wrap: wrap;
   color: var(--text-faint);
   font-size: 0.82rem;
-}
-
-.home-focus-head--actions,
-.home-card-head--actions {
-  justify-content: flex-end;
 }
 
 .home-focus-body {
@@ -4438,7 +4431,8 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-focus-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -4452,11 +4446,6 @@ html.is-capacitor-app .tool-switch--share {
     var(--bg-surface);
 }
 
-.home-card-head h2 {
-  font-size: clamp(1.8rem, 2.8vw, 2.3rem);
-  line-height: 1;
-}
-
 .home-quote-body {
   display: grid;
   gap: 18px;
@@ -4465,9 +4454,19 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-quote-text {
   margin: 0;
-  font-family: "Noto Serif SC", serif;
-  font-size: clamp(2rem, 3.2vw, 3.1rem);
-  line-height: 1.28;
+  max-width: 16ch;
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.home-quote-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .home-quote-meta {
@@ -4540,7 +4539,7 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-focus-head,
-  .home-card-head {
+  .home-quote-meta {
     align-items: flex-start;
   }
 
@@ -4569,16 +4568,17 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-focus-actions {
-    display: flex;
-  }
-
-  .home-card-head h2 {
-    font-size: 1.42rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-quote-text {
-    font-size: 1.34rem;
-    line-height: 1.62;
+    max-width: none;
+    font-size: 1.5rem;
+    line-height: 1.56;
+  }
+
+  .home-quote-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-quote-meta {
@@ -4834,7 +4834,6 @@ html[data-theme="dark"] .home-quote-card {
   border-color: rgba(100, 210, 197, 0.14);
 }
 
-html[data-theme="dark"] .home-card-head h2,
 html[data-theme="dark"] .home-focus-body h1,
 html[data-theme="dark"] .home-quote-text {
   color: #f4efe7;
@@ -4851,7 +4850,6 @@ html[data-theme="dark"] .home-focus-whyread {
 }
 
 html[data-theme="dark"] .home-focus-body h1,
-html[data-theme="dark"] .home-card-head h2,
 html[data-theme="dark"] .home-quote-text {
   color: #f4efe7;
 }

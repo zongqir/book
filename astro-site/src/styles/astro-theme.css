@@ -4392,22 +4392,21 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-cover-why {
-  max-width: 33rem;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(29, 29, 31, 0.08);
-  background: rgba(255, 255, 255, 0.74);
+  max-width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid rgba(29, 29, 31, 0.08);
 }
 
 .home-cover-why p {
   margin: 0;
-  color: var(--text);
-  font-size: 0.96rem;
+  max-width: 42rem;
+  color: var(--text-soft);
+  font-size: 0.94rem;
   line-height: 1.68;
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 5;
 }
 
 .home-cover-quote {
@@ -4500,8 +4499,8 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-cover-card {
-    gap: 14px;
-    padding: 20px 16px 16px;
+    gap: 12px;
+    padding: 18px 16px 14px;
     border-radius: 24px;
   }
 
@@ -4516,14 +4515,14 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-cover-why {
-    padding: 12px 14px;
-    border-radius: 16px;
+    padding-top: 8px;
   }
 
   .home-cover-why p {
-    font-size: 0.88rem;
-    line-height: 1.54;
-    -webkit-line-clamp: 4;
+    max-width: none;
+    font-size: 0.86rem;
+    line-height: 1.52;
+    -webkit-line-clamp: 5;
   }
 
   .home-cover-quote-text {
@@ -4533,15 +4532,28 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-cover-actions {
-    gap: 8px;
+    gap: 6px;
+    margin-top: 2px;
   }
 
   .home-cover-actions .btn,
   .home-cover-actions .tool-switch {
-    min-height: 34px;
-    padding: 0 8px;
-    font-size: 0.8rem;
-    border-radius: 9px;
+    min-height: 30px;
+    padding: 0 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    border-radius: 10px;
+  }
+
+  .home-cover-actions .tool-switch {
+    border-color: rgba(29, 29, 31, 0.1);
+    background: rgba(255, 255, 255, 0.88);
+  }
+
+  .home-cover-actions .btn {
+    background: #2a2a2e;
   }
 
   .section-preview-line {
@@ -4794,8 +4806,7 @@ html[data-theme="dark"] .home-cover-quote {
 }
 
 html[data-theme="dark"] .home-cover-why {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 html[data-theme="dark"] .home-cover-why p {

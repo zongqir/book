@@ -4424,20 +4424,10 @@ html.is-capacitor-app .tool-switch--share {
 
 .home-focus-whyread {
   display: grid;
-  gap: 8px;
   padding: 16px 18px;
   border-radius: 18px;
   border: 1px solid rgba(29, 29, 31, 0.08);
   background: rgba(255, 255, 255, 0.72);
-}
-
-.home-focus-whyread-label {
-  margin: 0;
-  color: var(--accent-strong);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .home-focus-whyread-copy {
@@ -4463,12 +4453,8 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-card-head h2 {
-  font-size: clamp(1.42rem, 2.2vw, 1.9rem);
-  line-height: 1.15;
-}
-
-.home-card-head .eyebrow {
-  margin: 0 0 10px;
+  font-size: clamp(1.8rem, 2.8vw, 2.3rem);
+  line-height: 1;
 }
 
 .home-quote-body {
@@ -4573,7 +4559,6 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-focus-whyread {
-    gap: 6px;
     padding: 14px;
     border-radius: 16px;
   }
@@ -4588,7 +4573,7 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-card-head h2 {
-    font-size: 1.18rem;
+    font-size: 1.42rem;
   }
 
   .home-quote-text {
@@ -4863,10 +4848,6 @@ html[data-theme="dark"] .home-quote-meta {
 html[data-theme="dark"] .home-focus-whyread {
   border-color: rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
-}
-
-html[data-theme="dark"] .home-focus-whyread-label {
-  color: #f0b088;
 }
 
 html[data-theme="dark"] .home-focus-body h1,

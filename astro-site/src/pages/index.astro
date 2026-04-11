@@ -42,7 +42,6 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         </div>
 
         <div class="home-focus-whyread" id="home-focus-whyread-wrap" hidden={!firstBookEntry?.whyRead}>
-          <p class="home-focus-whyread-label">为什么读</p>
           <p class="home-focus-whyread-copy" id="home-focus-whyread-copy">{firstBookEntry?.whyRead ?? ""}</p>
         </div>
 
@@ -55,12 +54,13 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
 
       <article class="home-quote-card" aria-label="摘一句">
         <div class="home-card-head home-card-head--actions">
+          <h2>摘句</h2>
           <button class="tool-switch tool-switch--compact" type="button" id="home-quote-shuffle">换一句</button>
         </div>
 
         {firstQuote ? (
           <div class="home-quote-body" aria-live="polite">
-            <p class="home-quote-text" id="home-quote-text">“{firstQuote.quote}”</p>
+            <p class="home-quote-text" id="home-quote-text">{firstQuote.quote}</p>
             <div class="home-quote-meta">
               <span id="home-quote-book">{firstQuote.book_title}</span>
               <a class="quote-link" id="home-quote-link" href={firstQuote.url}>{firstQuote.page_title}</a>
@@ -171,7 +171,7 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
         currentQuote = ((index % quotes.length) + quotes.length) % quotes.length;
         var current = quotes[currentQuote];
         if (!current) return;
-        if (quoteText) quoteText.textContent = "“" + (current.quote || "") + "”";
+        if (quoteText) quoteText.textContent = stripWrappingQuotes(current.quote || "");
         if (quoteBook) quoteBook.textContent = current.bookTitle || "来源";
         if (quoteLink) {
           quoteLink.href = current.url || "#";
@@ -188,6 +188,10 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
           next = Math.floor(Math.random() * quotes.length);
         }
         return next;
+      }
+
+      function stripWrappingQuotes(value) {
+        return String(value || "").replace(/^[\"'“”‘’«»「」『』]+|[\"'“”‘’«»「」『』]+$/g, "");
       }
 
       if (focusSecondary instanceof HTMLButtonElement) {
@@ -256,7 +260,7 @@ const firstBookEntry = firstBook ? getBookEntry(firstBook.id, firstBook.url) : n
           quotes = Array.isArray(payload.quotes)
             ? payload.quotes.map(function (item) {
                 return {
-                  quote: item.quote || "",
+                  quote: stripWrappingQuotes(item.quote || ""),
                   pageTitle: item.page_title || "查看原文",
                   bookTitle: item.book_title || "来源",
                   url: item.url || "#",

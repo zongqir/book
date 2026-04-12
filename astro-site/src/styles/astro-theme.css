@@ -4408,7 +4408,7 @@ html.is-capacitor-app .tool-switch--share {
 .home-cover-quote {
   display: grid;
   max-width: 42rem;
-  gap: 8px;
+  gap: 10px;
   padding-top: 14px;
   border-top: 1px solid rgba(29, 29, 31, 0.08);
 }
@@ -4428,6 +4428,7 @@ html.is-capacitor-app .tool-switch--share {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 2px;
 }
 
 .home-cover-actions > * {
@@ -4523,12 +4524,12 @@ html.is-capacitor-app .tool-switch--share {
   .home-cover-quote-text {
     max-width: none;
     font-size: 1.2rem;
-    line-height: 1.34;
+    line-height: 1.26;
   }
 
   .home-cover-actions {
     gap: 5px;
-    margin-top: -6px;
+    margin-top: 0;
   }
 
   .home-cover-actions .btn,
@@ -4543,8 +4544,8 @@ html.is-capacitor-app .tool-switch--share {
   }
 
   .home-cover-quote {
-    gap: 6px;
-    padding-top: 10px;
+    gap: 8px;
+    padding-top: 8px;
   }
 
   .home-cover-actions .tool-switch {

@@ -113,12 +113,11 @@ const firstQuote = featuredBook ? normalizedQuotes.find((quote) => quote.bookId 
 
         <div class="home-cover-quote" id="home-cover-quote" hidden={!firstQuote}>
           <p class="home-cover-quote-text" id="home-cover-quote-text">{firstQuote?.quote ?? ""}</p>
-        </div>
-
-        <div class="home-cover-actions">
-          <button class="tool-switch" type="button" id="home-cover-shuffle-book">换书</button>
-          <button class="tool-switch" type="button" id="home-cover-shuffle-quote">换句子</button>
-          <a class="btn" id="home-cover-open" href={firstBookEntry?.url ?? featuredBook?.url ?? libraryHref}>细读</a>
+          <div class="home-cover-actions">
+            <button class="tool-switch" type="button" id="home-cover-shuffle-book">换书</button>
+            <button class="tool-switch" type="button" id="home-cover-shuffle-quote">换句子</button>
+            <a class="btn" id="home-cover-open" href={firstBookEntry?.url ?? featuredBook?.url ?? libraryHref}>细读</a>
+          </div>
         </div>
 
         <div class="home-cover-why" id="home-cover-why" hidden={!firstBookEntry?.whyRead}>

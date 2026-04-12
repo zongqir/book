@@ -53,6 +53,9 @@ jobs:
         run: python3 scripts/check-writing-patterns.py
 
       - name: Check Astro build
+        env:
+          PUBLIC_ANDROID_APP_DOWNLOAD_BASE_URL: ${{ vars.ANDROID_APP_DOWNLOAD_BASE_URL }}
+          PUBLIC_ANDROID_APP_RELEASE_PAGE_URL: ${{ vars.ANDROID_APP_RELEASE_PAGE_URL }}
         run: python3 scripts/check-astro-build.py
 
       - name: Pack Astro dist

@@ -4616,6 +4616,13 @@ html[data-theme="dark"] .nav-pill.is-active {
   color: var(--text);
   box-shadow: var(--shadow-sm);
 }
+html.is-capacitor-app .top-nav {
+  grid-template-columns: repeat(4, minmax(78px, 1fr));
+}
+html.is-capacitor-app .nav-pill--app,
+html.is-capacitor-app .site-footer-link--app {
+  display: none;
+}
 html[data-theme="dark"] .btn,
 html[data-theme="dark"] .personal-mobile-tab.is-active,
 html[data-theme="dark"] .notes-filter-reset.is-active,

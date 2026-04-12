@@ -41,7 +41,7 @@ const isNotes = pathname.startsWith("/notes");
 const isAppDownload = pathname.startsWith("/app");
 const mobileSectionLabel = isHome ? "首页" : isLibrary ? "分类" : isShelf ? "书架" : isNotes ? "个人" : title;
 const appDownload = getAndroidAppDownloadConfig();
-const showAppDownloadEntry = appDownload.available;
+const showAppDownloadEntry = true;
 const homeHref = toInternalHref("/");
 const libraryHref = toInternalHref("/library/");
 const shelfHref = toInternalHref("/shelf/");
@@ -171,7 +171,7 @@ const appHref = toInternalHref("/app/");
               <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>分类</a>
               <a class:list={["nav-pill", isShelf && "is-active"]} href={shelfHref}>书架</a>
               <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
-              {showAppDownloadEntry && <a class:list={["nav-pill", isAppDownload && "is-active"]} href={appHref}>安卓</a>}
+              {showAppDownloadEntry && <a class:list={["nav-pill", "nav-pill--app", isAppDownload && "is-active"]} href={appHref}>安卓</a>}
             </nav>
           </div>
         </div>
@@ -186,7 +186,7 @@ const appHref = toInternalHref("/app/");
           <p class="site-footer-meta">hi@zongqir.com · {new Date().getFullYear()}</p>
           {showAppDownloadEntry && (
             <div class="site-footer-links">
-              <a class:list={["site-footer-link", isAppDownload && "is-active"]} href={appHref}>
+              <a class:list={["site-footer-link", "site-footer-link--app", isAppDownload && "is-active"]} href={appHref}>
                 安卓
               </a>
             </div>

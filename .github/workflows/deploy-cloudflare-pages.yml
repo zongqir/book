@@ -55,36 +55,40 @@ jobs:
       - name: Check Astro build
         run: python3 scripts/check-astro-build.py
 
+      - name: Pack Astro dist
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          tar -C astro-site -czf /tmp/astro-site-dist.tgz dist
+
+      - name: Upload Astro dist artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v5
+        with:
+          name: astro-site-dist
+          path: /tmp/astro-site-dist.tgz
+          if-no-files-found: error
+          retention-days: 1
+
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: quality
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "22.12.0"
-          cache: "npm"
-          cache-dependency-path: astro-site/package-lock.json
 
-      - name: Install Python dependencies
+      - name: Download Astro dist artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: astro-site-dist
+          path: /tmp/deploy-artifact
+
+      - name: Unpack Astro dist
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pyyaml
-
-      - name: Install Astro dependencies
-        working-directory: ./astro-site
-        run: npm ci
-
-      - name: Build Astro site
-        working-directory: ./astro-site
-        env:
-          PUBLIC_ANDROID_APP_DOWNLOAD_BASE_URL: ${{ vars.ANDROID_APP_DOWNLOAD_BASE_URL }}
-          PUBLIC_ANDROID_APP_RELEASE_PAGE_URL: ${{ vars.ANDROID_APP_RELEASE_PAGE_URL }}
-        run: npm run build:site
+          mkdir -p astro-site
+          tar -C astro-site -xzf /tmp/deploy-artifact/astro-site-dist.tgz
 
       - name: Ensure Cloudflare Pages project exists
         env:

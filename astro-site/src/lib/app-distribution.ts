@@ -20,7 +20,7 @@ export function getAndroidAppDownloadConfig() {
   const manifestUrl = baseUrl ? `${baseUrl}/${manifestPath}` : "";
 
   return {
-    available: Boolean(latestApkUrl || releasePageUrl),
+    available: Boolean(latestApkUrl),
     latestApkUrl,
     manifestUrl,
     releasePageUrl,

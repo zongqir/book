@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAndroidAppDownloadConfig } from "../../lib/app-distribution";
+
+const appDownload = getAndroidAppDownloadConfig();
+const updateUrl = appDownload.latestApkUrl || "/app/";
 ---
 
 <BaseLayout title="个人" description="回看你留在这个浏览器里的笔记、收藏的书和收藏的文章。">
@@ -67,6 +71,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </button>
           </div>
         </section>
+
+        {appDownload.available && (
+          <section class="personal-preference-block personal-preference-block--app-update">
+            <h3 class="personal-preference-title">更新</h3>
+            <p class="personal-preference-copy">安卓端在这里检查最新版本。</p>
+            <a class="btn btn-ghost" href={updateUrl}>检查更新</a>
+          </section>
+        )}
       </div>
     </section>
 

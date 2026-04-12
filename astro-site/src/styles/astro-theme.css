@@ -121,7 +121,7 @@ img { display: block; max-width: 100%; }
 }
 .top-nav {
   display: inline-grid;
-  grid-template-columns: repeat(4, minmax(78px, 1fr));
+  grid-template-columns: repeat(var(--top-nav-count, 4), minmax(78px, 1fr));
   align-items: center;
   gap: 2px;
   padding: 3px;
@@ -153,6 +153,12 @@ img { display: block; max-width: 100%; }
 }
 .nav-pill--subtle { background: var(--bg-surface); }
 .site-main { padding: 34px 0 72px; }
+.personal-preference-copy {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
 .page-stack { display: grid; gap: 28px; }
 .eyebrow,
 .hero-kicker,
@@ -2951,6 +2957,12 @@ html.is-capacitor-app .tool-switch--share {
     grid-template-columns: repeat(var(--mobile-dock-count, 4), minmax(0, 1fr));
     gap: 6px;
   }
+  html.is-capacitor-app .mobile-app-dock {
+    --mobile-dock-count: 4;
+  }
+  html.is-capacitor-app .mobile-dock-item--app {
+    display: none;
+  }
   .home-stage,
   .library-hero,
   .page-intro,
@@ -3529,6 +3541,9 @@ html.is-capacitor-app .tool-switch--share {
   .personal-preference-block {
     padding: 16px;
     border-radius: 20px;
+  }
+  html:not(.is-capacitor-app) .personal-preference-block--app-update {
+    display: none;
   }
   .preference-rail {
     gap: 6px;

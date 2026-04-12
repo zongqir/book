@@ -166,11 +166,12 @@ const appHref = toInternalHref("/app/");
             <span class="mobile-page-badge">{mobileSectionLabel}</span>
           </div>
           <div class="site-header-actions">
-            <nav class="top-nav" aria-label="主导航">
+            <nav class="top-nav" aria-label="主导航" style={`--top-nav-count: ${showAppDownloadEntry ? 5 : 4};`}>
               <a class:list={["nav-pill", isHome && "is-active"]} href={homeHref}>首页</a>
               <a class:list={["nav-pill", isLibrary && "is-active"]} href={libraryHref}>分类</a>
               <a class:list={["nav-pill", isShelf && "is-active"]} href={shelfHref}>书架</a>
               <a class:list={["nav-pill", isNotes && "is-active"]} href={notesHref}>个人</a>
+              {showAppDownloadEntry && <a class:list={["nav-pill", isAppDownload && "is-active"]} href={appHref}>安卓</a>}
             </nav>
           </div>
         </div>
@@ -186,7 +187,7 @@ const appHref = toInternalHref("/app/");
           {showAppDownloadEntry && (
             <div class="site-footer-links">
               <a class:list={["site-footer-link", isAppDownload && "is-active"]} href={appHref}>
-                Android App
+                安卓
               </a>
             </div>
           )}
@@ -194,7 +195,7 @@ const appHref = toInternalHref("/app/");
       </footer>
     )}
 
-    <nav class="mobile-app-dock" aria-label="移动导航" style="--mobile-dock-count: 4;">
+    <nav class="mobile-app-dock" aria-label="移动导航" style={`--mobile-dock-count: ${showAppDownloadEntry ? 5 : 4};`}>
       <a class:list={["mobile-dock-item", isHome && "is-active"]} href={homeHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>首页</span>
@@ -211,6 +212,12 @@ const appHref = toInternalHref("/app/");
         <span class="mobile-dock-dot mobile-dock-dot--settings" aria-hidden="true"></span>
         <span>个人</span>
       </a>
+      {showAppDownloadEntry && (
+        <a class:list={["mobile-dock-item", "mobile-dock-item--app", isAppDownload && "is-active"]} href={appHref}>
+          <span class="mobile-dock-dot" aria-hidden="true"></span>
+          <span>安卓</span>
+        </a>
+      )}
     </nav>
 
     <div class="network-toast" id="network-toast" hidden>当前离线，优先使用已缓存页面。</div>

@@ -3,8 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getAndroidAppDownloadConfig } from "../../lib/app-distribution";
 
 const appDownload = getAndroidAppDownloadConfig();
-const primaryUrl = appDownload.latestApkUrl || appDownload.releasePageUrl;
-const secondaryUrl = appDownload.manifestUrl || appDownload.releasePageUrl;
+const primaryUrl = appDownload.latestApkUrl;
+const secondaryUrl = appDownload.manifestUrl;
 ---
 
 <BaseLayout

@@ -171,6 +171,12 @@
 - `visibility`
 - `differentiation_notes`
 
+补充约束：
+
+- 上面这组是跨槽位通用字段，不代表在所有固定槽位里都继续是“可选”
+- 单书固定槽位（00-10、11）的实际必填组合以 `scripts/frontmatter_schema.py` 为代码真源；`check-frontmatter.py` 与 `normalize-frontmatter.py` 共用这套 schema
+- 批量生成或批量改写后，如果只是漏了 schema 里可自动补齐的字段，优先运行 `python scripts/normalize-frontmatter.py --write` 收口，再跑检查
+
 
 `differentiation_notes` 用法：在动笔前差异化诊断完成后，把“这本书和同分类已有书的核心差异”写进这个字段。它是跨槽位复用的，同一本书的所有槽位共享同一条。
 字段语义统一约束：
@@ -411,6 +417,7 @@ evidence_status: "llm-draft"
 - `rg "关键词" .`：搜索书名、文稿或重复内容
 - `rg -n "这本书|这套方法|整套体系|卷一|卷二|卷三|卷四|第一章|第二章|最值得|真正|一直在拆|另一个很硬的提醒|留下来的" site/content/library/目标目录`：提交前抓正文里的泛指代词、卷次主语和评价壳句式
 - `python scripts/check-frontmatter.py`：检查 `site/content/library/` 下文稿元数据
+- `python scripts/normalize-frontmatter.py --write`：按固定槽位 schema 自动补齐可保守回填的 frontmatter 缺口
 - `./scripts/start-site.ps1`：启动 Astro 本地站点预览
 - `python scripts/check-astro-build.py`：导出内容索引并构建 Astro 站点
 

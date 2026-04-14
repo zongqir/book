@@ -866,6 +866,9 @@ html.is-capacitor-app .share-inline {
 .library-index-empty {
   min-height: 48px;
 }
+.library-index-empty[hidden] {
+  display: none;
+}
 .library-index-preview,
 .mini-grid { display: grid; }
 .doc-side { display: flex; flex-direction: column; gap: 14px; align-self: start; }
@@ -2957,6 +2960,9 @@ html.is-capacitor-app .tool-switch--share {
     grid-template-columns: repeat(var(--mobile-dock-count, 4), minmax(0, 1fr));
     gap: 6px;
   }
+  .mobile-app-dock--with-app {
+    --mobile-dock-count: 5;
+  }
   html.is-capacitor-app .mobile-app-dock {
     --mobile-dock-count: 4;
   }
@@ -4421,46 +4427,71 @@ html.is-capacitor-app .tool-switch--share {
 }
 
 .home-cover-quote {
+  position: relative;
   display: grid;
-  max-width: 42rem;
-  gap: 12px;
-  padding: 16px 18px 14px;
-  border-radius: 20px;
+  max-width: 44rem;
+  gap: 14px;
+  padding: 18px 18px 14px 20px;
+  border-radius: 22px;
   border: 1px solid rgba(29, 29, 31, 0.08);
-  background: rgba(255, 255, 255, 0.56);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 252, 248, 0.92)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+
+.home-cover-quote::before {
+  content: "“";
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  color: rgba(164, 91, 42, 0.18);
+  font-family: "Noto Serif SC", serif;
+  font-size: 2.6rem;
+  line-height: 1;
 }
 
 .home-cover-quote-text {
   margin: 0;
-  max-width: 24ch;
+  max-width: 25ch;
+  padding-left: 8px;
   font-family: "Noto Serif SC", serif;
-  font-size: clamp(1.6rem, 2.6vw, 2.12rem);
+  font-size: clamp(1.72rem, 2.8vw, 2.2rem);
   font-weight: 600;
-  line-height: 1.42;
-  letter-spacing: -0.03em;
+  line-height: 1.34;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 
 .home-cover-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   margin-top: 0;
-  padding-top: 10px;
+  padding-top: 6px;
   border-top: 1px solid rgba(29, 29, 31, 0.08);
-}
-
-.home-cover-actions > * {
-  flex: 1 1 0;
 }
 
 .home-cover-actions .btn,
 .home-cover-actions .tool-switch {
-  width: 100%;
   min-height: 38px;
   padding: 0 12px;
   font-size: 0.88rem;
-  border-radius: 10px;
+  border-radius: 999px;
+}
+
+.home-cover-actions .tool-switch {
+  flex: 0 0 auto;
+  min-width: 92px;
+  border-color: rgba(29, 29, 31, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.home-cover-actions .btn {
+  flex: 0 0 auto;
+  min-width: 116px;
+  margin-left: auto;
 }
 
 .home-cover-card:hover,
@@ -4542,40 +4573,52 @@ html.is-capacitor-app .tool-switch--share {
 
   .home-cover-quote-text {
     max-width: none;
-    font-size: 1.18rem;
-    line-height: 1.3;
+    padding-left: 6px;
+    font-size: 1.24rem;
+    line-height: 1.32;
   }
 
   .home-cover-actions {
-    gap: 5px;
+    gap: 6px;
     margin-top: 0;
-    padding-top: 8px;
+    padding-top: 4px;
   }
 
   .home-cover-actions .btn,
   .home-cover-actions .tool-switch {
-    min-height: 28px;
-    padding: 0 6px;
+    min-height: 30px;
+    padding: 0 10px;
     font-size: 0.74rem;
     font-weight: 600;
     line-height: 1;
     letter-spacing: 0.01em;
-    border-radius: 10px;
+    border-radius: 999px;
   }
 
   .home-cover-quote {
-    gap: 8px;
-    padding: 12px 14px 10px;
-    border-radius: 16px;
+    gap: 10px;
+    padding: 14px 14px 12px 16px;
+    border-radius: 18px;
+  }
+
+  .home-cover-quote::before {
+    top: 9px;
+    left: 10px;
+    font-size: 2.2rem;
   }
 
   .home-cover-actions .tool-switch {
+    flex: 1 1 0;
+    min-width: 0;
     border-color: rgba(29, 29, 31, 0.1);
     background: rgba(255, 255, 255, 0.88);
     color: #1c1c1e;
   }
 
   .home-cover-actions .btn {
+    flex: 1.1 1 0;
+    min-width: 0;
+    margin-left: 0;
     background: #2a2a2e;
   }
 
@@ -4844,12 +4887,20 @@ html[data-theme="dark"] .home-cover-why p {
 }
 
 html[data-theme="dark"] .home-cover-quote {
-  border-top-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(40, 34, 30, 0.92), rgba(28, 24, 22, 0.92)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme="dark"] .home-cover-quote::before {
+  color: rgba(240, 176, 136, 0.16);
 }
 
 html[data-theme="dark"] .home-cover-actions .tool-switch {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(245, 242, 237, 0.92);
+  background: rgba(245, 242, 237, 0.9);
   color: #1c1c1e;
 }
 

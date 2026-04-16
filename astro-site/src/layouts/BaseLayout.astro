@@ -66,6 +66,11 @@ const appHref = toInternalHref("/app/");
 
         function applyNativeAppClass() {
           var root = document.documentElement;
+          var dock = document.querySelector(".mobile-app-dock");
+          var appDockItem = document.querySelector(".mobile-dock-item--app");
+          var topNav = document.querySelector(".top-nav");
+          var topNavAppItem = document.querySelector(".nav-pill--app");
+          var footerAppLink = document.querySelector(".site-footer-link--app");
           var ua = window.navigator.userAgent || "";
           var capacitor = window.Capacitor;
           var isNativeApp = Boolean(
@@ -80,6 +85,21 @@ const appHref = toInternalHref("/app/");
           root.classList.add("is-capacitor-app");
           if (/Android/i.test(ua)) {
             root.classList.add("is-capacitor-android");
+          }
+          if (dock instanceof HTMLElement) {
+            dock.style.setProperty("--mobile-dock-count", "4");
+          }
+          if (appDockItem instanceof HTMLElement) {
+            appDockItem.style.display = "none";
+          }
+          if (topNav instanceof HTMLElement) {
+            topNav.style.setProperty("--top-nav-count", "4");
+          }
+          if (topNavAppItem instanceof HTMLElement) {
+            topNavAppItem.style.display = "none";
+          }
+          if (footerAppLink instanceof HTMLElement) {
+            footerAppLink.style.display = "none";
           }
         }
 
@@ -195,7 +215,7 @@ const appHref = toInternalHref("/app/");
       </footer>
     )}
 
-    <nav class="mobile-app-dock" aria-label="移动导航" style={`--mobile-dock-count: ${showAppDownloadEntry ? 5 : 4};`}>
+    <nav class:list={["mobile-app-dock", showAppDownloadEntry && "mobile-app-dock--with-app"]} aria-label="移动导航">
       <a class:list={["mobile-dock-item", isHome && "is-active"]} href={homeHref}>
         <span class="mobile-dock-dot" aria-hidden="true"></span>
         <span>首页</span>

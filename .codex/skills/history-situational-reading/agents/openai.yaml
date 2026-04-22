@@ -1,0 +1,4 @@
+interface:
+  display_name: "历史临场解读"
+  short_description: "先重建历史处境与现象，再从叙事里长出判断"
+  default_prompt: "使用 $history-situational-reading 解读一本历史类书，要求先重建处境、现象、限制和历史位置，不要一上来压成行动指南或通用方法论。"
